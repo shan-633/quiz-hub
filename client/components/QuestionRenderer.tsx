@@ -186,6 +186,8 @@ export function QuestionRenderer({
             {b.responseKind === 'open' && (
               <CalculationAnswer
                 value={part}
+                answerLabel={`${b.label}文字答案`}
+                openQuestion
                 onChange={change}
                 disabled={disabled}
                 context={context ? { ...context, partId: b.id } : undefined}
@@ -199,6 +201,11 @@ export function QuestionRenderer({
   return (
     <div className="question-renderer">
       <div className="question-content">{q.content.map(block)}</div>
+      {q.type === 'multiple' && q.multipleScoring === 'half' && (
+        <p className="muted small">
+          全选对得 {q.score} 分，选对但不全得 {q.score / 2} 分，有错选或未选得 0 分。
+        </p>
+      )}
       {(q.type === 'single' || q.type === 'multiple') && (
         <OptionGroup
           options={q.options}

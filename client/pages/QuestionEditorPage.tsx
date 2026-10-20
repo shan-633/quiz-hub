@@ -195,7 +195,7 @@ export function QuestionEditorPage() {
                 />
               </label>
             </div>
-            {(q.type === 'fill' || q.type === 'experiment') && (
+            {(q.type === 'fill' || q.type === 'experiment' || q.type === 'reading') && (
               <div className="score-sync-row">
                 <span>填空与子问题的分值应与总分一致。</span>
                 <button className="text-button" onClick={() => patch(syncScores(q))}>
@@ -231,6 +231,20 @@ export function QuestionEditorPage() {
                   <div className="options-editor">
                     <h3>选项与正确答案</h3>
                     <p className="muted small">点击选项前的控件设置正确答案。</p>
+                    {q.type === 'multiple' && (
+                      <label className="field">
+                        多选评分规则
+                        <select
+                          value={q.multipleScoring ?? 'exact'}
+                          onChange={(e) =>
+                            patch({ ...q, multipleScoring: e.target.value as 'exact' | 'half' })
+                          }
+                        >
+                          <option value="exact">全部正确才得分</option>
+                          <option value="half">全对满分、漏选一半分、错选零分</option>
+                        </select>
+                      </label>
+                    )}
                     {q.options.map((o, i) => (
                       <div className="option-edit-row" key={o.id}>
                         <input

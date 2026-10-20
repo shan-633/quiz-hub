@@ -11,19 +11,27 @@ export function CalculationAnswer({
   disabled = false,
   context,
   allowedModes = ['text', 'drawing', 'photo'],
+  answerLabel = '计算题文字答案',
+  openQuestion = false,
 }: {
   value: ResponseValue;
   onChange: (value: ResponseValue) => void;
   disabled?: boolean;
   context?: AnswerContext;
   allowedModes?: string[];
+  answerLabel?: string;
+  openQuestion?: boolean;
 }) {
   const [mode, setMode] = useState(allowedModes.includes('text') ? 'text' : allowedModes[0]),
     [preview, setPreview] = useState(disabled);
   const selected = allowedModes.includes(mode) ? mode : allowedModes[0];
   return (
     <div className="calculation-answer">
-      <div className="answer-tabs" role="tablist" aria-label="计算题作答方式">
+      <div
+        className="answer-tabs"
+        role="tablist"
+        aria-label={openQuestion ? '开放小问作答方式' : '计算题作答方式'}
+      >
         {[
           {
             id: 'text',
@@ -67,7 +75,7 @@ export function CalculationAnswer({
       {selected === 'text' && (
         <div role="tabpanel" aria-label="文字与公式">
           <div className="text-answer-toolbar">
-            <span>写下思路，再写公式</span>
+            <span>{openQuestion ? '写下观察、作图说明或推理过程' : '写下思路，再写公式'}</span>
             <button
               className="text-button preview-button"
               type="button"
@@ -86,10 +94,13 @@ export function CalculationAnswer({
             </div>
           ) : (
             <textarea
-              aria-label="计算题文字答案"
+              aria-label={answerLabel}
               className="answer-textarea"
               placeholder={
-                '在这里写下你的思路和计算过程…\n\n可以直接输入文字，也支持 Markdown 与 $数学公式$。'
+                (openQuestion
+                  ? '在这里写下观察、作图说明或推理过程…'
+                  : '在这里写下你的思路和计算过程…') +
+                '\n\n可以直接输入文字，也支持 Markdown 与 $数学公式$。'
               }
               rows={8}
               disabled={disabled}

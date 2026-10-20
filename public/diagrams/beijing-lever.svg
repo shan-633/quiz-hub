@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 250" role="img" aria-label="杠杆模型">
+<defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0 0L6 3L0 6" fill="none" stroke="#237b77" stroke-width="1.5"/></marker></defs>
+<rect width="700" height="250" fill="#f7faf9"/>
+<g fill="none" stroke="#28424e" stroke-width="3"><path d="M90 125H620"/><path d="M100 125L75 165H125Z"/><path d="M155 165H50" stroke-width="1"/></g>
+<g stroke="#237b77" stroke-width="3" marker-end="url(#arr)"><path d="M270 125V210"/><path d="M610 125V35"/></g>
+<g stroke="#829590" fill="none"><path d="M100 105V75M270 105V75M610 105V75M100 87H610"/><path d="M100 94H270"/></g>
+<g fill="#28424e" font-family="Arial, sans-serif" font-size="21"><text x="85" y="118">O</text><text x="250" y="118">B</text><text x="588" y="150">A</text><text x="620" y="54">F</text><text x="285" y="208">G = 180 N</text><text x="140" y="76" font-size="17">20 cm</text><text x="370" y="76" font-size="17">OA = 60 cm</text></g>
+</svg>

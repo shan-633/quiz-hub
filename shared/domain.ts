@@ -59,9 +59,20 @@ export function gradeQuestion(q: Question, a: AnswerData): Grade {
     pending ||= manual;
   };
   if (q.type === 'calculation') add('open', q.score, false, hasOpen(a));
-  else if (q.type === 'single' || q.type === 'multiple')
+  else if (q.type === 'single' || q.type === 'multiple') {
     add('choices', q.score, equalSet(a.choiceIds, q.solution?.choices ?? []));
-  else {
+    if (
+      q.type === 'multiple' &&
+      q.multipleScoring === 'half' &&
+      earned === 0 &&
+      a.choiceIds.length > 0 &&
+      new Set(a.choiceIds).size === a.choiceIds.length &&
+      a.choiceIds.every((id) => q.solution?.choices.includes(id))
+    ) {
+      earned = q.score / 2;
+      details.choices.earned = earned;
+    }
+  } else {
     for (const blank of q.blanks) {
       const value = a.blankValues[blank.id]?.trim() ?? '',
         rule = q.solution?.blanks[blank.id];
@@ -161,7 +172,7 @@ export function validateQuestion(q: Question): string[] {
   };
   if (q.type === 'single' || q.type === 'multiple')
     checkOptions(q.options, q.solution?.choices ?? [], q.type === 'single');
-  if (q.type === 'fill' || q.type === 'experiment') {
+  if (q.type === 'fill' || q.type === 'experiment' || q.type === 'reading') {
     const parts = blocks.filter((b) => b.type === 'subquestion' && b.responseKind !== 'blanks');
     const sum =
       q.blanks.reduce((s, b) => s + b.score, 0) +

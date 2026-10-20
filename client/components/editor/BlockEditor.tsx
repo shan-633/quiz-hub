@@ -165,7 +165,7 @@ export function BlockEditor({
                   onChange={(e) => update(b.id, { text: e.target.value })}
                   placeholder="输入题干文字，支持 Markdown 和 $公式$"
                 />
-                {(q.type === 'fill' || q.type === 'experiment') && (
+                {(q.type === 'fill' || q.type === 'experiment' || q.type === 'reading') && (
                   <button className="text-button small" onClick={() => insertBlank(b)}>
                     <Plus size={14} />
                     插入空格

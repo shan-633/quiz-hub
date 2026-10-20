@@ -29,6 +29,92 @@ async function login(app: any, username = 'student') {
     'x-csrf-token': res.json().csrfToken,
   };
 }
+it('管理员从可复用混合实验/科普阅读模板建题，拒绝跨题型套用模板', async () => {
+  const { app } = await setup();
+  const headers = await login(app, 'admin');
+  const mixed = await app.inject({
+    method: 'POST',
+    url: '/api/admin/questions',
+    headers,
+    payload: { bankId: 'bank-mechanics', type: 'experiment', templateId: 'experiment-mixed' },
+  });
+  expect(mixed.statusCode).toBe(201);
+  expect(mixed.json().content.some((b: any) => b.responseKind === 'open')).toBe(true);
+  const reading = await app.inject({
+    method: 'POST',
+    url: '/api/admin/questions',
+    headers,
+    payload: { bankId: 'bank-mechanics', type: 'reading', templateId: 'reading-mixed' },
+  });
+  expect(reading.statusCode).toBe(201);
+  expect(reading.json().blanks.length).toBeGreaterThan(0);
+  expect(reading.json().content.some((b: any) => b.responseKind === 'open')).toBe(true);
+  const invalid = await app.inject({
+    method: 'POST',
+    url: '/api/admin/questions',
+    headers,
+    payload: { bankId: 'bank-mechanics', type: 'single', templateId: 'reading-mixed' },
+  });
+  expect(invalid.statusCode).toBe(422);
+});
+it('北京原创卷从公开目录到提交：26题无答案泄露，多选半分与阅读待评阅由服务器计算', async () => {
+  const { app } = await setup();
+  const library = (await app.inject({ url: '/api/library' })).json();
+  const paper = library.find((x: any) => x.id === 'paper-beijing-original-01');
+  expect(paper.questionCount).toBe(26);
+  expect(paper.totalScore).toBe(70);
+  const headers = await login(app);
+  const start = await app.inject({
+    method: 'POST',
+    url: '/api/attempts',
+    headers,
+    payload: { libraryId: paper.id },
+  });
+  expect(start.statusCode).toBe(201);
+  const attempt = start.json();
+  expect(attempt.questions).toHaveLength(26);
+  expect(JSON.stringify(attempt.questions)).not.toContain('solution');
+  const empty = {
+    choiceIds: [],
+    blankValues: {},
+    markdown: '',
+    drawingPages: [],
+    imagePages: [],
+    parts: {},
+    flagged: false,
+  };
+  const saved = await app.inject({
+    method: 'PUT',
+    url: `/api/attempts/${attempt.id}/answers/bj01-q13`,
+    headers,
+    payload: { expectedRevision: 0, data: { ...empty, choiceIds: ['a'] } },
+  });
+  expect(saved.statusCode).toBe(200);
+  const reading = attempt.questions.find((q: any) => q.type === 'reading');
+  const open = reading.content.find((b: any) => b.responseKind === 'open');
+  const readSaved = await app.inject({
+    method: 'PUT',
+    url: `/api/attempts/${attempt.id}/answers/${reading.id}`,
+    headers,
+    payload: {
+      expectedRevision: 0,
+      data: {
+        ...empty,
+        parts: { [open.id]: { ...empty, markdown: '不能确定，28℃保持此前的开关状态。' } },
+      },
+    },
+  });
+  expect(readSaved.statusCode).toBe(200);
+  const submitted = await app.inject({
+    method: 'POST',
+    url: `/api/attempts/${attempt.id}/submit`,
+    headers,
+  });
+  expect(submitted.statusCode).toBe(200);
+  expect(submitted.json().grades['bj01-q13'].earned).toBe(1);
+  expect(submitted.json().grades[reading.id].pending).toBe(true);
+});
+
 describe('真实 SQLite API 与权限边界', () => {
   it('匿名不能开始作答，学生不能进入管理接口', async () => {
     const { app } = await setup();

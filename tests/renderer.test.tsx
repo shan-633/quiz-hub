@@ -7,6 +7,44 @@ import { emptyAnswer } from '../shared/domain';
 import type { Question } from '../shared/model';
 import { CalculationAnswer } from '../client/components/CalculationAnswer';
 afterEach(cleanup);
+it('阅读开放小问使用自己的标签，答案写入子题且保留客观填空', () => {
+  const q: Question = {
+    id: 'read',
+    version: 1,
+    bankId: 'bank',
+    type: 'reading',
+    title: '阅读材料',
+    score: 2,
+    difficulty: '中等',
+    tags: [],
+    options: [],
+    blanks: [],
+    state: 'published',
+    content: [
+      {
+        id: 'argument',
+        type: 'subquestion',
+        label: '推理与论证',
+        score: 2,
+        responseKind: 'open',
+        children: [{ id: 'material', type: 'paragraph', text: '说明理由。' }],
+      },
+    ],
+  };
+  const changed = vi.fn();
+  render(
+    <QuestionRenderer
+      question={q}
+      answer={{ ...emptyAnswer(), blankValues: { retained: '电能' } }}
+      onChange={changed}
+    />,
+  );
+  fireEvent.change(screen.getByRole('textbox', { name: '推理与论证文字答案' }), {
+    target: { value: '依据材料，需知道之前的状态。' },
+  });
+  expect(changed.mock.calls[0][0].parts.argument.markdown).toContain('之前的状态');
+  expect(changed.mock.calls[0][0].blankValues.retained).toBe('电能');
+});
 it('切换到照片作答再返回文字，已经输入的计算过程保留', () => {
   function Editor() {
     const [value, setValue] = useState(emptyAnswer());

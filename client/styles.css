@@ -1141,6 +1141,7 @@ strong {
   align-items: start;
 }
 .question-navigator {
+  min-width: 0;
   background: #fff;
   border: 1px solid var(--line);
   border-radius: 8px;
@@ -2540,7 +2541,7 @@ strong {
     display: none;
   }
   .practice-layout {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
     gap: 18px;
   }
   .question-navigator {

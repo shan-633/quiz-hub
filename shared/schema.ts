@@ -46,7 +46,7 @@ export const questionSchema = z.object({
   id,
   version: z.number().int().min(0),
   bankId: id,
-  type: z.enum(['single', 'multiple', 'fill', 'experiment', 'calculation']),
+  type: z.enum(['single', 'multiple', 'fill', 'experiment', 'reading', 'calculation']),
   title: z.string().max(300),
   score: z.number().min(0).max(1000),
   difficulty: z.string().max(50),
@@ -81,6 +81,7 @@ export const questionSchema = z.object({
     .optional(),
   state: z.enum(['draft', 'published', 'archived']),
   source: z.string().max(1000).optional(),
+  multipleScoring: z.enum(['exact', 'half']).optional(),
   allowedModes: z
     .array(z.enum(['text', 'drawing', 'photo']))
     .max(3)

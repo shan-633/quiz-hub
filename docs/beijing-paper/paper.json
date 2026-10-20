@@ -1,0 +1,2291 @@
+{
+  "paper": {
+    "id": "paper-beijing-original-01",
+    "kind": "paper",
+    "title": "北京中考风格 · 原创模拟卷（一）",
+    "description": "26题 · 70分 · 建议70分钟。12单选、3多选、8实验、1科普阅读、2计算；多选漏选得1分，开放过程待人工评阅。非官方真题，不含10分实验操作。",
+    "chapter": "九年级 · 综合",
+    "accent": "exam",
+    "state": "published",
+    "questionCount": 26,
+    "minutes": 70,
+    "totalScore": 70,
+    "items": [
+      {
+        "questionId": "bj01-q01",
+        "version": 1,
+        "score": 2
+      },
+      {
+        "questionId": "bj01-q02",
+        "version": 1,
+        "score": 2
+      },
+      {
+        "questionId": "bj01-q03",
+        "version": 1,
+        "score": 2
+      },
+      {
+        "questionId": "bj01-q04",
+        "version": 1,
+        "score": 2
+      },
+      {
+        "questionId": "bj01-q05",
+        "version": 1,
+        "score": 2
+      },
+      {
+        "questionId": "bj01-q06",
+        "version": 1,
+        "score": 2
+      },
+      {
+        "questionId": "bj01-q07",
+        "version": 1,
+        "score": 2
+      },
+      {
+        "questionId": "bj01-q08",
+        "version": 1,
+        "score": 2
+      },
+      {
+        "questionId": "bj01-q09",
+        "version": 1,
+        "score": 2
+      },
+      {
+        "questionId": "bj01-q10",
+        "version": 1,
+        "score": 2
+      },
+      {
+        "questionId": "bj01-q11",
+        "version": 1,
+        "score": 2
+      },
+      {
+        "questionId": "bj01-q12",
+        "version": 1,
+        "score": 2
+      },
+      {
+        "questionId": "bj01-q13",
+        "version": 1,
+        "score": 2
+      },
+      {
+        "questionId": "bj01-q14",
+        "version": 1,
+        "score": 2
+      },
+      {
+        "questionId": "bj01-q15",
+        "version": 1,
+        "score": 2
+      },
+      {
+        "questionId": "bj01-q16",
+        "version": 1,
+        "score": 4
+      },
+      {
+        "questionId": "bj01-q17",
+        "version": 1,
+        "score": 4
+      },
+      {
+        "questionId": "bj01-q18",
+        "version": 1,
+        "score": 4
+      },
+      {
+        "questionId": "bj01-q19",
+        "version": 1,
+        "score": 3
+      },
+      {
+        "questionId": "bj01-q20",
+        "version": 1,
+        "score": 4
+      },
+      {
+        "questionId": "bj01-q21",
+        "version": 1,
+        "score": 4
+      },
+      {
+        "questionId": "bj01-q22",
+        "version": 1,
+        "score": 2
+      },
+      {
+        "questionId": "bj01-q23",
+        "version": 1,
+        "score": 3
+      },
+      {
+        "questionId": "bj01-q24",
+        "version": 1,
+        "score": 4
+      },
+      {
+        "questionId": "bj01-q25",
+        "version": 1,
+        "score": 4
+      },
+      {
+        "questionId": "bj01-q26",
+        "version": 1,
+        "score": 4
+      }
+    ]
+  },
+  "questions": [
+    {
+      "id": "bj01-q01",
+      "version": 1,
+      "bankId": "bank-beijing-original-01",
+      "type": "single",
+      "title": "1. 物理量与单位",
+      "score": 2,
+      "difficulty": "基础",
+      "tags": [
+        "北京中考风格",
+        "原创模拟",
+        "物理量与单位",
+        "单选·文字/图表"
+      ],
+      "content": [
+        {
+          "id": "bj01-block-1",
+          "type": "paragraph",
+          "text": "### 一、单项选择题（12题，每题2分，共24分）\n本卷为原创模拟卷，非官方真题。建议70分钟完成，全卷70分。取 $g=10\\,\\mathrm{N/kg}$，水的密度为 $1.0\\times10^3\\,\\mathrm{kg/m^3}$。"
+        },
+        {
+          "id": "bj01-block-2",
+          "type": "paragraph",
+          "text": "下列单位中，属于能量单位的是（　）。"
+        }
+      ],
+      "options": [
+        {
+          "id": "a",
+          "text": "瓦特（W）"
+        },
+        {
+          "id": "b",
+          "text": "焦耳（J）"
+        },
+        {
+          "id": "c",
+          "text": "牛顿（N）"
+        },
+        {
+          "id": "d",
+          "text": "帕斯卡（Pa）"
+        }
+      ],
+      "blanks": [],
+      "solution": {
+        "choices": [
+          "b"
+        ],
+        "blanks": {},
+        "partChoices": {},
+        "explanation": "焦耳是功、能量和热量的单位；瓦特是功率单位，牛顿是力的单位，帕斯卡是压强单位。"
+      },
+      "state": "published",
+      "allowedModes": [
+        "text",
+        "drawing",
+        "photo"
+      ],
+      "source": "知序原创 · 参考北京中考公开卷面结构与命题风格；非官方真题，非官方预测卷"
+    },
+    {
+      "id": "bj01-q02",
+      "version": 1,
+      "bankId": "bank-beijing-original-01",
+      "type": "single",
+      "title": "2. 湖面倒影",
+      "score": 2,
+      "difficulty": "基础",
+      "tags": [
+        "北京中考风格",
+        "原创模拟",
+        "光现象",
+        "单选·文字/图表"
+      ],
+      "content": [
+        {
+          "id": "bj01-block-3",
+          "type": "paragraph",
+          "text": "游览公园时，小林看到树木在平静湖面中的倒影。形成倒影的主要原因是（　）。"
+        }
+      ],
+      "options": [
+        {
+          "id": "a",
+          "text": "光的反射"
+        },
+        {
+          "id": "b",
+          "text": "光的折射"
+        },
+        {
+          "id": "c",
+          "text": "光沿直线传播"
+        },
+        {
+          "id": "d",
+          "text": "光的色散"
+        }
+      ],
+      "blanks": [],
+      "solution": {
+        "choices": [
+          "a"
+        ],
+        "blanks": {},
+        "partChoices": {},
+        "explanation": "平静湖面近似平面镜，树木反射的光经水面反射进入人眼，形成虚像。"
+      },
+      "state": "published",
+      "allowedModes": [
+        "text",
+        "drawing",
+        "photo"
+      ],
+      "source": "知序原创 · 参考北京中考公开卷面结构与命题风格；非官方真题，非官方预测卷"
+    },
+    {
+      "id": "bj01-q03",
+      "version": 1,
+      "bankId": "bank-beijing-original-01",
+      "type": "single",
+      "title": "3. 运动后的降温",
+      "score": 2,
+      "difficulty": "基础",
+      "tags": [
+        "北京中考风格",
+        "原创模拟",
+        "物态变化",
+        "单选·文字/图表"
+      ],
+      "content": [
+        {
+          "id": "bj01-block-4",
+          "type": "paragraph",
+          "text": "运动后皮肤表面的汗液逐渐变干，人感觉凉爽。有关说法正确的是（　）。"
+        }
+      ],
+      "options": [
+        {
+          "id": "a",
+          "text": "汗液凝固时吸热"
+        },
+        {
+          "id": "b",
+          "text": "汗液液化时吸热"
+        },
+        {
+          "id": "c",
+          "text": "汗液蒸发时吸热"
+        },
+        {
+          "id": "d",
+          "text": "汗液升华时放热"
+        }
+      ],
+      "blanks": [],
+      "solution": {
+        "choices": [
+          "c"
+        ],
+        "blanks": {},
+        "partChoices": {},
+        "explanation": "液态汗液变为水蒸气是汽化中的蒸发，需要吸收热量，从皮肤吸热使人感到凉爽。"
+      },
+      "state": "published",
+      "allowedModes": [
+        "text",
+        "drawing",
+        "photo"
+      ],
+      "source": "知序原创 · 参考北京中考公开卷面结构与命题风格；非官方真题，非官方预测卷"
+    },
+    {
+      "id": "bj01-q04",
+      "version": 1,
+      "bankId": "bank-beijing-original-01",
+      "type": "single",
+      "title": "4. 家庭安全用电",
+      "score": 2,
+      "difficulty": "基础",
+      "tags": [
+        "北京中考风格",
+        "原创模拟",
+        "安全用电",
+        "单选·文字/图表"
+      ],
+      "content": [
+        {
+          "id": "bj01-block-5",
+          "type": "paragraph",
+          "text": "有关家庭用电，下列做法符合安全要求的是（　）。"
+        }
+      ],
+      "options": [
+        {
+          "id": "a",
+          "text": "用湿布擦拭正在工作的插座"
+        },
+        {
+          "id": "b",
+          "text": "将用电器金属外壳接在零线上代替接地"
+        },
+        {
+          "id": "c",
+          "text": "把控制电灯的开关接在火线上"
+        },
+        {
+          "id": "d",
+          "text": "发现有人触电时直接用手拉开"
+        }
+      ],
+      "blanks": [],
+      "solution": {
+        "choices": [
+          "c"
+        ],
+        "blanks": {},
+        "partChoices": {},
+        "explanation": "开关接火线可在断开后切断灯与火线的连接；湿物导电风险较大；金属外壳应按规范保护接地；救援应先切断电源。"
+      },
+      "state": "published",
+      "allowedModes": [
+        "text",
+        "drawing",
+        "photo"
+      ],
+      "source": "知序原创 · 参考北京中考公开卷面结构与命题风格；非官方真题，非官方预测卷"
+    },
+    {
+      "id": "bj01-q05",
+      "version": 1,
+      "bankId": "bank-beijing-original-01",
+      "type": "single",
+      "title": "5. 敲钟的声音",
+      "score": 2,
+      "difficulty": "基础",
+      "tags": [
+        "北京中考风格",
+        "原创模拟",
+        "声现象",
+        "单选·文字/图表"
+      ],
+      "content": [
+        {
+          "id": "bj01-block-6",
+          "type": "paragraph",
+          "text": "同一口钟，用较大的力敲击，通常听到的声音更响，主要是因为钟的（　）。"
+        }
+      ],
+      "options": [
+        {
+          "id": "a",
+          "text": "振动频率更高"
+        },
+        {
+          "id": "b",
+          "text": "振动幅度更大"
+        },
+        {
+          "id": "c",
+          "text": "音色一定改变"
+        },
+        {
+          "id": "d",
+          "text": "声音在空气中传播更快"
+        }
+      ],
+      "blanks": [],
+      "solution": {
+        "choices": [
+          "b"
+        ],
+        "blanks": {},
+        "partChoices": {},
+        "explanation": "响度与振幅有关，用力较大通常使振幅增大；音调主要与频率有关，声速主要由介质及其温度决定。"
+      },
+      "state": "published",
+      "allowedModes": [
+        "text",
+        "drawing",
+        "photo"
+      ],
+      "source": "知序原创 · 参考北京中考公开卷面结构与命题风格；非官方真题，非官方预测卷"
+    },
+    {
+      "id": "bj01-q06",
+      "version": 1,
+      "bankId": "bank-beijing-original-01",
+      "type": "single",
+      "title": "6. 公交车制动",
+      "score": 2,
+      "difficulty": "基础",
+      "tags": [
+        "北京中考风格",
+        "原创模拟",
+        "惯性",
+        "单选·文字/图表"
+      ],
+      "content": [
+        {
+          "id": "bj01-block-7",
+          "type": "paragraph",
+          "text": "行驶的公交车突然制动时，站立乘客的上身容易向前倾。正确解释是（　）。"
+        }
+      ],
+      "options": [
+        {
+          "id": "a",
+          "text": "乘客受到向前的惯性力"
+        },
+        {
+          "id": "b",
+          "text": "制动使乘客的惯性增大"
+        },
+        {
+          "id": "c",
+          "text": "乘客的上身由于惯性仍要保持原来的运动状态"
+        },
+        {
+          "id": "d",
+          "text": "乘客只有在制动时才有惯性"
+        }
+      ],
+      "blanks": [],
+      "solution": {
+        "choices": [
+          "c"
+        ],
+        "blanks": {},
+        "partChoices": {},
+        "explanation": "惯性是物体保持原运动状态的性质，不是一种力，且始终存在。脚随车减速，上身仍趋于保持原速度而前倾。"
+      },
+      "state": "published",
+      "allowedModes": [
+        "text",
+        "drawing",
+        "photo"
+      ],
+      "source": "知序原创 · 参考北京中考公开卷面结构与命题风格；非官方真题，非官方预测卷"
+    },
+    {
+      "id": "bj01-q07",
+      "version": 1,
+      "bankId": "bank-beijing-original-01",
+      "type": "single",
+      "title": "7. 减小地面压强",
+      "score": 2,
+      "difficulty": "基础",
+      "tags": [
+        "北京中考风格",
+        "原创模拟",
+        "压力与压强",
+        "单选·文字/图表"
+      ],
+      "content": [
+        {
+          "id": "bj01-block-8",
+          "type": "paragraph",
+          "text": "下列设计主要用于在压力一定时减小压强的是（　）。"
+        }
+      ],
+      "options": [
+        {
+          "id": "a",
+          "text": "滑雪板做得较宽"
+        },
+        {
+          "id": "b",
+          "text": "图钉尖做得很细"
+        },
+        {
+          "id": "c",
+          "text": "菜刀刀刃磨得锋利"
+        },
+        {
+          "id": "d",
+          "text": "注射针针头做得很尖"
+        }
+      ],
+      "blanks": [],
+      "solution": {
+        "choices": [
+          "a"
+        ],
+        "blanks": {},
+        "partChoices": {},
+        "explanation": "由 $p=F/S$，压力相同时增大受力面积可减小压强。其余三项都通过减小面积来增大压强。"
+      },
+      "state": "published",
+      "allowedModes": [
+        "text",
+        "drawing",
+        "photo"
+      ],
+      "source": "知序原创 · 参考北京中考公开卷面结构与命题风格；非官方真题，非官方预测卷"
+    },
+    {
+      "id": "bj01-q08",
+      "version": 1,
+      "bankId": "bank-beijing-original-01",
+      "type": "single",
+      "title": "8. 摆球的机械能",
+      "score": 2,
+      "difficulty": "基础",
+      "tags": [
+        "北京中考风格",
+        "原创模拟",
+        "机械能",
+        "单选·文字/图表"
+      ],
+      "content": [
+        {
+          "id": "bj01-block-9",
+          "type": "paragraph",
+          "text": "忽略空气阻力和轴处摩擦，摆球从一侧最高点向最低点运动时（　）。"
+        }
+      ],
+      "options": [
+        {
+          "id": "a",
+          "text": "动能减小，重力势能增大"
+        },
+        {
+          "id": "b",
+          "text": "动能增大，重力势能减小"
+        },
+        {
+          "id": "c",
+          "text": "动能和重力势能都增大"
+        },
+        {
+          "id": "d",
+          "text": "机械能不断减小"
+        }
+      ],
+      "blanks": [],
+      "solution": {
+        "choices": [
+          "b"
+        ],
+        "blanks": {},
+        "partChoices": {},
+        "explanation": "摆球下降时重力势能转化为动能；忽略阻力和摩擦时机械能守恒。"
+      },
+      "state": "published",
+      "allowedModes": [
+        "text",
+        "drawing",
+        "photo"
+      ],
+      "source": "知序原创 · 参考北京中考公开卷面结构与命题风格；非官方真题，非官方预测卷"
+    },
+    {
+      "id": "bj01-q09",
+      "version": 1,
+      "bankId": "bank-beijing-original-01",
+      "type": "single",
+      "title": "9. 欧姆定律应用",
+      "score": 2,
+      "difficulty": "基础",
+      "tags": [
+        "北京中考风格",
+        "原创模拟",
+        "欧姆定律",
+        "单选·文字/图表"
+      ],
+      "content": [
+        {
+          "id": "bj01-block-10",
+          "type": "paragraph",
+          "text": "一个阻值为20 Ω的定值电阻，两端电压为6 V，流过它的电流为（　）。"
+        }
+      ],
+      "options": [
+        {
+          "id": "a",
+          "text": "120 A"
+        },
+        {
+          "id": "b",
+          "text": "3.3 A"
+        },
+        {
+          "id": "c",
+          "text": "1.2 A"
+        },
+        {
+          "id": "d",
+          "text": "0.30 A"
+        }
+      ],
+      "blanks": [],
+      "solution": {
+        "choices": [
+          "d"
+        ],
+        "blanks": {},
+        "partChoices": {},
+        "explanation": "由 $I=U/R=6/20=0.30\\,\\mathrm A$。注意单位和除法关系。"
+      },
+      "state": "published",
+      "allowedModes": [
+        "text",
+        "drawing",
+        "photo"
+      ],
+      "source": "知序原创 · 参考北京中考公开卷面结构与命题风格；非官方真题，非官方预测卷"
+    },
+    {
+      "id": "bj01-q10",
+      "version": 1,
+      "bankId": "bank-beijing-original-01",
+      "type": "single",
+      "title": "10. 发电机的原理",
+      "score": 2,
+      "difficulty": "基础",
+      "tags": [
+        "北京中考风格",
+        "原创模拟",
+        "电与磁",
+        "单选·文字/图表"
+      ],
+      "content": [
+        {
+          "id": "bj01-block-11",
+          "type": "paragraph",
+          "text": "手摇发电机转动时能使小灯泡发光。其发电部分主要利用的原理是（　）。"
+        }
+      ],
+      "options": [
+        {
+          "id": "a",
+          "text": "电流的热效应"
+        },
+        {
+          "id": "b",
+          "text": "通电导体周围存在磁场"
+        },
+        {
+          "id": "c",
+          "text": "电磁感应"
+        },
+        {
+          "id": "d",
+          "text": "磁极间的相互作用"
+        }
+      ],
+      "blanks": [],
+      "solution": {
+        "choices": [
+          "c"
+        ],
+        "blanks": {},
+        "partChoices": {},
+        "explanation": "闭合电路的一部分导体在磁场中做切割磁感线运动时产生感应电流，这是发电机的基本原理；电动机利用通电导体在磁场中受力。"
+      },
+      "state": "published",
+      "allowedModes": [
+        "text",
+        "drawing",
+        "photo"
+      ],
+      "source": "知序原创 · 参考北京中考公开卷面结构与命题风格；非官方真题，非官方预测卷"
+    },
+    {
+      "id": "bj01-q11",
+      "version": 1,
+      "bankId": "bank-beijing-original-01",
+      "type": "single",
+      "title": "11. 滑轮组效率",
+      "score": 2,
+      "difficulty": "中等",
+      "tags": [
+        "北京中考风格",
+        "原创模拟",
+        "机械效率",
+        "单选·文字/图表"
+      ],
+      "content": [
+        {
+          "id": "bj01-block-12",
+          "type": "paragraph",
+          "text": "用滑轮组匀速提升重400 N的物体，动滑轮总重100 N。承重绳段为2段，不计绳重和摩擦。物体在10 s内升高2 m。下列说法正确的是（　）。"
+        }
+      ],
+      "options": [
+        {
+          "id": "a",
+          "text": "绳自由端拉力为250 N"
+        },
+        {
+          "id": "b",
+          "text": "绳自由端移动距离为2 m"
+        },
+        {
+          "id": "c",
+          "text": "机械效率为100%"
+        },
+        {
+          "id": "d",
+          "text": "拉力的功率为200 W"
+        }
+      ],
+      "blanks": [],
+      "solution": {
+        "choices": [
+          "a"
+        ],
+        "blanks": {},
+        "partChoices": {},
+        "explanation": "$F=(G+G_{动})/2=250\\,\\mathrm N$；自由端移动4 m；有用功800 J，总功1000 J，效率80%；拉力功率100 W。"
+      },
+      "state": "published",
+      "allowedModes": [
+        "text",
+        "drawing",
+        "photo"
+      ],
+      "source": "知序原创 · 参考北京中考公开卷面结构与命题风格；非官方真题，非官方预测卷"
+    },
+    {
+      "id": "bj01-q12",
+      "version": 1,
+      "bankId": "bank-beijing-original-01",
+      "type": "single",
+      "title": "12. 杠杆模型",
+      "score": 2,
+      "difficulty": "中等",
+      "tags": [
+        "北京中考风格",
+        "原创模拟",
+        "杠杆平衡",
+        "单选·文字/图表"
+      ],
+      "content": [
+        {
+          "id": "bj01-block-14",
+          "type": "paragraph",
+          "text": "如图，轻质杠杆水平平衡，O为支点，OA=60 cm，OB=20 cm。在B点悬挂重180 N的物体，在A点施加竖直向上的力F。不计杠杆自重，F的大小为（　）。"
+        },
+        {
+          "id": "bj01-block-13",
+          "type": "image",
+          "src": "/diagrams/beijing-lever.svg",
+          "alt": "轻质杠杆O为左端支点，B距O20厘米向下受力180牛，A距O60厘米向上受力F",
+          "caption": "图1 杠杆模型（示意图不按比例）",
+          "width": 100
+        }
+      ],
+      "options": [
+        {
+          "id": "a",
+          "text": "540 N"
+        },
+        {
+          "id": "b",
+          "text": "60 N"
+        },
+        {
+          "id": "c",
+          "text": "180 N"
+        },
+        {
+          "id": "d",
+          "text": "360 N"
+        }
+      ],
+      "blanks": [],
+      "solution": {
+        "choices": [
+          "b"
+        ],
+        "blanks": {},
+        "partChoices": {},
+        "explanation": "由 $F\\cdot OA=G\\cdot OB$，$F=180\\times20/60=60\\,\\mathrm N$。动力臂为阻力臂的3倍，是省力杠杆。"
+      },
+      "state": "published",
+      "allowedModes": [
+        "text",
+        "drawing",
+        "photo"
+      ],
+      "source": "知序原创 · 参考北京中考公开卷面结构与命题风格；非官方真题，非官方预测卷"
+    },
+    {
+      "id": "bj01-q13",
+      "version": 1,
+      "bankId": "bank-beijing-original-01",
+      "type": "multiple",
+      "title": "13. 内能与热量",
+      "score": 2,
+      "difficulty": "中等",
+      "tags": [
+        "北京中考风格",
+        "原创模拟",
+        "内能与比热容",
+        "多选·北京漏选半分"
+      ],
+      "content": [
+        {
+          "id": "bj01-block-15",
+          "type": "paragraph",
+          "text": "### 二、多项选择题（3题，每题2分，共6分）\n每题正确选项多于一个；全对2分，选对但不全1分，有错选或未选0分。"
+        },
+        {
+          "id": "bj01-block-16",
+          "type": "paragraph",
+          "text": "关于内能和热量，下列说法正确的有（　）。"
+        }
+      ],
+      "options": [
+        {
+          "id": "a",
+          "text": "用热水袋取暖，是通过热传递改变手的内能"
+        },
+        {
+          "id": "b",
+          "text": "相同质量的不同物质吸收相同热量，比热容较大的物质温升较小（均不发生物态变化）"
+        },
+        {
+          "id": "c",
+          "text": "温度高的物体，其内能一定比温度低的物体大"
+        },
+        {
+          "id": "d",
+          "text": "燃料的热值随所取燃料的质量增大而增大"
+        }
+      ],
+      "blanks": [],
+      "solution": {
+        "choices": [
+          "a",
+          "b"
+        ],
+        "blanks": {},
+        "partChoices": {},
+        "explanation": "A正确；由 $Q=cm\\Delta t$ 可知B正确。内能还与质量、物态等有关，不能只比较温度；热值是燃料的特性，不由所取质量决定。"
+      },
+      "state": "published",
+      "allowedModes": [
+        "text",
+        "drawing",
+        "photo"
+      ],
+      "source": "知序原创 · 参考北京中考公开卷面结构与命题风格；非官方真题，非官方预测卷",
+      "multipleScoring": "half"
+    },
+    {
+      "id": "bj01-q14",
+      "version": 1,
+      "bankId": "bank-beijing-original-01",
+      "type": "multiple",
+      "title": "14. 称重法与浮力",
+      "score": 2,
+      "difficulty": "中等",
+      "tags": [
+        "北京中考风格",
+        "原创模拟",
+        "阿基米德原理",
+        "多选·北京漏选半分"
+      ],
+      "content": [
+        {
+          "id": "bj01-block-17",
+          "type": "paragraph",
+          "text": "一个不吸水的实心物体在空气中静止时，弹簧测力计示数为5.0 N；完全浸没在水中且不接触容器时，示数为3.0 N；完全浸没在另一种液体中时，示数为3.4 N。忽略空气浮力。下列说法正确的有（　）。"
+        }
+      ],
+      "options": [
+        {
+          "id": "a",
+          "text": "物体在水中受到的浮力为2.0 N"
+        },
+        {
+          "id": "b",
+          "text": "物体的密度为 $1.0\\times10^3\\,\\mathrm{kg/m^3}$"
+        },
+        {
+          "id": "c",
+          "text": "物体的体积为200 cm³"
+        },
+        {
+          "id": "d",
+          "text": "另一种液体的密度为 $0.8\\times10^3\\,\\mathrm{kg/m^3}$"
+        }
+      ],
+      "blanks": [],
+      "solution": {
+        "choices": [
+          "a",
+          "c",
+          "d"
+        ],
+        "blanks": {},
+        "partChoices": {},
+        "explanation": "水中浮力5−3=2 N，体积 $V=F浮/(ρ水g)=2\\times10^{-4}\\,\\mathrm{m^3}=200\\,\\mathrm{cm^3}$；质量0.5 kg，物体密度2500 kg/m³；另一液体浮力1.6 N，密度800 kg/m³。"
+      },
+      "state": "published",
+      "allowedModes": [
+        "text",
+        "drawing",
+        "photo"
+      ],
+      "source": "知序原创 · 参考北京中考公开卷面结构与命题风格；非官方真题，非官方预测卷",
+      "multipleScoring": "half"
+    },
+    {
+      "id": "bj01-q15",
+      "version": 1,
+      "bankId": "bank-beijing-original-01",
+      "type": "multiple",
+      "title": "15. 光敏传感电路",
+      "score": 2,
+      "difficulty": "中等",
+      "tags": [
+        "北京中考风格",
+        "原创模拟",
+        "传感器与串联电路",
+        "多选·北京漏选半分"
+      ],
+      "content": [
+        {
+          "id": "bj01-block-19",
+          "type": "paragraph",
+          "text": "某模型电路由恒压6 V电源、20 Ω定值电阻和光敏电阻串联组成。光敏电阻随光照变化的数据见表。电表理想，电阻均在安全范围内。当光照由100 lx增强到400 lx时，下列说法正确的有（　）。"
+        },
+        {
+          "id": "bj01-block-18",
+          "type": "table",
+          "headers": [
+            "光照强度/lx",
+            "光敏电阻/Ω"
+          ],
+          "rows": [
+            [
+              "100",
+              "40"
+            ],
+            [
+              "200",
+              "20"
+            ],
+            [
+              "400",
+              "10"
+            ]
+          ]
+        }
+      ],
+      "options": [
+        {
+          "id": "a",
+          "text": "电路总电阻增大"
+        },
+        {
+          "id": "b",
+          "text": "电路电流由0.10 A增大到0.20 A"
+        },
+        {
+          "id": "c",
+          "text": "光敏电阻两端电压增大"
+        },
+        {
+          "id": "d",
+          "text": "定值电阻消耗的电功率增大"
+        }
+      ],
+      "blanks": [],
+      "solution": {
+        "choices": [
+          "b",
+          "d"
+        ],
+        "blanks": {},
+        "partChoices": {},
+        "explanation": "总电阻由60 Ω降为30 Ω，电流由0.10 A升至0.20 A。定值电阻电压由2 V升至4 V，光敏电阻电压由4 V降至2 V；定值电阻功率由0.2 W升至0.8 W。"
+      },
+      "state": "published",
+      "allowedModes": [
+        "text",
+        "drawing",
+        "photo"
+      ],
+      "source": "知序原创 · 参考北京中考公开卷面结构与命题风格；非官方真题，非官方预测卷",
+      "multipleScoring": "half"
+    },
+    {
+      "id": "bj01-q16",
+      "version": 1,
+      "bankId": "bank-beijing-original-01",
+      "type": "experiment",
+      "title": "16. 磁体与电动机",
+      "score": 4,
+      "difficulty": "中等",
+      "tags": [
+        "北京中考风格",
+        "原创模拟",
+        "磁极与磁场",
+        "实验·稳定填空"
+      ],
+      "content": [
+        {
+          "id": "bj01-block-20",
+          "type": "paragraph",
+          "text": "### 三、实验探究题（8题，共28分）"
+        },
+        {
+          "id": "bj01-block-21",
+          "type": "paragraph",
+          "text": "实验现象与原理："
+        },
+        {
+          "id": "bj01-block-23",
+          "type": "subquestion",
+          "label": "（1）磁极相互作用",
+          "score": 2,
+          "responseKind": "blanks",
+          "children": [
+            {
+              "id": "bj01-block-22",
+              "type": "paragraph",
+              "text": "把一根可自由转动的条形磁体悬挂起来，用另一磁体的N极接近它的N极，观察到两个N极互相{{bj01-q16-blank-1}}。"
+            }
+          ]
+        },
+        {
+          "id": "bj01-block-25",
+          "type": "subquestion",
+          "label": "（2）简易电动机",
+          "score": 2,
+          "responseKind": "blanks",
+          "children": [
+            {
+              "id": "bj01-block-24",
+              "type": "paragraph",
+              "text": "线圈通电后在磁场中转动，说明通电导体在磁场中受到{{bj01-q16-blank-2}}。"
+            }
+          ]
+        }
+      ],
+      "options": [],
+      "blanks": [
+        {
+          "id": "bj01-q16-blank-1",
+          "label": "同名磁极相互作用",
+          "score": 2,
+          "kind": "text"
+        },
+        {
+          "id": "bj01-q16-blank-2",
+          "label": "电动机工作原理",
+          "score": 2,
+          "kind": "text"
+        }
+      ],
+      "solution": {
+        "choices": [],
+        "blanks": {
+          "bj01-q16-blank-1": {
+            "accepted": [
+              "排斥",
+              "排开"
+            ],
+            "ignoreWhitespace": true
+          },
+          "bj01-q16-blank-2": {
+            "accepted": [
+              "力的作用",
+              "力",
+              "磁场力",
+              "磁场的力"
+            ],
+            "ignoreWhitespace": true
+          }
+        },
+        "partChoices": {},
+        "explanation": "（1）同名磁极相互排斥。（2）通电导体在磁场中受力，线圈两侧受力可使其转动；电动机将电能转化为机械能。"
+      },
+      "state": "published",
+      "allowedModes": [
+        "text",
+        "drawing",
+        "photo"
+      ],
+      "source": "知序原创 · 参考北京中考公开卷面结构与命题风格；非官方真题，非官方预测卷"
+    },
+    {
+      "id": "bj01-q17",
+      "version": 1,
+      "bankId": "bank-beijing-original-01",
+      "type": "experiment",
+      "title": "17. 物态变化与分子运动",
+      "score": 4,
+      "difficulty": "中等",
+      "tags": [
+        "北京中考风格",
+        "原创模拟",
+        "热现象与控制变量",
+        "实验·填空、作图与论证"
+      ],
+      "content": [
+        {
+          "id": "bj01-block-27",
+          "type": "subquestion",
+          "label": "（1）物态变化",
+          "score": 1,
+          "responseKind": "blanks",
+          "children": [
+            {
+              "id": "bj01-block-26",
+              "type": "paragraph",
+              "text": "冬季窗玻璃内侧出现小水珠，这是室内水蒸气遇冷发生{{bj01-q17-blank-1}}形成的。"
+            }
+          ]
+        },
+        {
+          "id": "bj01-block-29",
+          "type": "subquestion",
+          "label": "（2）比较扩散快慢",
+          "score": 3,
+          "responseKind": "open",
+          "children": [
+            {
+              "id": "bj01-block-28",
+              "type": "paragraph",
+              "text": "小林在两个相同烧杯中装入等量的冷水和热水，同时各滴入一滴相同的墨水，静置观察。发现墨水在热水中散开更快。请写出实验结论，并说明为什么要使用等量的水和相同的墨水。"
+            }
+          ]
+        }
+      ],
+      "options": [],
+      "blanks": [
+        {
+          "id": "bj01-q17-blank-1",
+          "label": "水蒸气遇冷的物态变化",
+          "score": 1,
+          "kind": "text"
+        }
+      ],
+      "solution": {
+        "choices": [],
+        "blanks": {
+          "bj01-q17-blank-1": {
+            "accepted": [
+              "液化"
+            ],
+            "ignoreWhitespace": true
+          }
+        },
+        "partChoices": {},
+        "explanation": "（1）液化，1分。（2）温度越高，分子热运动越剧烈，扩散越快，1分；控制水量等条件相同，1分；墨水种类和滴入量相同，使温度成为主要变量、便于比较，1分。水应保持静置、避免搅拌等宏观运动干扰。合理等价表述可给分。"
+      },
+      "state": "published",
+      "allowedModes": [
+        "text",
+        "drawing",
+        "photo"
+      ],
+      "source": "知序原创 · 参考北京中考公开卷面结构与命题风格；非官方真题，非官方预测卷"
+    },
+    {
+      "id": "bj01-q18",
+      "version": 1,
+      "bankId": "bank-beijing-original-01",
+      "type": "experiment",
+      "title": "18. 光的反射与凸透镜",
+      "score": 4,
+      "difficulty": "中等",
+      "tags": [
+        "北京中考风格",
+        "原创模拟",
+        "光学实验",
+        "实验·填空、作图与论证"
+      ],
+      "content": [
+        {
+          "id": "bj01-block-30",
+          "type": "paragraph",
+          "text": "某小组记录光反射实验数据，并开展凸透镜成像实验。"
+        },
+        {
+          "id": "bj01-block-31",
+          "type": "table",
+          "headers": [
+            "入射角/°",
+            "反射角/°"
+          ],
+          "rows": [
+            [
+              "20",
+              "20"
+            ],
+            [
+              "35",
+              "35"
+            ],
+            [
+              "50",
+              "50"
+            ]
+          ]
+        },
+        {
+          "id": "bj01-block-33",
+          "type": "subquestion",
+          "label": "（1）反射规律",
+          "score": 1,
+          "responseKind": "blanks",
+          "children": [
+            {
+              "id": "bj01-block-32",
+              "type": "paragraph",
+              "text": "根据表格，反射角{{bj01-q18-blank-1}}入射角。"
+            }
+          ]
+        },
+        {
+          "id": "bj01-block-35",
+          "type": "subquestion",
+          "label": "（2）像的性质",
+          "score": 1,
+          "responseKind": "blanks",
+          "children": [
+            {
+              "id": "bj01-block-34",
+              "type": "paragraph",
+              "text": "焦距为10 cm的凸透镜位于光具座50 cm处，蜡烛在20 cm处，移动光屏获得清晰的像。此像是倒立、{{bj01-q18-blank-2}}的实像。"
+            }
+          ]
+        },
+        {
+          "id": "bj01-block-37",
+          "type": "subquestion",
+          "label": "（3）实验设计",
+          "score": 2,
+          "responseKind": "open",
+          "children": [
+            {
+              "id": "bj01-block-36",
+              "type": "paragraph",
+              "text": "若要探究“同一凸透镜所成实像的大小与物距是否有关”，请写出接下来应怎样改变实验条件、调整器材并比较结果。"
+            }
+          ]
+        }
+      ],
+      "options": [],
+      "blanks": [
+        {
+          "id": "bj01-q18-blank-1",
+          "label": "反射角与入射角的关系",
+          "score": 1,
+          "kind": "text"
+        },
+        {
+          "id": "bj01-q18-blank-2",
+          "label": "像的大小",
+          "score": 1,
+          "kind": "text"
+        }
+      ],
+      "solution": {
+        "choices": [],
+        "blanks": {
+          "bj01-q18-blank-1": {
+            "accepted": [
+              "等于"
+            ],
+            "ignoreWhitespace": true
+          },
+          "bj01-q18-blank-2": {
+            "accepted": [
+              "缩小"
+            ],
+            "ignoreWhitespace": true
+          }
+        },
+        "partChoices": {},
+        "explanation": "（1）等于，1分。（2）物距30 cm大于2f，成倒立缩小实像，1分。（3）保持同一透镜，改变蜡烛到透镜的距离且物距大于焦距，1分；每次移动光屏至像清晰，比较并记录像的大小，1分。不能把模糊程度当作像的大小。"
+      },
+      "state": "published",
+      "allowedModes": [
+        "text",
+        "drawing",
+        "photo"
+      ],
+      "source": "知序原创 · 参考北京中考公开卷面结构与命题风格；非官方真题，非官方预测卷"
+    },
+    {
+      "id": "bj01-q19",
+      "version": 1,
+      "bankId": "bank-beijing-original-01",
+      "type": "experiment",
+      "title": "19. 伏安法测电阻与电路作图",
+      "score": 3,
+      "difficulty": "中等",
+      "tags": [
+        "北京中考风格",
+        "原创模拟",
+        "电学实验与电路图",
+        "实验·填空、作图与论证"
+      ],
+      "content": [
+        {
+          "id": "bj01-block-38",
+          "type": "paragraph",
+          "text": "器材有电源、开关、电流表、电压表、滑动变阻器、待测定值电阻和导线。用伏安法测量待测电阻，电表及滑动变阻器量程均合适。"
+        },
+        {
+          "id": "bj01-block-40",
+          "type": "subquestion",
+          "label": "（1）实验原理",
+          "score": 1,
+          "responseKind": "blanks",
+          "children": [
+            {
+              "id": "bj01-block-39",
+              "type": "paragraph",
+              "text": "请写出用电压U、电流I表示电阻R的公式：R={{bj01-q19-blank-1}}。"
+            }
+          ]
+        },
+        {
+          "id": "bj01-block-42",
+          "type": "subquestion",
+          "label": "（2）画实验电路图",
+          "score": 2,
+          "responseKind": "open",
+          "children": [
+            {
+              "id": "bj01-block-41",
+              "type": "paragraph",
+              "text": "画出可完成测量且可调节电流的电路图，标注电流表、电压表、待测电阻和滑动变阻器。请选择“手写作答”绘制，或上传纸面作图照片；也可用文字完整描述各元件连接关系供人工评阅。"
+            }
+          ]
+        }
+      ],
+      "options": [],
+      "blanks": [
+        {
+          "id": "bj01-q19-blank-1",
+          "label": "电阻表达式（只填右侧）",
+          "score": 1,
+          "kind": "text"
+        }
+      ],
+      "solution": {
+        "choices": [],
+        "blanks": {
+          "bj01-q19-blank-1": {
+            "accepted": [
+              "U/I",
+              "U÷I",
+              "U／I",
+              "U∕I"
+            ],
+            "ignoreWhitespace": true
+          }
+        },
+        "partChoices": {},
+        "explanation": "（1）R=U/I，1分。（2）电源、开关、电流表、滑动变阻器与待测电阻串联，1分；电压表并联在待测电阻两端，电表正负连接合理，1分。滑动变阻器有效接入须选一个上接线柱和一个下接线柱，闭合前调至最大阻值。图或完整等价描述由人工评阅。"
+      },
+      "state": "published",
+      "allowedModes": [
+        "text",
+        "drawing",
+        "photo"
+      ],
+      "source": "知序原创 · 参考北京中考公开卷面结构与命题风格；非官方真题，非官方预测卷"
+    },
+    {
+      "id": "bj01-q20",
+      "version": 1,
+      "bankId": "bank-beijing-original-01",
+      "type": "experiment",
+      "title": "20. 液体压强的探究与纠错",
+      "score": 4,
+      "difficulty": "中等",
+      "tags": [
+        "北京中考风格",
+        "原创模拟",
+        "液体压强与控制变量",
+        "实验·填空、作图与论证"
+      ],
+      "content": [
+        {
+          "id": "bj01-block-43",
+          "type": "paragraph",
+          "text": "小组使用同一个压强计研究液体压强，U形管内液体相同。记录如下（各次实验前均检查装置正常）："
+        },
+        {
+          "id": "bj01-block-44",
+          "type": "table",
+          "headers": [
+            "实验",
+            "液体",
+            "探头深度/cm",
+            "U形管液面高度差/cm"
+          ],
+          "rows": [
+            [
+              "甲",
+              "水",
+              "5",
+              "4"
+            ],
+            [
+              "乙",
+              "水",
+              "10",
+              "8"
+            ],
+            [
+              "丙",
+              "酒精",
+              "8",
+              "5"
+            ]
+          ]
+        },
+        {
+          "id": "bj01-block-46",
+          "type": "subquestion",
+          "label": "（1）方法与变量",
+          "score": 2,
+          "responseKind": "blanks",
+          "children": [
+            {
+              "id": "bj01-block-45",
+              "type": "paragraph",
+              "text": "液体压强大小通过U形管液面的{{bj01-q20-blank-1}}反映。比较甲、乙可研究压强与{{bj01-q20-blank-2}}的关系。"
+            }
+          ]
+        },
+        {
+          "id": "bj01-block-48",
+          "type": "subquestion",
+          "label": "（2）评价与改进",
+          "score": 2,
+          "responseKind": "open",
+          "children": [
+            {
+              "id": "bj01-block-47",
+              "type": "paragraph",
+              "text": "同学直接比较乙和丙，认为“液体压强与密度有关”。指出这一比较的不合理之处，并写出具体改进办法。"
+            }
+          ]
+        }
+      ],
+      "options": [],
+      "blanks": [
+        {
+          "id": "bj01-q20-blank-1",
+          "label": "反映压强的观察量",
+          "score": 1,
+          "kind": "text"
+        },
+        {
+          "id": "bj01-q20-blank-2",
+          "label": "甲乙所研究的变量",
+          "score": 1,
+          "kind": "text"
+        }
+      ],
+      "solution": {
+        "choices": [],
+        "blanks": {
+          "bj01-q20-blank-1": {
+            "accepted": [
+              "高度差",
+              "液面高度差"
+            ],
+            "ignoreWhitespace": true
+          },
+          "bj01-q20-blank-2": {
+            "accepted": [
+              "深度",
+              "液体深度",
+              "探头深度"
+            ],
+            "ignoreWhitespace": true
+          }
+        },
+        "partChoices": {},
+        "explanation": "（1）高度差、深度，各1分。（2）乙、丙液体种类和探头深度同时改变，没有控制深度相同，1分；将水与酒精中探头放在相同深度，其他条件相同，再比较高度差，1分。酒精密度小于水时，在相同深度压强较小。"
+      },
+      "state": "published",
+      "allowedModes": [
+        "text",
+        "drawing",
+        "photo"
+      ],
+      "source": "知序原创 · 参考北京中考公开卷面结构与命题风格；非官方真题，非官方预测卷"
+    },
+    {
+      "id": "bj01-q21",
+      "version": 1,
+      "bankId": "bank-beijing-original-01",
+      "type": "experiment",
+      "title": "21. 串联电路电压与实验数据",
+      "score": 4,
+      "difficulty": "中等",
+      "tags": [
+        "北京中考风格",
+        "原创模拟",
+        "串联电路电压",
+        "实验 · 数据表与填空"
+      ],
+      "content": [
+        {
+          "id": "bj01-block-49",
+          "type": "paragraph",
+          "text": "小组将两个不同规格小灯泡串联，通过调整电路取得多组数据。U₁、U₂分别为两灯电压，U为两灯总电压。"
+        },
+        {
+          "id": "bj01-block-50",
+          "type": "table",
+          "headers": [
+            "次数",
+            "U₁/V",
+            "U₂/V",
+            "U/V"
+          ],
+          "rows": [
+            [
+              "1",
+              "0.8",
+              "0.4",
+              "1.2"
+            ],
+            [
+              "2",
+              "1.2",
+              "0.6",
+              "1.8"
+            ],
+            [
+              "3",
+              "1.6",
+              "0.8",
+              "{{bj01-q21-blank-1}}"
+            ]
+          ]
+        },
+        {
+          "id": "bj01-block-52",
+          "type": "subquestion",
+          "label": "（1）数据与关系",
+          "score": 1,
+          "responseKind": "blanks",
+          "children": [
+            {
+              "id": "bj01-block-51",
+              "type": "paragraph",
+              "text": "表格中第3次U的空格填数值（1分，见表中输入框）。根据数据，U与U₁、U₂的关系可写成U={{bj01-q21-blank-2}}。"
+            }
+          ]
+        },
+        {
+          "id": "bj01-block-54",
+          "type": "subquestion",
+          "label": "（2）证据的充分性",
+          "score": 2,
+          "responseKind": "open",
+          "children": [
+            {
+              "id": "bj01-block-53",
+              "type": "paragraph",
+              "text": "小明认为只做一次实验就可以证明上述关系适用于一般串联电路。你是否赞同？请从器材或测量次数的角度给出改进建议及理由。"
+            }
+          ]
+        }
+      ],
+      "options": [],
+      "blanks": [
+        {
+          "id": "bj01-q21-blank-1",
+          "label": "第3次总电压（V）",
+          "score": 1,
+          "kind": "number"
+        },
+        {
+          "id": "bj01-q21-blank-2",
+          "label": "串联电压表达式（只填右侧）",
+          "score": 1,
+          "kind": "text"
+        }
+      ],
+      "solution": {
+        "choices": [],
+        "blanks": {
+          "bj01-q21-blank-1": {
+            "accepted": [
+              "2.4"
+            ],
+            "ignoreWhitespace": true,
+            "tolerance": 0.001
+          },
+          "bj01-q21-blank-2": {
+            "accepted": [
+              "U1+U2",
+              "U₁+U₂",
+              "U_1+U_2",
+              "U1＋U2",
+              "U₁＋U₂"
+            ],
+            "ignoreWhitespace": true
+          }
+        },
+        "partChoices": {},
+        "explanation": "表格U=2.4 V，1分；U=U₁+U₂，1分。开放题：不赞同，仅一次存在偶然性且不能充分支持一般结论，1分；更换不同规格灯泡/改变适当条件，多次测量比较，以增强结论普遍性，1分。"
+      },
+      "state": "published",
+      "allowedModes": [
+        "text",
+        "drawing",
+        "photo"
+      ],
+      "source": "知序原创 · 参考北京中考公开卷面结构与命题风格；非官方真题，非官方预测卷"
+    },
+    {
+      "id": "bj01-q22",
+      "version": 1,
+      "bankId": "bank-beijing-original-01",
+      "type": "experiment",
+      "title": "22. 用量筒和天平测密度",
+      "score": 2,
+      "difficulty": "中等",
+      "tags": [
+        "北京中考风格",
+        "原创模拟",
+        "密度测量与读图",
+        "实验·图示读数与填空"
+      ],
+      "content": [
+        {
+          "id": "bj01-block-55",
+          "type": "paragraph",
+          "text": "测量一个不吸水小石块的密度，天平测得质量36.0 g。量筒中水体积及石块完全浸没后总体积如图；石块不接触容器壁，忽略悬线体积。"
+        },
+        {
+          "id": "bj01-block-56",
+          "type": "image",
+          "src": "/diagrams/beijing-cylinder.svg",
+          "alt": "量筒示意：浸入前水面为50毫升，石块浸没后水面为65毫升",
+          "caption": "图2 排水法测体积（示意图）",
+          "width": 100
+        },
+        {
+          "id": "bj01-block-57",
+          "type": "paragraph",
+          "text": "石块体积为{{bj01-q22-blank-1}} cm³，密度为{{bj01-q22-blank-2}} g/cm³。"
+        }
+      ],
+      "options": [],
+      "blanks": [
+        {
+          "id": "bj01-q22-blank-1",
+          "label": "石块体积（cm³）",
+          "score": 1,
+          "kind": "number"
+        },
+        {
+          "id": "bj01-q22-blank-2",
+          "label": "石块密度（g/cm³）",
+          "score": 1,
+          "kind": "number"
+        }
+      ],
+      "solution": {
+        "choices": [],
+        "blanks": {
+          "bj01-q22-blank-1": {
+            "accepted": [
+              "15",
+              "15.0"
+            ],
+            "ignoreWhitespace": true,
+            "tolerance": 0.001
+          },
+          "bj01-q22-blank-2": {
+            "accepted": [
+              "2.4",
+              "2.40"
+            ],
+            "ignoreWhitespace": true,
+            "tolerance": 0.001
+          }
+        },
+        "partChoices": {},
+        "explanation": "石块体积V=65−50=15 cm³，1分；ρ=m/V=36.0/15=2.4 g/cm³，1分。输入框后已显示单位，填写数值即可。"
+      },
+      "state": "published",
+      "allowedModes": [
+        "text",
+        "drawing",
+        "photo"
+      ],
+      "source": "知序原创 · 参考北京中考公开卷面结构与命题风格；非官方真题，非官方预测卷"
+    },
+    {
+      "id": "bj01-q23",
+      "version": 1,
+      "bankId": "bank-beijing-original-01",
+      "type": "experiment",
+      "title": "23. 比较液体吸热性能",
+      "score": 3,
+      "difficulty": "提升",
+      "tags": [
+        "北京中考风格",
+        "原创模拟",
+        "比热容与实验论证",
+        "实验·开放论证"
+      ],
+      "content": [
+        {
+          "id": "bj01-block-58",
+          "type": "paragraph",
+          "text": "两个相同容器分别盛质量均为200 g的液体A、B，用两个完全相同且功率保持不变的电加热器同时加热。加热时间相同，均未沸腾，忽略热量损失，实验数据见表。"
+        },
+        {
+          "id": "bj01-block-59",
+          "type": "table",
+          "headers": [
+            "液体",
+            "初温/℃",
+            "末温/℃"
+          ],
+          "rows": [
+            [
+              "A",
+              "20",
+              "40"
+            ],
+            [
+              "B",
+              "20",
+              "30"
+            ]
+          ]
+        },
+        {
+          "id": "bj01-block-61",
+          "type": "subquestion",
+          "label": "分析与论证",
+          "score": 3,
+          "responseKind": "open",
+          "children": [
+            {
+              "id": "bj01-block-60",
+              "type": "paragraph",
+              "text": "哪种液体的吸热性能更强？请结合吸收的热量、质量、温度变化以及比热容的含义说明理由。"
+            }
+          ]
+        }
+      ],
+      "options": [],
+      "blanks": [],
+      "solution": {
+        "choices": [],
+        "blanks": {},
+        "partChoices": {},
+        "explanation": "B液体吸热性能更强。相同功率的加热器工作相同时间，由Q=Pt知两液体吸收热量相同，1分；两液体质量相等，A升温20℃、B升温10℃，1分；由c=Q/(mΔt)，B比热容更大（为A的2倍），相同质量升高相同温度时B吸热更多，1分。不能只说“B温度低所以强”。"
+      },
+      "state": "published",
+      "allowedModes": [
+        "text",
+        "drawing",
+        "photo"
+      ],
+      "source": "知序原创 · 参考北京中考公开卷面结构与命题风格；非官方真题，非官方预测卷"
+    },
+    {
+      "id": "bj01-q24",
+      "version": 1,
+      "bankId": "bank-beijing-original-01",
+      "type": "reading",
+      "title": "24. 校园温室的自动通风",
+      "score": 4,
+      "difficulty": "提升",
+      "tags": [
+        "北京中考风格",
+        "原创模拟",
+        "科普阅读与信息迁移",
+        "科普阅读 · 材料与混合小问"
+      ],
+      "content": [
+        {
+          "id": "bj01-block-62",
+          "type": "paragraph",
+          "text": "### 四、科普阅读题（1题，共4分）\n#### 校园温室的自动通风"
+        },
+        {
+          "id": "bj01-block-63",
+          "type": "paragraph",
+          "text": "校园科技小组设计了一台教学模型：太阳能电池板为风扇和控制电路供电，将太阳能转化为电能。温度传感器把温度变化转化为电信号，控制器据此开启或关闭风扇。该模型电源电压稳定时，传感电路由定值电阻R₀和热敏电阻R串联组成，R的阻值在20～40℃范围内随温度升高而减小。控制器检测R₀两端电压；温度达到30℃时开启风扇，温度降至26℃时关闭风扇，26～30℃之间保持原来状态，以避免频繁开关。本文参数为教学模型设定。"
+        },
+        {
+          "id": "bj01-block-65",
+          "type": "subquestion",
+          "label": "（1）提取信息",
+          "score": 1,
+          "responseKind": "blanks",
+          "children": [
+            {
+              "id": "bj01-block-64",
+              "type": "paragraph",
+              "text": "太阳能电池板把太阳能转化为{{bj01-q24-blank-1}}。"
+            }
+          ]
+        },
+        {
+          "id": "bj01-block-67",
+          "type": "subquestion",
+          "label": "（2）电路迁移",
+          "score": 1,
+          "responseKind": "single",
+          "children": [
+            {
+              "id": "bj01-block-66",
+              "type": "paragraph",
+              "text": "温度由20℃升至30℃时，电源电压保持不变，R₀两端电压如何变化？"
+            }
+          ],
+          "options": [
+            {
+              "id": "a",
+              "text": "增大"
+            },
+            {
+              "id": "b",
+              "text": "减小"
+            },
+            {
+              "id": "c",
+              "text": "不变"
+            },
+            {
+              "id": "d",
+              "text": "先减小后增大"
+            }
+          ]
+        },
+        {
+          "id": "bj01-block-69",
+          "type": "subquestion",
+          "label": "（3）分析控制策略",
+          "score": 2,
+          "responseKind": "open",
+          "children": [
+            {
+              "id": "bj01-block-68",
+              "type": "paragraph",
+              "text": "某时刻温室温度为28℃。只知道这一温度，能否确定风扇一定正在转动？结合材料说明理由。"
+            }
+          ]
+        }
+      ],
+      "options": [],
+      "blanks": [
+        {
+          "id": "bj01-q24-blank-1",
+          "label": "太阳能电池板输出能量形式",
+          "score": 1,
+          "kind": "text"
+        }
+      ],
+      "solution": {
+        "choices": [],
+        "blanks": {
+          "bj01-q24-blank-1": {
+            "accepted": [
+              "电能"
+            ],
+            "ignoreWhitespace": true
+          }
+        },
+        "partChoices": {
+          "bj01-block-67": [
+            "a"
+          ]
+        },
+        "explanation": "（1）电能，1分。（2）A，1分。温度升高时R减小，串联总电阻减小，电流增大，U₀=IR₀增大。（3）不能确定，1分；28℃处于26～30℃保持原状态区间，若此前升至30℃开机后回落到28℃则仍转动，若此前在26℃关机后升至28℃则不转动，说明取决于此前状态，1分。"
+      },
+      "state": "published",
+      "allowedModes": [
+        "text",
+        "drawing",
+        "photo"
+      ],
+      "source": "知序原创 · 参考北京中考公开卷面结构与命题风格；非官方真题，非官方预测卷"
+    },
+    {
+      "id": "bj01-q25",
+      "version": 1,
+      "bankId": "bank-beijing-original-01",
+      "type": "calculation",
+      "title": "25. 电热饮水机的功率与电阻",
+      "score": 4,
+      "difficulty": "提升",
+      "tags": [
+        "北京中考风格",
+        "原创模拟",
+        "电功率与热效率",
+        "计算·图文材料与混合作答"
+      ],
+      "content": [
+        {
+          "id": "bj01-block-70",
+          "type": "paragraph",
+          "text": "### 五、计算题（2题，每题4分，共8分）\n请写出必要公式、代入过程和结果。"
+        },
+        {
+          "id": "bj01-block-71",
+          "type": "paragraph",
+          "text": "某饮水机正常加热时电压为220 V、加热功率为880 W，可把加热部分视为阻值不变的电阻。此次饮水机在220 V电压下正常加热，水吸收的热量为 $1.32\\times10^5\\,\\mathrm J$，加热效率为75%。忽略其他耗电。"
+        },
+        {
+          "id": "bj01-block-72",
+          "type": "paragraph",
+          "text": "（1）求正常加热时的电流和加热电阻的阻值。（2分）\n\n（2）求此次加热所需时间。（2分）"
+        }
+      ],
+      "options": [],
+      "blanks": [],
+      "solution": {
+        "choices": [],
+        "blanks": {},
+        "partChoices": {},
+        "explanation": "（1）I=P/U=880/220=4 A，1分；R=U²/P=220²/880=55 Ω，1分。（2）电能W=Q/η=1.32×10⁵/0.75=1.76×10⁵ J，1分；t=W/P=1.76×10⁵/880=200 s，1分。列式和单位合理，等价方法可给分。"
+      },
+      "state": "published",
+      "allowedModes": [
+        "text",
+        "drawing",
+        "photo"
+      ],
+      "source": "知序原创 · 参考北京中考公开卷面结构与命题风格；非官方真题，非官方预测卷"
+    },
+    {
+      "id": "bj01-q26",
+      "version": 1,
+      "bankId": "bank-beijing-original-01",
+      "type": "calculation",
+      "title": "26. 电动运输车的做功与节能",
+      "score": 4,
+      "difficulty": "提升",
+      "tags": [
+        "北京中考风格",
+        "原创模拟",
+        "功率与能量效率",
+        "计算·图文材料与混合作答"
+      ],
+      "content": [
+        {
+          "id": "bj01-block-73",
+          "type": "paragraph",
+          "text": "一辆电动运输车在水平道路上以10 m/s做匀速直线运动，此时总阻力为600 N。电动机把电能转化为牵引力所做机械功的效率为80%，忽略车上其他设备耗电。改进轮胎后，在相同速度下总阻力减小10%，电动机效率保持不变。"
+        },
+        {
+          "id": "bj01-block-74",
+          "type": "paragraph",
+          "text": "（1）求改进前牵引力的大小和牵引力的功率。（2分）\n\n（2）以相同速度各行驶100 s，改进后比改进前节省多少电能？（2分）"
+        }
+      ],
+      "options": [],
+      "blanks": [],
+      "solution": {
+        "choices": [],
+        "blanks": {},
+        "partChoices": {},
+        "explanation": "（1）匀速直线运动时受力平衡，F=f=600 N，1分；P=Fv=600×10=6000 W，1分。（2）改进后阻力540 N，减少牵引力60 N；100 s路程s=vt=1000 m，少做机械功ΔW机=60×1000=6.0×10⁴ J，1分；节省电能ΔE=ΔW机/η=6.0×10⁴/0.80=7.5×10⁴ J，1分。也可分别计算两种工况电能后相减。"
+      },
+      "state": "published",
+      "allowedModes": [
+        "text",
+        "drawing",
+        "photo"
+      ],
+      "source": "知序原创 · 参考北京中考公开卷面结构与命题风格；非官方真题，非官方预测卷"
+    }
+  ],
+  "analysis": [
+    {
+      "number": 1,
+      "title": "物理量与单位",
+      "type": "single",
+      "score": 2,
+      "template": "已有单选基础模板＋文字/图表",
+      "knowledge": "物理量与单位",
+      "reason": "使用四个独立选项；图表与题干由共享内容块组合。",
+      "assessment": "全部自动判分"
+    },
+    {
+      "number": 2,
+      "title": "湖面倒影",
+      "type": "single",
+      "score": 2,
+      "template": "已有单选基础模板＋文字/图表",
+      "knowledge": "光现象",
+      "reason": "使用四个独立选项；图表与题干由共享内容块组合。",
+      "assessment": "全部自动判分"
+    },
+    {
+      "number": 3,
+      "title": "运动后的降温",
+      "type": "single",
+      "score": 2,
+      "template": "已有单选基础模板＋文字/图表",
+      "knowledge": "物态变化",
+      "reason": "使用四个独立选项；图表与题干由共享内容块组合。",
+      "assessment": "全部自动判分"
+    },
+    {
+      "number": 4,
+      "title": "家庭安全用电",
+      "type": "single",
+      "score": 2,
+      "template": "已有单选基础模板＋文字/图表",
+      "knowledge": "安全用电",
+      "reason": "使用四个独立选项；图表与题干由共享内容块组合。",
+      "assessment": "全部自动判分"
+    },
+    {
+      "number": 5,
+      "title": "敲钟的声音",
+      "type": "single",
+      "score": 2,
+      "template": "已有单选基础模板＋文字/图表",
+      "knowledge": "声现象",
+      "reason": "使用四个独立选项；图表与题干由共享内容块组合。",
+      "assessment": "全部自动判分"
+    },
+    {
+      "number": 6,
+      "title": "公交车制动",
+      "type": "single",
+      "score": 2,
+      "template": "已有单选基础模板＋文字/图表",
+      "knowledge": "惯性",
+      "reason": "使用四个独立选项；图表与题干由共享内容块组合。",
+      "assessment": "全部自动判分"
+    },
+    {
+      "number": 7,
+      "title": "减小地面压强",
+      "type": "single",
+      "score": 2,
+      "template": "已有单选基础模板＋文字/图表",
+      "knowledge": "压力与压强",
+      "reason": "使用四个独立选项；图表与题干由共享内容块组合。",
+      "assessment": "全部自动判分"
+    },
+    {
+      "number": 8,
+      "title": "摆球的机械能",
+      "type": "single",
+      "score": 2,
+      "template": "已有单选基础模板＋文字/图表",
+      "knowledge": "机械能",
+      "reason": "使用四个独立选项；图表与题干由共享内容块组合。",
+      "assessment": "全部自动判分"
+    },
+    {
+      "number": 9,
+      "title": "欧姆定律应用",
+      "type": "single",
+      "score": 2,
+      "template": "已有单选基础模板＋文字/图表",
+      "knowledge": "欧姆定律",
+      "reason": "使用四个独立选项；图表与题干由共享内容块组合。",
+      "assessment": "全部自动判分"
+    },
+    {
+      "number": 10,
+      "title": "发电机的原理",
+      "type": "single",
+      "score": 2,
+      "template": "已有单选基础模板＋文字/图表",
+      "knowledge": "电与磁",
+      "reason": "使用四个独立选项；图表与题干由共享内容块组合。",
+      "assessment": "全部自动判分"
+    },
+    {
+      "number": 11,
+      "title": "滑轮组效率",
+      "type": "single",
+      "score": 2,
+      "template": "已有单选基础模板＋文字/图表",
+      "knowledge": "机械效率",
+      "reason": "使用四个独立选项；图表与题干由共享内容块组合。",
+      "assessment": "全部自动判分"
+    },
+    {
+      "number": 12,
+      "title": "杠杆模型",
+      "type": "single",
+      "score": 2,
+      "template": "已有单选基础模板＋文字/图表",
+      "knowledge": "杠杆平衡",
+      "reason": "使用四个独立选项；图表与题干由共享内容块组合。",
+      "assessment": "全部自动判分"
+    },
+    {
+      "number": 13,
+      "title": "内能与热量",
+      "type": "multiple",
+      "score": 2,
+      "template": "多选·北京漏选半分",
+      "knowledge": "内能与比热容",
+      "reason": "使用四个独立选项；图表与题干由共享内容块组合。",
+      "assessment": "全对2分，漏选1分，错选/未选0分"
+    },
+    {
+      "number": 14,
+      "title": "称重法与浮力",
+      "type": "multiple",
+      "score": 2,
+      "template": "多选·北京漏选半分",
+      "knowledge": "阿基米德原理",
+      "reason": "使用四个独立选项；图表与题干由共享内容块组合。",
+      "assessment": "全对2分，漏选1分，错选/未选0分"
+    },
+    {
+      "number": 15,
+      "title": "光敏传感电路",
+      "type": "multiple",
+      "score": 2,
+      "template": "多选·北京漏选半分",
+      "knowledge": "传感器与串联电路",
+      "reason": "使用四个独立选项；图表与题干由共享内容块组合。",
+      "assessment": "全对2分，漏选1分，错选/未选0分"
+    },
+    {
+      "number": 16,
+      "title": "磁体与电动机",
+      "type": "experiment",
+      "score": 4,
+      "template": "已有实验基础模板（稳定填空）",
+      "knowledge": "磁极与磁场",
+      "reason": "两个独立观察/原理填空，不需要独立绘图输入。",
+      "assessment": "全部自动判分"
+    },
+    {
+      "number": 17,
+      "title": "物态变化与分子运动",
+      "type": "experiment",
+      "score": 4,
+      "template": "实验·填空、作图与论证",
+      "knowledge": "热现象与控制变量",
+      "reason": "现象名称可自动判分；控制变量和结论需完整语义，独立开放小问评阅。",
+      "assessment": "1分自动判分＋3分人工评阅"
+    },
+    {
+      "number": 18,
+      "title": "光的反射与凸透镜",
+      "type": "experiment",
+      "score": 4,
+      "template": "实验·填空、作图与论证",
+      "knowledge": "光学实验",
+      "reason": "数据归纳和像的性质可短答；实验方案使用独立开放输入。",
+      "assessment": "2分自动判分＋2分人工评阅"
+    },
+    {
+      "number": 19,
+      "title": "伏安法测电阻与电路作图",
+      "type": "experiment",
+      "score": 3,
+      "template": "实验·填空、作图与论证",
+      "knowledge": "电学实验与电路图",
+      "reason": "公式填空1分，电路图2分；作图单独保存文字/笔迹/照片，不能伪装为短文本填空。",
+      "assessment": "1分自动判分＋2分人工评阅"
+    },
+    {
+      "number": 20,
+      "title": "液体压强的探究与纠错",
+      "type": "experiment",
+      "score": 4,
+      "template": "实验·填空、作图与论证",
+      "knowledge": "液体压强与控制变量",
+      "reason": "表格呈现实验条件，填空判断变量，开放题要求识别并修正实验缺陷。",
+      "assessment": "2分自动判分＋2分人工评阅"
+    },
+    {
+      "number": 21,
+      "title": "串联电路电压与实验数据",
+      "type": "experiment",
+      "score": 4,
+      "template": "实验 · 数据表与填空",
+      "knowledge": "串联电路电压",
+      "reason": "数据表中的待填单元格也关联稳定空格；文字结论和开放评价分别作答。",
+      "assessment": "2分自动判分＋2分人工评阅"
+    },
+    {
+      "number": 22,
+      "title": "用量筒和天平测密度",
+      "type": "experiment",
+      "score": 2,
+      "template": "已有实验基础模板＋图示读数",
+      "knowledge": "密度测量与读图",
+      "reason": "质量与排水体积给出充分条件，使用示意图加两个独立空格。",
+      "assessment": "全部自动判分"
+    },
+    {
+      "number": 23,
+      "title": "比较液体吸热性能",
+      "type": "experiment",
+      "score": 3,
+      "template": "新增实验混合模板（仅保留开放小问）",
+      "knowledge": "比热容与实验论证",
+      "reason": "整题是证据到结论的论证，不宜按关键词自动判分；开放小问3分人工评阅。",
+      "assessment": "0分自动判分＋3分人工评阅"
+    },
+    {
+      "number": 24,
+      "title": "校园温室的自动通风",
+      "type": "reading",
+      "score": 4,
+      "template": "科普阅读 · 材料与混合小问",
+      "knowledge": "科普阅读与信息迁移",
+      "reason": "共享原创材料后设信息提取、选择和条件推理；三个小问分别保存，开放推理不强行自动判分。",
+      "assessment": "2分自动判分＋2分人工评阅"
+    },
+    {
+      "number": 25,
+      "title": "电热饮水机的功率与电阻",
+      "type": "calculation",
+      "score": 4,
+      "template": "已有计算模板＋混合作答",
+      "knowledge": "电功率与热效率",
+      "reason": "保留两小问完整计算过程，支持文字、手写和照片共同提交，按步骤给分。",
+      "assessment": "0分自动判分＋4分人工评阅"
+    },
+    {
+      "number": 26,
+      "title": "电动运输车的做功与节能",
+      "type": "calculation",
+      "score": 4,
+      "template": "已有计算模板＋混合作答",
+      "knowledge": "功率与能量效率",
+      "reason": "从数据提取到受力模型再到效率换算，过程人工评阅，不能仅按最终数字判对。",
+      "assessment": "0分自动判分＋4分人工评阅"
+    }
+  ]
+}

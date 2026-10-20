@@ -1,4 +1,4 @@
-import { applyStarter } from '../../shared/editor';
+import { applyQuestionTemplate } from '../../shared/questionTemplates';
 import type { FastifyInstance } from 'fastify';
 import { z } from 'zod';
 import { questionSchema } from '../../shared/schema';
@@ -38,14 +38,20 @@ export function registerQuestions(app: FastifyInstance, store: Store) {
     const body = z
       .object({
         bankId: z.string(),
-        type: z.enum(['single', 'multiple', 'fill', 'experiment', 'calculation']),
+        type: z.enum(['single', 'multiple', 'fill', 'experiment', 'reading', 'calculation']),
+        templateId: z.string().max(100).optional(),
       })
       .parse(req.body);
     const bank = store.get<LibraryItem>('library', body.bankId);
     if (!bank || bank.kind !== 'bank' || bank.state === 'archived')
       throw new HttpError(422, '请选择有效题库');
     const initial = newQuestion(body.type, body.bankId);
-    const q = body.type === 'fill' || body.type === 'experiment' ? applyStarter(initial) : initial;
+    let q: Question;
+    try {
+      q = applyQuestionTemplate(initial, body.templateId);
+    } catch {
+      throw new HttpError(422, '模板不存在或与题型不匹配');
+    }
     store.put('questions', q.id, {
       id: q.id,
       bankId: q.bankId,

@@ -9,6 +9,7 @@ import { resolve, join } from 'node:path';
 import { z, ZodError } from 'zod';
 import { Store } from './store';
 import { seed as seedDatabase } from './seed';
+import { installBeijingPaper } from './content/installBeijingPaper';
 import {
   registerAuthHooks,
   checkPassword,
@@ -30,7 +31,10 @@ export interface AppOptions {
 export async function createApp(options: AppOptions) {
   const app = Fastify({ logger: options.logger ?? false, bodyLimit: 8 * 1024 * 1024 });
   const store = new Store(resolve(options.dataDir));
-  if (options.seed ?? true) seedDatabase(store);
+  if (options.seed ?? true) {
+    seedDatabase(store);
+    installBeijingPaper(store);
+  }
   await app.register(cookie);
   await app.register(cors, {
     origin: options.origin ?? process.env.APP_ORIGIN ?? 'http://localhost:5173',

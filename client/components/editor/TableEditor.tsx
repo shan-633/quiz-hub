@@ -53,7 +53,9 @@ export function TableEditor({
                         })
                       }
                     />
-                    {(question.type === 'fill' || question.type === 'experiment') && (
+                    {(question.type === 'fill' ||
+                      question.type === 'experiment' ||
+                      question.type === 'reading') && (
                       <button
                         className="text-button"
                         onClick={() =>

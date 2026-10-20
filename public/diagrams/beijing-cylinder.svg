@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 310" role="img" aria-label="量筒排水法测体积">
+<rect width="680" height="310" fill="#f7faf9"/>
+<g stroke="#37545d" stroke-width="3" fill="none"><path d="M120 35V250Q120 260 130 260H245Q255 260 255 250V35M105 275H270"/><path d="M425 35V250Q425 260 435 260H550Q560 260 560 250V35M410 275H575"/></g>
+<path d="M123 160H252V249Q252 257 244 257H132Q123 257 123 249Z" fill="#d6eceb"/>
+<path d="M428 100H557V249Q557 257 549 257H437Q428 257 428 249Z" fill="#d6eceb"/>
+<g stroke="#237b77" stroke-width="2"><path d="M123 160H252M428 100H557"/><path d="M227 200H252M237 180H252M227 160H252M237 140H252M227 120H252M237 100H252M227 80H252"/><path d="M532 200H557M542 180H557M532 160H557M542 140H557M532 120H557M542 100H557M532 80H557"/></g>
+<path d="M467 215L477 185L507 180L522 211L504 238L476 238Z" fill="#9eb5b0" stroke="#526d67" stroke-width="2"/>
+<g font-family="Arial, sans-serif" font-size="18" fill="#28424e"><text x="275" y="166">50 mL</text><text x="580" y="106">65 mL</text><text x="150" y="26">mL</text><text x="455" y="26">mL</text><text x="155" y="300">Before</text><text x="465" y="300">After</text></g>
+</svg>

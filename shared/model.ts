@@ -1,4 +1,5 @@
-export type QuestionType = 'single' | 'multiple' | 'fill' | 'experiment' | 'calculation';
+export type QuestionType =
+  'single' | 'multiple' | 'fill' | 'experiment' | 'reading' | 'calculation';
 export type State = 'draft' | 'published' | 'archived';
 export interface Option {
   id: string;
@@ -61,6 +62,7 @@ export interface Question {
   state: State;
   source?: string;
   allowedModes?: ('text' | 'drawing' | 'photo')[];
+  multipleScoring?: 'exact' | 'half';
 }
 export interface Point {
   x: number;
@@ -147,5 +149,6 @@ export const typeLabels: Record<QuestionType, string> = {
   multiple: '多选题',
   fill: '填空题',
   experiment: '实验题',
+  reading: '科普阅读题',
   calculation: '计算题',
 };

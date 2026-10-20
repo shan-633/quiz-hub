@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import type { LibraryItem, Question, QuestionType } from '../../shared/model';
 import { typeLabels } from '../../shared/model';
+import { questionTemplates } from '../../shared/questionTemplates';
 import { useLoad } from '../useLoad';
 import { api, json } from '../api';
 import { useToast } from '../context';
@@ -31,6 +32,7 @@ export function AdminPage() {
     [adding, setAdding] = useState(false),
     [bankId, setBankId] = useState(''),
     [type, setType] = useState<QuestionType>('single'),
+    [templateId, setTemplateId] = useState(''),
     [busy, setBusy] = useState(false),
     [query, setQuery] = useState('');
   const refresh = () => {
@@ -45,7 +47,10 @@ export function AdminPage() {
     }
     setBusy(true);
     try {
-      const q = await api('/admin/questions', { method: 'POST', body: json({ bankId, type }) });
+      const q = await api('/admin/questions', {
+        method: 'POST',
+        body: json({ bankId, type, templateId: templateId || undefined }),
+      });
       navigate(`/admin/questions/${q.id}`);
     } catch (e) {
       toast((e as Error).message, true);
@@ -269,7 +274,13 @@ export function AdminPage() {
             </label>
             <label className="field">
               题型
-              <select value={type} onChange={(e) => setType(e.target.value as QuestionType)}>
+              <select
+                value={type}
+                onChange={(e) => {
+                  setType(e.target.value as QuestionType);
+                  setTemplateId('');
+                }}
+              >
                 {Object.entries(typeLabels).map(([id, name]) => (
                   <option key={id} value={id}>
                     {name}
@@ -277,6 +288,25 @@ export function AdminPage() {
                 ))}
               </select>
             </label>
+            {questionTemplates.some((t) => t.type === type) && (
+              <label className="field span-2">
+                可复用模板
+                <select value={templateId} onChange={(e) => setTemplateId(e.target.value)}>
+                  <option value="">基础模板</option>
+                  {questionTemplates
+                    .filter((t) => t.type === type)
+                    .map((t) => (
+                      <option key={t.id} value={t.id}>
+                        {t.name}
+                      </option>
+                    ))}
+                </select>
+                <span className="muted small">
+                  {questionTemplates.find((t) => t.id === templateId)?.description ??
+                    '按题型创建基础草稿。'}
+                </span>
+              </label>
+            )}
           </div>
           <p className="muted">
             创建后可以添加文字、图片、公式和子问题，并实时预览学生看到的页面。

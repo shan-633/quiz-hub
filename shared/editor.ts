@@ -18,7 +18,7 @@ export function insertTableBlank(
   return recount(q);
 }
 function recount(q: Question) {
-  if (q.type === 'fill' || q.type === 'experiment') {
+  if (q.type === 'fill' || q.type === 'experiment' || q.type === 'reading') {
     const all = walkBlocks(q.content);
     for (const b of all)
       if (b.type === 'subquestion' && b.responseKind === 'blanks')
