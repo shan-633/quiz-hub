@@ -1,0 +1,42 @@
+import Fastify from 'fastify';
+import cookie from '@fastify/cookie';
+import cors from '@fastify/cors';
+import rateLimit from '@fastify/rate-limit';
+import fastifyStatic from '@fastify/static';
+import {existsSync} from 'node:fs';
+import {resolve,join} from 'node:path';
+import {z,ZodError} from 'zod';
+import {Store} from './store';
+import {seed as seedDatabase} from './seed';
+import {registerAuthHooks,checkPassword,newSession,HttpError,requireUser,type StoredUser} from './auth';
+import {registerLibrary} from './routes/library';
+import {registerQuestions} from './routes/questions';
+import {registerAttempts} from './routes/attempts';
+export interface AppOptions {dataDir:string;seed?:boolean;origin?:string;logger?:boolean}
+export async function createApp(options:AppOptions){
+ const app=Fastify({logger:options.logger??false,bodyLimit:8*1024*1024});const store=new Store(resolve(options.dataDir));
+ if(options.seed??true)seedDatabase(store);
+ await app.register(cookie);await app.register(cors,{origin:options.origin??process.env.APP_ORIGIN??'http://localhost:5173',credentials:true});await app.register(rateLimit,{max:500,timeWindow:'1 minute'});
+ registerAuthHooks(app,store,options.origin??process.env.APP_ORIGIN??'http://localhost:5173');
+ app.setErrorHandler((error,req,reply)=>{
+  if(error instanceof ZodError)return reply.code(422).send({message:'输入格式不正确',issues:error.issues.map(i=>`${i.path.join('.')}：${i.message}`)});
+  if(error instanceof HttpError)return reply.code(error.statusCode).send({message:error.message,...error.extra});
+  const status=(error as {statusCode?:number}).statusCode??500;if(status>=500)req.log.error(error);return reply.code(status).send({message:status>=500?'服务暂时不可用，请稍后重试':(error as Error).message});
+ });
+ app.get('/api/health',async()=>({ok:true,version:'1.0.0'}));
+ app.post('/api/auth/login',{config:{rateLimit:{max:10,timeWindow:'1 minute'}}},async(req,reply)=>{
+  const body=z.object({username:z.string().min(1).max(100),password:z.string().min(1).max(128)}).parse(req.body);
+  const user=store.list<StoredUser>('users').find(u=>u.username===body.username);if(!user||!checkPassword(body.password,user.passwordHash))throw new HttpError(401,'账号或密码不正确');
+  const{token,csrfToken}=newSession(store,user.id),{passwordHash,...safe}=user;
+  reply.setCookie('zhixu_session',token,{httpOnly:true,sameSite:'lax',path:'/',secure:process.env.SECURE_COOKIE==='true',maxAge:7*86400});return{user:safe,csrfToken};
+ });
+ app.get('/api/auth/me',async(req)=>({user:req.user,csrfToken:req.csrfToken}));
+ app.post('/api/auth/logout',async(req,reply)=>{requireUser(req);store.delete('sessions',req.sessionId);reply.clearCookie('zhixu_session',{path:'/'});return{ok:true};});
+ registerLibrary(app,store);registerQuestions(app,store);registerAttempts(app,store);
+ const publicDir=resolve('public');if(existsSync(publicDir))await app.register(fastifyStatic,{root:publicDir,prefix:'/',decorateReply:false});
+ const dist=resolve('dist');if(existsSync(dist)){
+  await app.register(fastifyStatic,{root:dist,prefix:'/',decorateReply:true,wildcard:false});
+  app.setNotFoundHandler((req,reply)=>req.url.startsWith('/api/')?reply.code(404).send({message:'接口不存在'}):reply.sendFile('index.html',dist));
+ }
+ app.addHook('onClose',async()=>store.close());return app;
+}

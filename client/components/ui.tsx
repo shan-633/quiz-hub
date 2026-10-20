@@ -1,0 +1,11 @@
+import {useEffect,useRef,type ReactNode} from 'react';
+import {X,LoaderCircle,ArrowUpRight,AlertCircle} from 'lucide-react';
+export function Loading(){return<div className="loading" role="status"><LoaderCircle className="spin" size={24}/><span>正在准备你的学习空间…</span></div>;}
+export function ErrorState({message,retry}:{message:string;retry?:()=>void}){return<div className="empty-state"><AlertCircle size={30}/><h2>暂时没有加载成功</h2><p>{message}</p>{retry&&<button className="button" onClick={retry}>重新加载</button>}</div>;}
+export function EmptyState({title,description,children}:{title:string;description:string;children?:ReactNode}){return<div className="empty-state"><span className="empty-icon"><ArrowUpRight/></span><h2>{title}</h2><p>{description}</p>{children}</div>;}
+export function Modal({title,children,onClose,wide=false}:{title:string;children:ReactNode;onClose:()=>void;wide?:boolean}){
+ const ref=useRef<HTMLDivElement>(null),close=useRef(onClose);close.current=onClose;
+ useEffect(()=>{const before=document.activeElement as HTMLElement|null;const el=ref.current;el?.focus();const handler=(event:KeyboardEvent)=>{if(event.key==='Escape')close.current();if(event.key==='Tab'&&el){const nodes=[...el.querySelectorAll<HTMLElement>('button:not(:disabled),input:not(:disabled),select,textarea,a[href],[tabindex="0"]')];const first=nodes[0],last=nodes.at(-1);if(event.shiftKey&&(document.activeElement===first||document.activeElement===el)){event.preventDefault();last?.focus();}else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first?.focus();}}};document.addEventListener('keydown',handler);const old=document.body.style.overflow;document.body.style.overflow='hidden';return()=>{document.removeEventListener('keydown',handler);document.body.style.overflow=old;before?.focus();};},[]);
+ return<div className="modal-backdrop" onMouseDown={e=>{if(e.target===e.currentTarget)onClose();}}><div className={`modal ${wide?'modal-wide':''}`} role="dialog" aria-modal="true" aria-label={title} tabIndex={-1} ref={ref}><div className="modal-heading"><h2>{title}</h2><button aria-label="关闭弹窗" className="icon-button" onClick={onClose}><X size={20}/></button></div>{children}</div></div>;
+}
+export const formatDate=(value:string)=>new Intl.DateTimeFormat('zh-CN',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}).format(new Date(value));
