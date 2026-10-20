@@ -1,0 +1,2571 @@
+{
+  "bank": {
+    "id": "bank-beijing-2022-real",
+    "kind": "bank",
+    "title": "2022北京中考物理 · 真题题库",
+    "description": "整套真实北京中考物理题，26题70分。题中图1—图24及数据表直接截自来源PDF，保留原图与水印。",
+    "chapter": "九年级 · 综合",
+    "accent": "exam",
+    "state": "published",
+    "questionCount": 26,
+    "minutes": 70,
+    "totalScore": 70
+  },
+  "paper": {
+    "id": "paper-beijing-2022-real",
+    "kind": "paper",
+    "title": "2022年北京中考物理真题",
+    "description": "真实中考卷 · 26题 · 70分 · 70分钟。原题条件、题号、选项与分值校录；全部插图采用原卷截图。12单选、3多选、8实验、1阅读、2计算。",
+    "chapter": "九年级 · 综合",
+    "accent": "exam",
+    "state": "published",
+    "questionCount": 26,
+    "minutes": 70,
+    "totalScore": 70,
+    "items": [
+      {
+        "questionId": "bj2022-q01",
+        "version": 1,
+        "score": 2
+      },
+      {
+        "questionId": "bj2022-q02",
+        "version": 1,
+        "score": 2
+      },
+      {
+        "questionId": "bj2022-q03",
+        "version": 1,
+        "score": 2
+      },
+      {
+        "questionId": "bj2022-q04",
+        "version": 1,
+        "score": 2
+      },
+      {
+        "questionId": "bj2022-q05",
+        "version": 1,
+        "score": 2
+      },
+      {
+        "questionId": "bj2022-q06",
+        "version": 1,
+        "score": 2
+      },
+      {
+        "questionId": "bj2022-q07",
+        "version": 1,
+        "score": 2
+      },
+      {
+        "questionId": "bj2022-q08",
+        "version": 1,
+        "score": 2
+      },
+      {
+        "questionId": "bj2022-q09",
+        "version": 1,
+        "score": 2
+      },
+      {
+        "questionId": "bj2022-q10",
+        "version": 1,
+        "score": 2
+      },
+      {
+        "questionId": "bj2022-q11",
+        "version": 1,
+        "score": 2
+      },
+      {
+        "questionId": "bj2022-q12",
+        "version": 1,
+        "score": 2
+      },
+      {
+        "questionId": "bj2022-q13",
+        "version": 1,
+        "score": 2
+      },
+      {
+        "questionId": "bj2022-q14",
+        "version": 1,
+        "score": 2
+      },
+      {
+        "questionId": "bj2022-q15",
+        "version": 1,
+        "score": 2
+      },
+      {
+        "questionId": "bj2022-q16",
+        "version": 1,
+        "score": 2
+      },
+      {
+        "questionId": "bj2022-q17",
+        "version": 1,
+        "score": 4
+      },
+      {
+        "questionId": "bj2022-q18",
+        "version": 1,
+        "score": 3
+      },
+      {
+        "questionId": "bj2022-q19",
+        "version": 1,
+        "score": 4
+      },
+      {
+        "questionId": "bj2022-q20",
+        "version": 1,
+        "score": 4
+      },
+      {
+        "questionId": "bj2022-q21",
+        "version": 1,
+        "score": 3
+      },
+      {
+        "questionId": "bj2022-q22",
+        "version": 1,
+        "score": 4
+      },
+      {
+        "questionId": "bj2022-q23",
+        "version": 1,
+        "score": 4
+      },
+      {
+        "questionId": "bj2022-q24",
+        "version": 1,
+        "score": 4
+      },
+      {
+        "questionId": "bj2022-q25",
+        "version": 1,
+        "score": 4
+      },
+      {
+        "questionId": "bj2022-q26",
+        "version": 1,
+        "score": 4
+      }
+    ]
+  },
+  "questions": [
+    {
+      "id": "bj2022-q01",
+      "version": 1,
+      "bankId": "bank-beijing-2022-real",
+      "type": "single",
+      "title": "1. 验电器与电荷间相互作用",
+      "score": 2,
+      "difficulty": "基础",
+      "tags": [
+        "北京中考真题",
+        "2022",
+        "电荷相互作用"
+      ],
+      "content": [
+        {
+          "id": "bj2022-block-2",
+          "type": "paragraph",
+          "text": "### 一、单项选择题（共24分，每题2分）\n以下题目来自2022年北京中考物理真题。全卷26题、70分，考试时间70分钟。插图直接截自来源PDF，题号、条件与选项保持原题。"
+        },
+        {
+          "id": "bj2022-block-3",
+          "type": "paragraph",
+          "text": "如图1所示，用毛皮摩擦过的橡胶棒接触验电器的金属球时，验电器的两片金属箔之所以张开是由于"
+        },
+        {
+          "id": "bj2022-block-1",
+          "type": "image",
+          "assetId": "bj2022-fig-01",
+          "intrinsicWidth": 291,
+          "intrinsicHeight": 318,
+          "alt": "2022北京中考物理图1原图截图",
+          "caption": "图1 · 原卷截图（点击放大）",
+          "width": 45
+        }
+      ],
+      "options": [
+        {
+          "id": "a",
+          "text": "同种电荷相互排斥"
+        },
+        {
+          "id": "b",
+          "text": "异种电荷相互吸引"
+        },
+        {
+          "id": "c",
+          "text": "同种电荷相互吸引"
+        },
+        {
+          "id": "d",
+          "text": "异种电荷相互排斥"
+        }
+      ],
+      "blanks": [],
+      "solution": {
+        "choices": [
+          "a"
+        ],
+        "blanks": {},
+        "partChoices": {},
+        "explanation": "参考答案A。两片金属箔带同种电荷，相互排斥而张开。"
+      },
+      "state": "published",
+      "allowedModes": [
+        "text",
+        "drawing",
+        "photo"
+      ],
+      "source": "2022年北京市初中学业水平考试物理真题；依据本地北京高考在线资料版PDF校录，插图直接截自该PDF，保留原水印。"
+    },
+    {
+      "id": "bj2022-q02",
+      "version": 1,
+      "bankId": "bank-beijing-2022-real",
+      "type": "single",
+      "title": "2. 光现象的辨析",
+      "score": 2,
+      "difficulty": "基础",
+      "tags": [
+        "北京中考真题",
+        "2022",
+        "光的折射"
+      ],
+      "content": [
+        {
+          "id": "bj2022-block-5",
+          "type": "paragraph",
+          "text": "图2所示的光现象中，由于光的折射形成的是"
+        },
+        {
+          "id": "bj2022-block-4",
+          "type": "image",
+          "assetId": "bj2022-fig-02",
+          "intrinsicWidth": 1275,
+          "intrinsicHeight": 417,
+          "alt": "2022北京中考物理图2（A—D四幅原图）原图截图",
+          "caption": "图2（A—D四幅原图） · 原卷截图（点击放大）",
+          "width": 100
+        }
+      ],
+      "options": [
+        {
+          "id": "a",
+          "text": "日晷上呈现针的影子"
+        },
+        {
+          "id": "b",
+          "text": "景物在镜中成像"
+        },
+        {
+          "id": "c",
+          "text": "鸟巢在水中形成倒影"
+        },
+        {
+          "id": "d",
+          "text": "筷子好像在水面处弯折"
+        }
+      ],
+      "blanks": [],
+      "solution": {
+        "choices": [
+          "d"
+        ],
+        "blanks": {},
+        "partChoices": {},
+        "explanation": "参考答案D。影子由光沿直线传播形成，镜中像和水中倒影由反射形成；水中筷子看似弯折由折射形成。"
+      },
+      "state": "published",
+      "allowedModes": [
+        "text",
+        "drawing",
+        "photo"
+      ],
+      "source": "2022年北京市初中学业水平考试物理真题；依据本地北京高考在线资料版PDF校录，插图直接截自该PDF，保留原水印。"
+    },
+    {
+      "id": "bj2022-q03",
+      "version": 1,
+      "bankId": "bank-beijing-2022-real",
+      "type": "single",
+      "title": "3. 琴瑟声音的特性",
+      "score": 2,
+      "difficulty": "基础",
+      "tags": [
+        "北京中考真题",
+        "2022",
+        "声现象"
+      ],
+      "content": [
+        {
+          "id": "bj2022-block-6",
+          "type": "paragraph",
+          "text": "琴和瑟是我国传统的两种乐器，通过弹拨琴和瑟的弦使之发声。下列说法正确的是"
+        }
+      ],
+      "options": [
+        {
+          "id": "a",
+          "text": "正在发声的琴弦，没有振动"
+        },
+        {
+          "id": "b",
+          "text": "琴和瑟发出的声音，可以在真空中传播"
+        },
+        {
+          "id": "c",
+          "text": "琴和瑟发出的声音音调相同时，它们的响度一定相同"
+        },
+        {
+          "id": "d",
+          "text": "人们依据音色的不同，能区分出琴和瑟的声音"
+        }
+      ],
+      "blanks": [],
+      "solution": {
+        "choices": [
+          "d"
+        ],
+        "blanks": {},
+        "partChoices": {},
+        "explanation": "参考答案D。声音由振动产生，传播需要介质，真空不能传声；音调与响度是不同特性，辨别不同乐器主要依据音色。"
+      },
+      "state": "published",
+      "allowedModes": [
+        "text",
+        "drawing",
+        "photo"
+      ],
+      "source": "2022年北京市初中学业水平考试物理真题；依据本地北京高考在线资料版PDF校录，插图直接截自该PDF，保留原水印。"
+    },
+    {
+      "id": "bj2022-q04",
+      "version": 1,
+      "bankId": "bank-beijing-2022-real",
+      "type": "single",
+      "title": "4. 物态变化辨析",
+      "score": 2,
+      "difficulty": "基础",
+      "tags": [
+        "北京中考真题",
+        "2022",
+        "物态变化"
+      ],
+      "content": [
+        {
+          "id": "bj2022-block-8",
+          "type": "paragraph",
+          "text": "图3所示的物态变化实例中，由于熔化形成的是"
+        },
+        {
+          "id": "bj2022-block-7",
+          "type": "image",
+          "assetId": "bj2022-fig-03",
+          "intrinsicWidth": 1320,
+          "intrinsicHeight": 411,
+          "alt": "2022北京中考物理图3（A—D四幅原图）原图截图",
+          "caption": "图3（A—D四幅原图） · 原卷截图（点击放大）",
+          "width": 100
+        }
+      ],
+      "options": [
+        {
+          "id": "a",
+          "text": "立春时节冰化成的水"
+        },
+        {
+          "id": "b",
+          "text": "白露时节草叶上的露珠"
+        },
+        {
+          "id": "c",
+          "text": "霜降时节枝头上的霜"
+        },
+        {
+          "id": "d",
+          "text": "冬至时节房檐上的冰挂"
+        }
+      ],
+      "blanks": [],
+      "solution": {
+        "choices": [
+          "a"
+        ],
+        "blanks": {},
+        "partChoices": {},
+        "explanation": "参考答案A。冰化水是熔化；露为液化，霜为凝华，冰挂主要由水凝固形成。"
+      },
+      "state": "published",
+      "allowedModes": [
+        "text",
+        "drawing",
+        "photo"
+      ],
+      "source": "2022年北京市初中学业水平考试物理真题；依据本地北京高考在线资料版PDF校录，插图直接截自该PDF，保留原水印。"
+    },
+    {
+      "id": "bj2022-q05",
+      "version": 1,
+      "bankId": "bank-beijing-2022-real",
+      "type": "single",
+      "title": "5. 并联电路电流电压",
+      "score": 2,
+      "difficulty": "基础",
+      "tags": [
+        "北京中考真题",
+        "2022",
+        "并联电路与欧姆定律"
+      ],
+      "content": [
+        {
+          "id": "bj2022-block-10",
+          "type": "paragraph",
+          "text": "图4所示的电路中，电阻阻值 $R_1<R_2$。开关S闭合后，$R_1$、$R_2$两端的电压分别为 $U_1$、$U_2$，通过 $R_1$、$R_2$的电流分别为 $I_1$、$I_2$。下列判断正确的是"
+        },
+        {
+          "id": "bj2022-block-9",
+          "type": "image",
+          "assetId": "bj2022-fig-04",
+          "intrinsicWidth": 387,
+          "intrinsicHeight": 375,
+          "alt": "2022北京中考物理图4原图截图",
+          "caption": "图4 · 原卷截图（点击放大）",
+          "width": 55
+        }
+      ],
+      "options": [
+        {
+          "id": "a",
+          "text": "$U_1>U_2$"
+        },
+        {
+          "id": "b",
+          "text": "$U_1<U_2$"
+        },
+        {
+          "id": "c",
+          "text": "$I_1>I_2$"
+        },
+        {
+          "id": "d",
+          "text": "$I_1=I_2$"
+        }
+      ],
+      "blanks": [],
+      "solution": {
+        "choices": [
+          "c"
+        ],
+        "blanks": {},
+        "partChoices": {},
+        "explanation": "参考答案C。两电阻并联，电压相等；由I=U/R，R₁<R₂时I₁>I₂。"
+      },
+      "state": "published",
+      "allowedModes": [
+        "text",
+        "drawing",
+        "photo"
+      ],
+      "source": "2022年北京市初中学业水平考试物理真题；依据本地北京高考在线资料版PDF校录，插图直接截自该PDF，保留原水印。"
+    },
+    {
+      "id": "bj2022-q06",
+      "version": 1,
+      "bankId": "bank-beijing-2022-real",
+      "type": "single",
+      "title": "6. 返回舱的机械能",
+      "score": 2,
+      "difficulty": "基础",
+      "tags": [
+        "北京中考真题",
+        "2022",
+        "动能与重力势能"
+      ],
+      "content": [
+        {
+          "id": "bj2022-block-12",
+          "type": "paragraph",
+          "text": "图5所示的是神舟十三号载人飞船返回舱返回地面时的情境。打开降落伞后，若返回舱在一段时间内的运动可看作是竖直向下的匀速运动，则关于返回舱在这段时间内，下列说法正确的是"
+        },
+        {
+          "id": "bj2022-block-11",
+          "type": "image",
+          "assetId": "bj2022-fig-05",
+          "intrinsicWidth": 261,
+          "intrinsicHeight": 462,
+          "alt": "2022北京中考物理图5原图截图",
+          "caption": "图5 · 原卷截图（点击放大）",
+          "width": 40
+        }
+      ],
+      "options": [
+        {
+          "id": "a",
+          "text": "返回舱的动能不变"
+        },
+        {
+          "id": "b",
+          "text": "返回舱的重力势能不变"
+        },
+        {
+          "id": "c",
+          "text": "返回舱的机械能不变"
+        },
+        {
+          "id": "d",
+          "text": "返回舱所受重力不做功"
+        }
+      ],
+      "blanks": [],
+      "solution": {
+        "choices": [
+          "a"
+        ],
+        "blanks": {},
+        "partChoices": {},
+        "explanation": "参考答案A。质量、速度不变，动能不变；高度下降，重力势能减小，机械能减小；重力方向与位移方向相同，重力做功。"
+      },
+      "state": "published",
+      "allowedModes": [
+        "text",
+        "drawing",
+        "photo"
+      ],
+      "source": "2022年北京市初中学业水平考试物理真题；依据本地北京高考在线资料版PDF校录，插图直接截自该PDF，保留原水印。"
+    },
+    {
+      "id": "bj2022-q07",
+      "version": 1,
+      "bankId": "bank-beijing-2022-real",
+      "type": "single",
+      "title": "7. 放大镜的成像条件",
+      "score": 2,
+      "difficulty": "基础",
+      "tags": [
+        "北京中考真题",
+        "2022",
+        "凸透镜成像"
+      ],
+      "content": [
+        {
+          "id": "bj2022-block-14",
+          "type": "paragraph",
+          "text": "小京通过焦距为10cm的凸透镜看到了提示牌上“关灯”两字放大的像，如图6所示。下列说法正确的是"
+        },
+        {
+          "id": "bj2022-block-13",
+          "type": "image",
+          "assetId": "bj2022-fig-06",
+          "intrinsicWidth": 243,
+          "intrinsicHeight": 273,
+          "alt": "2022北京中考物理图6原图截图",
+          "caption": "图6 · 原卷截图（点击放大）",
+          "width": 45
+        }
+      ],
+      "options": [
+        {
+          "id": "a",
+          "text": "“关灯”两字放大的像是实像"
+        },
+        {
+          "id": "b",
+          "text": "提示牌上“关灯”两字在凸透镜的焦点上"
+        },
+        {
+          "id": "c",
+          "text": "提示牌上“关灯”两字到凸透镜的距离小于10cm"
+        },
+        {
+          "id": "d",
+          "text": "提示牌上“关灯”两字到凸透镜的距离大于20cm"
+        }
+      ],
+      "blanks": [],
+      "solution": {
+        "choices": [
+          "c"
+        ],
+        "blanks": {},
+        "partChoices": {},
+        "explanation": "参考答案C。用凸透镜作放大镜时，成正立放大的虚像，物体应位于焦距以内。"
+      },
+      "state": "published",
+      "allowedModes": [
+        "text",
+        "drawing",
+        "photo"
+      ],
+      "source": "2022年北京市初中学业水平考试物理真题；依据本地北京高考在线资料版PDF校录，插图直接截自该PDF，保留原水印。"
+    },
+    {
+      "id": "bj2022-q08",
+      "version": 1,
+      "bankId": "bank-beijing-2022-real",
+      "type": "single",
+      "title": "8. 冰壶运动与惯性",
+      "score": 2,
+      "difficulty": "基础",
+      "tags": [
+        "北京中考真题",
+        "2022",
+        "惯性与运动状态"
+      ],
+      "content": [
+        {
+          "id": "bj2022-block-16",
+          "type": "paragraph",
+          "text": "图7所示的是我国运动员在北京冬奥会上参加冰壶比赛时的情境。下列说法正确的是"
+        },
+        {
+          "id": "bj2022-block-15",
+          "type": "image",
+          "assetId": "bj2022-fig-07",
+          "intrinsicWidth": 303,
+          "intrinsicHeight": 285,
+          "alt": "2022北京中考物理图7原图截图",
+          "caption": "图7 · 原卷截图（点击放大）",
+          "width": 55
+        }
+      ],
+      "options": [
+        {
+          "id": "a",
+          "text": "运动员推动冰壶滑行，以冰面为参照物冰壶是静止的"
+        },
+        {
+          "id": "b",
+          "text": "掷出后的冰壶能继续运动，是由于冰壶具有惯性"
+        },
+        {
+          "id": "c",
+          "text": "掷出后的冰壶继续运动时，冰壶受到手的推力"
+        },
+        {
+          "id": "d",
+          "text": "冰壶运动越来越慢的过程中，冰壶的运动状态不变"
+        }
+      ],
+      "blanks": [],
+      "solution": {
+        "choices": [
+          "b"
+        ],
+        "blanks": {},
+        "partChoices": {},
+        "explanation": "参考答案B。冰壶相对冰面运动；脱手后仍能运动是由于惯性，此时不再受手的推力；速度变化意味着运动状态改变。"
+      },
+      "state": "published",
+      "allowedModes": [
+        "text",
+        "drawing",
+        "photo"
+      ],
+      "source": "2022年北京市初中学业水平考试物理真题；依据本地北京高考在线资料版PDF校录，插图直接截自该PDF，保留原水印。"
+    },
+    {
+      "id": "bj2022-q09",
+      "version": 1,
+      "bankId": "bank-beijing-2022-real",
+      "type": "single",
+      "title": "9. 滑动摩擦力的影响因素",
+      "score": 2,
+      "difficulty": "基础",
+      "tags": [
+        "北京中考真题",
+        "2022",
+        "摩擦力与控制变量"
+      ],
+      "content": [
+        {
+          "id": "bj2022-block-18",
+          "type": "paragraph",
+          "text": "小京在探究影响滑动摩擦力大小的因素时，用弹簧测力计水平拉动木块沿水平木板做匀速直线运动，如图8甲所示；将铁块放在木块上，再次用弹簧测力计水平拉动木块，使木块和铁块沿同一水平木板做匀速直线运动，如图8乙所示。下列说法正确的是"
+        },
+        {
+          "id": "bj2022-block-17",
+          "type": "image",
+          "assetId": "bj2022-fig-08",
+          "intrinsicWidth": 1092,
+          "intrinsicHeight": 249,
+          "alt": "2022北京中考物理图8（甲、乙）原图截图",
+          "caption": "图8（甲、乙） · 原卷截图（点击放大）",
+          "width": 100
+        }
+      ],
+      "options": [
+        {
+          "id": "a",
+          "text": "图甲所示实验中，弹簧测力计的示数小于滑动摩擦力的大小"
+        },
+        {
+          "id": "b",
+          "text": "图乙所示实验中，木板受到的压力等于木块受到的重力"
+        },
+        {
+          "id": "c",
+          "text": "甲、乙两次实验，探究的是滑动摩擦力的大小与压力是否有关"
+        },
+        {
+          "id": "d",
+          "text": "甲、乙两次实验，探究的是滑动摩擦力的大小与接触面的粗糙程度是否有关"
+        }
+      ],
+      "blanks": [],
+      "solution": {
+        "choices": [
+          "c"
+        ],
+        "blanks": {},
+        "partChoices": {},
+        "explanation": "参考答案C。匀速运动时拉力等于摩擦力；放上铁块后压力增大，接触面粗糙程度不变，因此比较的是压力的影响。"
+      },
+      "state": "published",
+      "allowedModes": [
+        "text",
+        "drawing",
+        "photo"
+      ],
+      "source": "2022年北京市初中学业水平考试物理真题；依据本地北京高考在线资料版PDF校录，插图直接截自该PDF，保留原水印。"
+    },
+    {
+      "id": "bj2022-q10",
+      "version": 1,
+      "bankId": "bank-beijing-2022-real",
+      "type": "single",
+      "title": "10. 发电机工作原理",
+      "score": 2,
+      "difficulty": "中等",
+      "tags": [
+        "北京中考真题",
+        "2022",
+        "电磁感应"
+      ],
+      "content": [
+        {
+          "id": "bj2022-block-20",
+          "type": "paragraph",
+          "text": "图9所示的实验中能说明发电机工作原理的是"
+        },
+        {
+          "id": "bj2022-block-19",
+          "type": "image",
+          "assetId": "bj2022-fig-09",
+          "intrinsicWidth": 1506,
+          "intrinsicHeight": 435,
+          "alt": "2022北京中考物理图9（A—D四幅原图）原图截图",
+          "caption": "图9（A—D四幅原图） · 原卷截图（点击放大）",
+          "width": 100
+        }
+      ],
+      "options": [
+        {
+          "id": "a",
+          "text": "磁极间有相互作用"
+        },
+        {
+          "id": "b",
+          "text": "通电导线周围存在磁场"
+        },
+        {
+          "id": "c",
+          "text": "通电导体在磁场中受力"
+        },
+        {
+          "id": "d",
+          "text": "电磁感应现象"
+        }
+      ],
+      "blanks": [],
+      "solution": {
+        "choices": [
+          "d"
+        ],
+        "blanks": {},
+        "partChoices": {},
+        "explanation": "参考答案D。发电机利用电磁感应将机械能转化为电能。原题题干在PDF第2页末，四幅选项图续在第3页，已合并呈现。"
+      },
+      "state": "published",
+      "allowedModes": [
+        "text",
+        "drawing",
+        "photo"
+      ],
+      "source": "2022年北京市初中学业水平考试物理真题；依据本地北京高考在线资料版PDF校录，插图直接截自该PDF，保留原水印。"
+    },
+    {
+      "id": "bj2022-q11",
+      "version": 1,
+      "bankId": "bank-beijing-2022-real",
+      "type": "single",
+      "title": "11. 小球稳定后的浮力",
+      "score": 2,
+      "difficulty": "中等",
+      "tags": [
+        "北京中考真题",
+        "2022",
+        "物体浮沉与浮力"
+      ],
+      "content": [
+        {
+          "id": "bj2022-block-22",
+          "type": "paragraph",
+          "text": "甲、乙、丙三个小球的质量m和体积V如下表所示。将它们浸没在水中释放，在其稳定后，三个小球所受的浮力分别为 $F_{甲}$、$F_{乙}$ 和 $F_{丙}$。下列判断正确的是"
+        },
+        {
+          "id": "bj2022-block-21",
+          "type": "image",
+          "assetId": "bj2022-table-11",
+          "intrinsicWidth": 654,
+          "intrinsicHeight": 249,
+          "alt": "2022北京中考物理第11题原表（质量与体积）原图截图",
+          "caption": "第11题原表（质量与体积） · 原卷截图（点击放大）",
+          "width": 75
+        }
+      ],
+      "options": [
+        {
+          "id": "a",
+          "text": "$F_{甲}>F_{乙}>F_{丙}$"
+        },
+        {
+          "id": "b",
+          "text": "$F_{乙}>F_{甲}>F_{丙}$"
+        },
+        {
+          "id": "c",
+          "text": "$F_{丙}>F_{乙}>F_{甲}$"
+        },
+        {
+          "id": "d",
+          "text": "$F_{甲}>F_{丙}>F_{乙}$"
+        }
+      ],
+      "blanks": [],
+      "solution": {
+        "choices": [
+          "b"
+        ],
+        "blanks": {},
+        "partChoices": {},
+        "explanation": "参考答案B。甲、乙密度均小于水，最终漂浮，浮力分别等于其重力；丙下沉，排开水的体积为20cm³，浮力小于甲、乙，故F乙>F甲>F丙。"
+      },
+      "state": "published",
+      "allowedModes": [
+        "text",
+        "drawing",
+        "photo"
+      ],
+      "source": "2022年北京市初中学业水平考试物理真题；依据本地北京高考在线资料版PDF校录，插图直接截自该PDF，保留原水印。"
+    },
+    {
+      "id": "bj2022-q12",
+      "version": 1,
+      "bankId": "bank-beijing-2022-real",
+      "type": "single",
+      "title": "12. 液体压强的综合比较",
+      "score": 2,
+      "difficulty": "中等",
+      "tags": [
+        "北京中考真题",
+        "2022",
+        "液体压强"
+      ],
+      "content": [
+        {
+          "id": "bj2022-block-24",
+          "type": "paragraph",
+          "text": "如图10所示，两个圆柱形容器甲和乙放在水平桌面上，甲容器底面积大于乙容器底面积，它们分别装有体积相等的液体，甲容器中液体的密度为 $\\rho_{甲}$，乙容器中液体的密度为 $\\rho_{乙}$。液体内A、B两点到容器底部的距离相等，其压强分别为 $p_A$、$p_B$。若两容器底部受到的液体压强相等，则下列判断正确的是"
+        },
+        {
+          "id": "bj2022-block-23",
+          "type": "image",
+          "assetId": "bj2022-fig-10",
+          "intrinsicWidth": 333,
+          "intrinsicHeight": 372,
+          "alt": "2022北京中考物理图10原图截图",
+          "caption": "图10 · 原卷截图（点击放大）",
+          "width": 55
+        }
+      ],
+      "options": [
+        {
+          "id": "a",
+          "text": "$\\rho_{甲}<\\rho_{乙},\\ p_A<p_B$"
+        },
+        {
+          "id": "b",
+          "text": "$\\rho_{甲}<\\rho_{乙},\\ p_A>p_B$"
+        },
+        {
+          "id": "c",
+          "text": "$\\rho_{甲}>\\rho_{乙},\\ p_A=p_B$"
+        },
+        {
+          "id": "d",
+          "text": "$\\rho_{甲}>\\rho_{乙},\\ p_A<p_B$"
+        }
+      ],
+      "blanks": [],
+      "solution": {
+        "choices": [
+          "d"
+        ],
+        "blanks": {},
+        "partChoices": {},
+        "explanation": "参考答案D。体积相等而甲底面积较大，甲液面高度较低；底部压强相等可得ρ甲>ρ乙。两点距底部高度相等，从相同底部压强减去ρgh，得到pA<pB。"
+      },
+      "state": "published",
+      "allowedModes": [
+        "text",
+        "drawing",
+        "photo"
+      ],
+      "source": "2022年北京市初中学业水平考试物理真题；依据本地北京高考在线资料版PDF校录，插图直接截自该PDF，保留原水印。"
+    },
+    {
+      "id": "bj2022-q13",
+      "version": 1,
+      "bankId": "bank-beijing-2022-real",
+      "type": "multiple",
+      "title": "13. 内能与热现象",
+      "score": 2,
+      "difficulty": "中等",
+      "tags": [
+        "北京中考真题",
+        "2022",
+        "内能与比热容"
+      ],
+      "content": [
+        {
+          "id": "bj2022-block-25",
+          "type": "paragraph",
+          "text": "### 二、多项选择题（共6分，每题2分）\n每题符合题意的选项均多于一个。全选对得2分，选对但不全得1分，有错选或未选得0分。"
+        },
+        {
+          "id": "bj2022-block-26",
+          "type": "paragraph",
+          "text": "下列说法正确的是"
+        }
+      ],
+      "options": [
+        {
+          "id": "a",
+          "text": "沿海地区通常比内陆地区昼夜温差小，原因之一是水的比热容比砂石的比热容大"
+        },
+        {
+          "id": "b",
+          "text": "冬天双手互搓，手的温度升高，是通过热传递的方式改变手的内能"
+        },
+        {
+          "id": "c",
+          "text": "长时间紧压在一起的铅片和金片互相渗入，是由于发生了扩散现象"
+        },
+        {
+          "id": "d",
+          "text": "汽油机的做功冲程中，燃气对外做功，将内能转化为机械能"
+        }
+      ],
+      "blanks": [],
+      "solution": {
+        "choices": [
+          "a",
+          "c",
+          "d"
+        ],
+        "blanks": {},
+        "partChoices": {},
+        "explanation": "参考答案ACD。双手互搓是通过做功改变内能，其余三项正确。"
+      },
+      "state": "published",
+      "allowedModes": [
+        "text",
+        "drawing",
+        "photo"
+      ],
+      "source": "2022年北京市初中学业水平考试物理真题；依据本地北京高考在线资料版PDF校录，插图直接截自该PDF，保留原水印。",
+      "multipleScoring": "half"
+    },
+    {
+      "id": "bj2022-q14",
+      "version": 1,
+      "bankId": "bank-beijing-2022-real",
+      "type": "multiple",
+      "title": "14. 电能时间图像与功率",
+      "score": 2,
+      "difficulty": "中等",
+      "tags": [
+        "北京中考真题",
+        "2022",
+        "电功率与图像"
+      ],
+      "content": [
+        {
+          "id": "bj2022-block-28",
+          "type": "paragraph",
+          "text": "额定电压相同的电热水壶、电烤箱和电饭锅正常工作过程中消耗的电能W和通电时间t的关系如图11所示。关于这三个用电器，下列判断正确的是"
+        },
+        {
+          "id": "bj2022-block-27",
+          "type": "image",
+          "assetId": "bj2022-fig-11",
+          "intrinsicWidth": 513,
+          "intrinsicHeight": 435,
+          "alt": "2022北京中考物理图11（电能—时间图像）原图截图",
+          "caption": "图11（电能—时间图像） · 原卷截图（点击放大）",
+          "width": 70
+        }
+      ],
+      "options": [
+        {
+          "id": "a",
+          "text": "正常工作时，电热水壶比电烤箱产生的热量少"
+        },
+        {
+          "id": "b",
+          "text": "正常工作时，电热水壶比电饭锅的功率大"
+        },
+        {
+          "id": "c",
+          "text": "正常工作时，通过电饭锅的电流最小"
+        },
+        {
+          "id": "d",
+          "text": "在一个月内，电热水壶消耗的电能一定最多"
+        }
+      ],
+      "blanks": [],
+      "solution": {
+        "choices": [
+          "b",
+          "c"
+        ],
+        "blanks": {},
+        "partChoices": {},
+        "explanation": "参考答案BC。W—t图像斜率表示功率，电热水壶功率最大，电饭锅功率最小；额定电压相同，电饭锅电流最小。总电能还与工作时间有关，不能仅凭功率判断一个月耗电量。"
+      },
+      "state": "published",
+      "allowedModes": [
+        "text",
+        "drawing",
+        "photo"
+      ],
+      "source": "2022年北京市初中学业水平考试物理真题；依据本地北京高考在线资料版PDF校录，插图直接截自该PDF，保留原水印。",
+      "multipleScoring": "half"
+    },
+    {
+      "id": "bj2022-q15",
+      "version": 1,
+      "bankId": "bank-beijing-2022-real",
+      "type": "multiple",
+      "title": "15. 滑轮组的受力与效率",
+      "score": 2,
+      "difficulty": "中等",
+      "tags": [
+        "北京中考真题",
+        "2022",
+        "滑轮组与压强"
+      ],
+      "content": [
+        {
+          "id": "bj2022-block-30",
+          "type": "paragraph",
+          "text": "如图12所示，工人站在水平台面上用滑轮组提货物。工人第一次竖直向上用200N的力拉绳子时，货物未离开水平地面；第二次竖直向上拉动绳子，使货物以0.09m/s的速度匀速上升。已知工人体重为600N，货物重为900N，货物与地面的接触面积为0.1m²，动滑轮重为100N。不计滑轮组的绳重和摩擦，下列说法正确的是"
+        },
+        {
+          "id": "bj2022-block-29",
+          "type": "image",
+          "assetId": "bj2022-fig-12",
+          "intrinsicWidth": 264,
+          "intrinsicHeight": 564,
+          "alt": "2022北京中考物理图12原图截图",
+          "caption": "图12 · 原卷截图（点击放大）",
+          "width": 45
+        }
+      ],
+      "options": [
+        {
+          "id": "a",
+          "text": "第一次拉绳子时，工人对水平台面的压力为800N"
+        },
+        {
+          "id": "b",
+          "text": "第一次拉绳子时，货物对地面的压强为4000Pa"
+        },
+        {
+          "id": "c",
+          "text": "第二次拉绳子的过程中，该滑轮组的机械效率为90%"
+        },
+        {
+          "id": "d",
+          "text": "第二次拉绳子的过程中，工人拉力的功率为81W"
+        }
+      ],
+      "blanks": [],
+      "solution": {
+        "choices": [
+          "a",
+          "b",
+          "c"
+        ],
+        "blanks": {},
+        "partChoices": {},
+        "explanation": "参考答案ABC。绳对工人的力向下，平台受压力600+200=800N。三段绳承重，第一次地面支持力900+100−3×200=400N，压强400/0.1=4000Pa。效率900/(900+100)=90%；第二次拉力功率(900+100)×0.09=90W，非81W。"
+      },
+      "state": "published",
+      "allowedModes": [
+        "text",
+        "drawing",
+        "photo"
+      ],
+      "source": "2022年北京市初中学业水平考试物理真题；依据本地北京高考在线资料版PDF校录，插图直接截自该PDF，保留原水印。",
+      "multipleScoring": "half"
+    },
+    {
+      "id": "bj2022-q16",
+      "version": 1,
+      "bankId": "bank-beijing-2022-real",
+      "type": "experiment",
+      "title": "16. 温度计读数",
+      "score": 2,
+      "difficulty": "中等",
+      "tags": [
+        "北京中考真题",
+        "2022",
+        "测量与读数"
+      ],
+      "content": [
+        {
+          "id": "bj2022-block-31",
+          "type": "paragraph",
+          "text": "### 三、实验探究题（共28分）\n16题2分，17、19、20、22、23题各4分，18、21题各3分。"
+        },
+        {
+          "id": "bj2022-block-32",
+          "type": "paragraph",
+          "text": "如图13所示，温度计的示数为{{bj2022-q16-blank-1}}℃。"
+        },
+        {
+          "id": "bj2022-block-33",
+          "type": "image",
+          "assetId": "bj2022-fig-13",
+          "intrinsicWidth": 291,
+          "intrinsicHeight": 501,
+          "alt": "2022北京中考物理图13原图截图",
+          "caption": "图13 · 原卷截图（点击放大）",
+          "width": 45
+        }
+      ],
+      "options": [],
+      "blanks": [
+        {
+          "id": "bj2022-q16-blank-1",
+          "label": "温度计示数（℃）",
+          "score": 2,
+          "kind": "number"
+        }
+      ],
+      "solution": {
+        "choices": [],
+        "blanks": {
+          "bj2022-q16-blank-1": {
+            "accepted": [
+              "34",
+              "34.0"
+            ],
+            "ignoreWhitespace": true,
+            "tolerance": 0.00001
+          }
+        },
+        "partChoices": {},
+        "explanation": "参考答案34℃。分度值为1℃，液柱顶端对应34℃。"
+      },
+      "state": "published",
+      "allowedModes": [
+        "text",
+        "drawing",
+        "photo"
+      ],
+      "source": "2022年北京市初中学业水平考试物理真题；依据本地北京高考在线资料版PDF校录，插图直接截自该PDF，保留原水印。"
+    },
+    {
+      "id": "bj2022-q17",
+      "version": 1,
+      "bankId": "bank-beijing-2022-real",
+      "type": "experiment",
+      "title": "17. 通电螺线管与重力方向",
+      "score": 4,
+      "difficulty": "中等",
+      "tags": [
+        "北京中考真题",
+        "2022",
+        "电与磁及重力"
+      ],
+      "content": [
+        {
+          "id": "bj2022-block-36",
+          "type": "subquestion",
+          "label": "（1）",
+          "score": 2,
+          "children": [
+            {
+              "id": "bj2022-block-34",
+              "type": "paragraph",
+              "text": "根据图14中的电流方向，可知通电螺线管的{{bj2022-q17-blank-1}}端是N极。"
+            },
+            {
+              "id": "bj2022-block-35",
+              "type": "image",
+              "assetId": "bj2022-fig-14",
+              "intrinsicWidth": 459,
+              "intrinsicHeight": 414,
+              "alt": "2022北京中考物理图14原图截图",
+              "caption": "图14 · 原卷截图（点击放大）",
+              "width": 65
+            }
+          ],
+          "responseKind": "blanks"
+        },
+        {
+          "id": "bj2022-block-39",
+          "type": "subquestion",
+          "label": "（2）",
+          "score": 2,
+          "children": [
+            {
+              "id": "bj2022-block-37",
+              "type": "paragraph",
+              "text": "图15所示的是北京冬奥会单板滑雪大跳台比赛中运动员在空中运动时的情境，此时他所受重力的方向是沿图中{{bj2022-q17-blank-2}}向下的方向。（选填“OA”“OB”或“OC”。其中，OA垂直于滑雪板，OB沿竖直方向，OC平行于滑雪板。）"
+            },
+            {
+              "id": "bj2022-block-38",
+              "type": "image",
+              "assetId": "bj2022-fig-15",
+              "intrinsicWidth": 342,
+              "intrinsicHeight": 414,
+              "alt": "2022北京中考物理图15原图截图",
+              "caption": "图15 · 原卷截图（点击放大）",
+              "width": 55
+            }
+          ],
+          "responseKind": "blanks"
+        }
+      ],
+      "options": [],
+      "blanks": [
+        {
+          "id": "bj2022-q17-blank-1",
+          "label": "通电螺线管的N极端",
+          "score": 2,
+          "kind": "text"
+        },
+        {
+          "id": "bj2022-q17-blank-2",
+          "label": "重力方向（OA、OB或OC）",
+          "score": 2,
+          "kind": "text"
+        }
+      ],
+      "solution": {
+        "choices": [],
+        "blanks": {
+          "bj2022-q17-blank-1": {
+            "accepted": [
+              "A",
+              "a",
+              "Ａ"
+            ],
+            "ignoreWhitespace": true
+          },
+          "bj2022-q17-blank-2": {
+            "accepted": [
+              "OB",
+              "ob",
+              "ＯＢ"
+            ],
+            "ignoreWhitespace": true
+          }
+        },
+        "partChoices": {},
+        "explanation": "参考答案：（1）A；（2）OB。由安培定则判断螺线管磁极；重力方向始终竖直向下，与运动员姿态无关。"
+      },
+      "state": "published",
+      "allowedModes": [
+        "text",
+        "drawing",
+        "photo"
+      ],
+      "source": "2022年北京市初中学业水平考试物理真题；依据本地北京高考在线资料版PDF校录，插图直接截自该PDF，保留原水印。"
+    },
+    {
+      "id": "bj2022-q18",
+      "version": 1,
+      "bankId": "bank-beijing-2022-real",
+      "type": "experiment",
+      "title": "18. 平面镜成像特点",
+      "score": 3,
+      "difficulty": "中等",
+      "tags": [
+        "北京中考真题",
+        "2022",
+        "平面镜成像"
+      ],
+      "content": [
+        {
+          "id": "bj2022-block-40",
+          "type": "paragraph",
+          "text": "小京利用如图16所示的装置及相同高度的蜡烛等器材探究平面镜成像特点，其中玻璃板和蜡烛竖直放置在水平桌面上，蜡烛的高度为6cm，蜡烛与玻璃板之间的距离为10cm。蜡烛通过玻璃板所成的像是{{bj2022-q18-blank-1}}像（选填“实”或“虚”），像的高度为{{bj2022-q18-blank-2}}cm，像到玻璃板的距离为{{bj2022-q18-blank-3}}cm。"
+        },
+        {
+          "id": "bj2022-block-41",
+          "type": "image",
+          "assetId": "bj2022-fig-16",
+          "intrinsicWidth": 426,
+          "intrinsicHeight": 321,
+          "alt": "2022北京中考物理图16原图截图",
+          "caption": "图16 · 原卷截图（点击放大）",
+          "width": 65
+        }
+      ],
+      "options": [],
+      "blanks": [
+        {
+          "id": "bj2022-q18-blank-1",
+          "label": "像的虚实（实或虚）",
+          "score": 1,
+          "kind": "text"
+        },
+        {
+          "id": "bj2022-q18-blank-2",
+          "label": "像的高度（cm）",
+          "score": 1,
+          "kind": "number"
+        },
+        {
+          "id": "bj2022-q18-blank-3",
+          "label": "像到玻璃板的距离（cm）",
+          "score": 1,
+          "kind": "number"
+        }
+      ],
+      "solution": {
+        "choices": [],
+        "blanks": {
+          "bj2022-q18-blank-1": {
+            "accepted": [
+              "虚"
+            ],
+            "ignoreWhitespace": true
+          },
+          "bj2022-q18-blank-2": {
+            "accepted": [
+              "6",
+              "6.0"
+            ],
+            "ignoreWhitespace": true,
+            "tolerance": 0.00001
+          },
+          "bj2022-q18-blank-3": {
+            "accepted": [
+              "10",
+              "10.0"
+            ],
+            "ignoreWhitespace": true,
+            "tolerance": 0.00001
+          }
+        },
+        "partChoices": {},
+        "explanation": "参考答案：虚；6；10。平面镜成等大的虚像，像与物到镜面的距离相等。图16原在来源PDF第5页顶部，已归入第18题。"
+      },
+      "state": "published",
+      "allowedModes": [
+        "text",
+        "drawing",
+        "photo"
+      ],
+      "source": "2022年北京市初中学业水平考试物理真题；依据本地北京高考在线资料版PDF校录，插图直接截自该PDF，保留原水印。"
+    },
+    {
+      "id": "bj2022-q19",
+      "version": 1,
+      "bankId": "bank-beijing-2022-real",
+      "type": "experiment",
+      "title": "19. 测量小灯泡额定功率",
+      "score": 4,
+      "difficulty": "中等",
+      "tags": [
+        "北京中考真题",
+        "2022",
+        "电学实验与电表读数"
+      ],
+      "content": [
+        {
+          "id": "bj2022-block-42",
+          "type": "paragraph",
+          "text": "小京用图17甲所示的电路测量额定电压为2.5V小灯泡的额定功率。"
+        },
+        {
+          "id": "bj2022-block-43",
+          "type": "image",
+          "assetId": "bj2022-fig-17",
+          "intrinsicWidth": 852,
+          "intrinsicHeight": 462,
+          "alt": "2022北京中考物理图17（甲、乙）原图截图",
+          "caption": "图17（甲、乙） · 原卷截图（点击放大）",
+          "width": 100
+        },
+        {
+          "id": "bj2022-block-45",
+          "type": "subquestion",
+          "label": "（1）",
+          "score": 1,
+          "children": [
+            {
+              "id": "bj2022-block-44",
+              "type": "paragraph",
+              "text": "如图17甲所示，闭合开关S前，应将滑动变阻器的滑片P移动至{{bj2022-q19-blank-1}}端。"
+            }
+          ],
+          "responseKind": "blanks"
+        },
+        {
+          "id": "bj2022-block-47",
+          "type": "subquestion",
+          "label": "（2）",
+          "score": 3,
+          "children": [
+            {
+              "id": "bj2022-block-46",
+              "type": "paragraph",
+              "text": "闭合开关S后，移动滑动变阻器的滑片P，当电压表示数为2.5V时，电流表的示数如图17乙所示，此时通过小灯泡的电流为{{bj2022-q19-blank-2}}A，该小灯泡的额定功率为{{bj2022-q19-blank-3}}W。"
+            }
+          ],
+          "responseKind": "blanks"
+        }
+      ],
+      "options": [],
+      "blanks": [
+        {
+          "id": "bj2022-q19-blank-1",
+          "label": "滑片初始端（A或B）",
+          "score": 1,
+          "kind": "text"
+        },
+        {
+          "id": "bj2022-q19-blank-2",
+          "label": "小灯泡电流（A）",
+          "score": 1,
+          "kind": "number"
+        },
+        {
+          "id": "bj2022-q19-blank-3",
+          "label": "小灯泡额定功率（W）",
+          "score": 2,
+          "kind": "number"
+        }
+      ],
+      "solution": {
+        "choices": [],
+        "blanks": {
+          "bj2022-q19-blank-1": {
+            "accepted": [
+              "B",
+              "b",
+              "Ｂ"
+            ],
+            "ignoreWhitespace": true
+          },
+          "bj2022-q19-blank-2": {
+            "accepted": [
+              "0.3",
+              "0.30"
+            ],
+            "ignoreWhitespace": true,
+            "tolerance": 0.00001
+          },
+          "bj2022-q19-blank-3": {
+            "accepted": [
+              "0.75"
+            ],
+            "ignoreWhitespace": true,
+            "tolerance": 0.00001
+          }
+        },
+        "partChoices": {},
+        "explanation": "参考答案：（1）B；（2）0.3A；0.75W。闭合前有效接入电阻应最大；电流表使用0～0.6A量程，读数0.3A；P=UI=2.5×0.3=0.75W。"
+      },
+      "state": "published",
+      "allowedModes": [
+        "text",
+        "drawing",
+        "photo"
+      ],
+      "source": "2022年北京市初中学业水平考试物理真题；依据本地北京高考在线资料版PDF校录，插图直接截自该PDF，保留原水印。"
+    },
+    {
+      "id": "bj2022-q20",
+      "version": 1,
+      "bankId": "bank-beijing-2022-real",
+      "type": "experiment",
+      "title": "20. 测量金属块密度",
+      "score": 4,
+      "difficulty": "中等",
+      "tags": [
+        "北京中考真题",
+        "2022",
+        "质量体积测量与密度"
+      ],
+      "content": [
+        {
+          "id": "bj2022-block-48",
+          "type": "paragraph",
+          "text": "小京测量金属块的密度时，先将金属块放在调节好的天平上测量其质量，天平平衡后，右盘中所放砝码及游码在标尺上的位置如图18甲所示，则金属块的质量为{{bj2022-q20-blank-1}}g。再将金属块用细线系好放进盛有40mL水的量筒中，量筒中的水面升高到如图18乙所示的位置，则金属块的体积为{{bj2022-q20-blank-2}}cm³，该金属块的密度为{{bj2022-q20-blank-3}}g/cm³。"
+        },
+        {
+          "id": "bj2022-block-49",
+          "type": "image",
+          "assetId": "bj2022-fig-18",
+          "intrinsicWidth": 564,
+          "intrinsicHeight": 513,
+          "alt": "2022北京中考物理图18（甲、乙）原图截图",
+          "caption": "图18（甲、乙） · 原卷截图（点击放大）",
+          "width": 75
+        }
+      ],
+      "options": [],
+      "blanks": [
+        {
+          "id": "bj2022-q20-blank-1",
+          "label": "金属块质量（g）",
+          "score": 1,
+          "kind": "number"
+        },
+        {
+          "id": "bj2022-q20-blank-2",
+          "label": "金属块体积（cm³）",
+          "score": 1,
+          "kind": "number"
+        },
+        {
+          "id": "bj2022-q20-blank-3",
+          "label": "金属块密度（g/cm³）",
+          "score": 2,
+          "kind": "number"
+        }
+      ],
+      "solution": {
+        "choices": [],
+        "blanks": {
+          "bj2022-q20-blank-1": {
+            "accepted": [
+              "54",
+              "54.0"
+            ],
+            "ignoreWhitespace": true,
+            "tolerance": 0.00001
+          },
+          "bj2022-q20-blank-2": {
+            "accepted": [
+              "20",
+              "20.0"
+            ],
+            "ignoreWhitespace": true,
+            "tolerance": 0.00001
+          },
+          "bj2022-q20-blank-3": {
+            "accepted": [
+              "2.7",
+              "2.70"
+            ],
+            "ignoreWhitespace": true,
+            "tolerance": 0.00001
+          }
+        },
+        "partChoices": {},
+        "explanation": "质量50+4=54g；体积60−40=20cm³；ρ=m/V=54/20=2.7g/cm³。来源资料版参考答案把密度印为“27”，与题目数据不符，网页按计算结果校正为2.7；题干、数据及原图未作改题。"
+      },
+      "state": "published",
+      "allowedModes": [
+        "text",
+        "drawing",
+        "photo"
+      ],
+      "source": "2022年北京市初中学业水平考试物理真题；依据本地北京高考在线资料版PDF校录，插图直接截自该PDF，保留原水印。"
+    },
+    {
+      "id": "bj2022-q21",
+      "version": 1,
+      "bankId": "bank-beijing-2022-real",
+      "type": "experiment",
+      "title": "21. 水沸腾前后的吸热与温度",
+      "score": 3,
+      "difficulty": "中等",
+      "tags": [
+        "北京中考真题",
+        "2022",
+        "沸腾实验与图像"
+      ],
+      "content": [
+        {
+          "id": "bj2022-block-50",
+          "type": "paragraph",
+          "text": "小京为探究水沸腾前后温度随吸收热量变化的特点，进行了如下实验：用如图19甲所示的装置给一定质量的水加热，当水温为90℃时，每隔一分钟记录一次水的温度，从计时开始，经5min水沸腾。水沸腾后持续加热一段时间，并记录水的温度。根据实验数据得到了水的温度随加热时间变化的关系图像，如图19乙所示。"
+        },
+        {
+          "id": "bj2022-block-51",
+          "type": "image",
+          "assetId": "bj2022-fig-19",
+          "intrinsicWidth": 1017,
+          "intrinsicHeight": 702,
+          "alt": "2022北京中考物理图19（甲、乙）原图截图",
+          "caption": "图19（甲、乙） · 原卷截图（点击放大）",
+          "width": 100
+        },
+        {
+          "id": "bj2022-block-53",
+          "type": "subquestion",
+          "label": "（1）",
+          "score": 1,
+          "children": [
+            {
+              "id": "bj2022-block-52",
+              "type": "paragraph",
+              "text": "在此实验中，水吸收的热量是通过{{bj2022-q21-blank-1}}来反映的。"
+            }
+          ],
+          "responseKind": "blanks"
+        },
+        {
+          "id": "bj2022-block-55",
+          "type": "subquestion",
+          "label": "（2）",
+          "score": 2,
+          "children": [
+            {
+              "id": "bj2022-block-54",
+              "type": "paragraph",
+              "text": "由图像可得出的实验结论：水在沸腾前，{{bj2022-q21-blank-2}}；水在沸腾过程中，{{bj2022-q21-blank-3}}。"
+            }
+          ],
+          "responseKind": "blanks"
+        }
+      ],
+      "options": [],
+      "blanks": [
+        {
+          "id": "bj2022-q21-blank-1",
+          "label": "反映吸热的观察量",
+          "score": 1,
+          "kind": "text"
+        },
+        {
+          "id": "bj2022-q21-blank-2",
+          "label": "沸腾前的吸热与温度变化",
+          "score": 1,
+          "kind": "manual"
+        },
+        {
+          "id": "bj2022-q21-blank-3",
+          "label": "沸腾过程中的吸热与温度变化",
+          "score": 1,
+          "kind": "manual"
+        }
+      ],
+      "solution": {
+        "choices": [],
+        "blanks": {
+          "bj2022-q21-blank-1": {
+            "accepted": [
+              "加热时间",
+              "加热时间长短",
+              "加热的时间",
+              "加热时长"
+            ],
+            "ignoreWhitespace": true
+          },
+          "bj2022-q21-blank-2": {
+            "accepted": [],
+            "ignoreWhitespace": true
+          },
+          "bj2022-q21-blank-3": {
+            "accepted": [],
+            "ignoreWhitespace": true
+          }
+        },
+        "partChoices": {},
+        "explanation": "参考答案：（1）加热时间；（2）吸收热量，温度升高；吸收热量，温度不变。两个结论空需要同时表达吸热和温度变化，由人工评阅，避免只按关键词误判。图像在来源PDF第5页、第（2）问在第6页，现完整合并。"
+      },
+      "state": "published",
+      "allowedModes": [
+        "text",
+        "drawing",
+        "photo"
+      ],
+      "source": "2022年北京市初中学业水平考试物理真题；依据本地北京高考在线资料版PDF校录，插图直接截自该PDF，保留原水印。"
+    },
+    {
+      "id": "bj2022-q22",
+      "version": 1,
+      "bankId": "bank-beijing-2022-real",
+      "type": "experiment",
+      "title": "22. 检验浮力与水深关系",
+      "score": 4,
+      "difficulty": "提升",
+      "tags": [
+        "北京中考真题",
+        "2022",
+        "控制变量与实验反证"
+      ],
+      "content": [
+        {
+          "id": "bj2022-block-56",
+          "type": "paragraph",
+          "text": "小京为了证明“浸没在水中的物体所受的浮力大小与水的深度有关”的观点是错误的，他利用符合实验要求的弹簧测力计、刻度尺、烧杯、水和金属块等器材进行实验。"
+        },
+        {
+          "id": "bj2022-block-57",
+          "type": "paragraph",
+          "text": "（1）以下是他的部分实验步骤，请帮他补充完整。\n\n①将金属块悬挂在弹簧测力计下，测量金属块受到的重力G并记录。"
+        },
+        {
+          "id": "bj2022-block-59",
+          "type": "subquestion",
+          "label": "（1）② 补充原题横线处",
+          "score": 1,
+          "children": [
+            {
+              "id": "bj2022-block-58",
+              "type": "paragraph",
+              "text": "②在烧杯中装入适量的水，___________，静止时记录弹簧测力计的示数F，用刻度尺测量烧杯中水的深度h并记录。"
+            }
+          ],
+          "responseKind": "open"
+        },
+        {
+          "id": "bj2022-block-61",
+          "type": "subquestion",
+          "label": "（1）③ 补充原题横线处",
+          "score": 1,
+          "children": [
+            {
+              "id": "bj2022-block-60",
+              "type": "paragraph",
+              "text": "③___________，静止时记录弹簧测力计的示数F，用刻度尺测量烧杯中水的深度h并记录。"
+            }
+          ],
+          "responseKind": "open"
+        },
+        {
+          "id": "bj2022-block-63",
+          "type": "subquestion",
+          "label": "（1）④",
+          "score": 1,
+          "children": [
+            {
+              "id": "bj2022-block-62",
+              "type": "paragraph",
+              "text": "④用公式{{bj2022-q22-blank-1}}计算金属块所受浮力 $F_{浮1}$、$F_{浮2}$ 并记录。"
+            }
+          ],
+          "responseKind": "blanks"
+        },
+        {
+          "id": "bj2022-block-65",
+          "type": "subquestion",
+          "label": "（2）",
+          "score": 1,
+          "children": [
+            {
+              "id": "bj2022-block-64",
+              "type": "paragraph",
+              "text": "由水的深度变化时，$F_{浮1}${{bj2022-q22-blank-2}}$F_{浮2}$（选填“=”或“≠”），就可以证明这种观点是错误的。"
+            }
+          ],
+          "responseKind": "blanks"
+        }
+      ],
+      "options": [],
+      "blanks": [
+        {
+          "id": "bj2022-q22-blank-1",
+          "label": "浮力的计算公式",
+          "score": 1,
+          "kind": "text"
+        },
+        {
+          "id": "bj2022-q22-blank-2",
+          "label": "两次浮力大小关系",
+          "score": 1,
+          "kind": "text"
+        }
+      ],
+      "solution": {
+        "choices": [],
+        "blanks": {
+          "bj2022-q22-blank-1": {
+            "accepted": [
+              "F浮=G-F",
+              "F浮＝G-F",
+              "F浮=G−F",
+              "F_浮=G-F",
+              "F=G-F",
+              "G-F",
+              "G−F",
+              "F浮=G－F"
+            ],
+            "ignoreWhitespace": true
+          },
+          "bj2022-q22-blank-2": {
+            "accepted": [
+              "=",
+              "＝",
+              "相等",
+              "等于"
+            ],
+            "ignoreWhitespace": true
+          }
+        },
+        "partChoices": {},
+        "explanation": "参考答案：（1）②将金属块浸没在水中且不接触烧杯；③向烧杯中加水，将金属块浸没在水中且不接触烧杯；④F浮=G−F。（2）=。方案必须保证两次均完全浸没、改变水深且不接触容器；不能只把“浸没深度”与“水的深度”含混替代。②③各1分人工评阅，其余按答案规则判分。"
+      },
+      "state": "published",
+      "allowedModes": [
+        "text",
+        "drawing",
+        "photo"
+      ],
+      "source": "2022年北京市初中学业水平考试物理真题；依据本地北京高考在线资料版PDF校录，插图直接截自该PDF，保留原水印。"
+    },
+    {
+      "id": "bj2022-q23",
+      "version": 1,
+      "bankId": "bank-beijing-2022-real",
+      "type": "experiment",
+      "title": "23. 热敏电阻阻值与温度",
+      "score": 4,
+      "difficulty": "提升",
+      "tags": [
+        "北京中考真题",
+        "2022",
+        "欧姆定律与实验论证"
+      ],
+      "content": [
+        {
+          "id": "bj2022-block-66",
+          "type": "paragraph",
+          "text": "为研究热敏电阻 $R_2$ 的阻值与温度的关系，小京按图20所示的电路进行实验，其中电源两端电压U不变，$R_1$ 为定值电阻。实验中，他将已做防水处理的热敏电阻 $R_2$ 先后浸没在温度 $t_1$、$t_2$ 和 $t_3$ 的水中，闭合开关，分别读出对应电流表A的示数 $I_1$、$I_2$ 和 $I_3$，发现 $I_1<I_2<I_3$。已知 $t_1<t_2<t_3$，请分析并说明热敏电阻 $R_2$ 的阻值与温度的关系。"
+        },
+        {
+          "id": "bj2022-block-67",
+          "type": "image",
+          "assetId": "bj2022-fig-20",
+          "intrinsicWidth": 423,
+          "intrinsicHeight": 336,
+          "alt": "2022北京中考物理图20原图截图",
+          "caption": "图20 · 原卷截图（点击放大）",
+          "width": 60
+        },
+        {
+          "id": "bj2022-block-69",
+          "type": "subquestion",
+          "label": "原题分析与说明",
+          "score": 4,
+          "children": [
+            {
+              "id": "bj2022-block-68",
+              "type": "paragraph",
+              "text": "请在此作答，可使用文字、手写或上传纸面答案。"
+            }
+          ],
+          "responseKind": "open"
+        }
+      ],
+      "options": [],
+      "blanks": [],
+      "solution": {
+        "choices": [],
+        "blanks": {},
+        "partChoices": {},
+        "explanation": "参考解法：电源电压U不变，R₁为定值电阻，由串联电路特点和欧姆定律得R₂=U/I−R₁。t₁<t₂<t₃时，I₁<I₂<I₃，总电阻随温度升高而减小，所以热敏电阻R₂的阻值随温度升高而减小。原题4分，完整推理人工评阅。"
+      },
+      "state": "published",
+      "allowedModes": [
+        "text",
+        "drawing",
+        "photo"
+      ],
+      "source": "2022年北京市初中学业水平考试物理真题；依据本地北京高考在线资料版PDF校录，插图直接截自该PDF，保留原水印。"
+    },
+    {
+      "id": "bj2022-q24",
+      "version": 1,
+      "bankId": "bank-beijing-2022-real",
+      "type": "reading",
+      "title": "24. 国之重器——综合极端条件实验装置",
+      "score": 4,
+      "difficulty": "提升",
+      "tags": [
+        "北京中考真题",
+        "2022",
+        "科普阅读与超导"
+      ],
+      "content": [
+        {
+          "id": "bj2022-block-70",
+          "type": "paragraph",
+          "text": "### 四、科普阅读题（共4分）\n请阅读《国之重器——综合极端条件实验装置》并回答24题。\n\n#### 国之重器——综合极端条件实验装置"
+        },
+        {
+          "id": "bj2022-block-71",
+          "type": "paragraph",
+          "text": "从人类第一次仰望星空，到试图用“中国天眼”破译日月星辰等天文现象的奥秘，从探究万物组成到利用扫描隧道显微镜透视物质的微观结构，都得益于实验条件的拓展和技术手段的进步。"
+        },
+        {
+          "id": "bj2022-block-72",
+          "type": "paragraph",
+          "text": "在宇宙中，高温、高压、强磁场等极端环境比比皆是，而我们地球上的生活环境是一个相对温和的环境，要发现更多的新现象，就需要建造极端条件实验室，拓展研究空间。"
+        },
+        {
+          "id": "bj2022-block-73",
+          "type": "paragraph",
+          "text": "所谓极端条件，指的是在实验室中人为创造出来特别低的温度、特别强的磁场、特别高的压强等（如图21所示）实验条件。通过创造极端条件，可以发现和揭示许多在通常条件下观察不到的奇异物质特性，例如某些物质在很低的温度时，电阻就变成了0（如铝在−271.76℃——即1.39K——以下时电阻为0），这就是超导现象。"
+        },
+        {
+          "id": "bj2022-block-74",
+          "type": "image",
+          "assetId": "bj2022-fig-21",
+          "intrinsicWidth": 1200,
+          "intrinsicHeight": 705,
+          "alt": "2022北京中考物理图21原图截图",
+          "caption": "图21 · 原卷截图（点击放大）",
+          "width": 100
+        },
+        {
+          "id": "bj2022-block-75",
+          "type": "paragraph",
+          "text": "肩负原始创新重任的国之重器——国际首个综合极端条件实验装置布局在北京怀柔科学城，并已投入使用。该项目拥有极低温（可达1mK）、强磁场（可达32.35T）、超高压（可达 $3.8\\times10^{11}\\,\\mathrm{Pa}$）和超快光场（时间分辨率可达 $10^{-18}\\,\\mathrm{s}$）极端条件实验装置。"
+        },
+        {
+          "id": "bj2022-block-76",
+          "type": "paragraph",
+          "text": "科学家们将极端条件进行综合运用，大大拓展了物质科学的研究空间，为发现新物态、探索新现象、开辟新领域，创造了前所未有的机遇。"
+        },
+        {
+          "id": "bj2022-block-77",
+          "type": "paragraph",
+          "text": "24. 请根据上述材料，回答下列问题。"
+        },
+        {
+          "id": "bj2022-block-79",
+          "type": "subquestion",
+          "label": "（1）",
+          "score": 1,
+          "children": [
+            {
+              "id": "bj2022-block-78",
+              "type": "paragraph",
+              "text": "请写出我国综合极端条件实验装置中的一个极端条件：{{bj2022-q24-blank-1}}。"
+            }
+          ],
+          "responseKind": "blanks"
+        },
+        {
+          "id": "bj2022-block-81",
+          "type": "subquestion",
+          "label": "（2）",
+          "score": 1,
+          "children": [
+            {
+              "id": "bj2022-block-80",
+              "type": "paragraph",
+              "text": "我国自主研制的载人潜水器“奋斗者”号成功完成了10000m的深潜试验，创造了中国载人深潜的新纪录。超高压极端条件的压强约为“奋斗者”号在10000m深海中（海水密度取 $1.0\\times10^3\\,\\mathrm{kg/m^3}$）承受压强的___________倍。（填写正确选项前的字母）"
+            }
+          ],
+          "responseKind": "single",
+          "options": [
+            {
+              "id": "a",
+              "text": "4"
+            },
+            {
+              "id": "b",
+              "text": "40"
+            },
+            {
+              "id": "c",
+              "text": "4000"
+            },
+            {
+              "id": "d",
+              "text": "400000"
+            }
+          ]
+        },
+        {
+          "id": "bj2022-block-83",
+          "type": "subquestion",
+          "label": "（3）",
+          "score": 2,
+          "children": [
+            {
+              "id": "bj2022-block-82",
+              "type": "paragraph",
+              "text": "强磁场的产生需要大电流，但电流越大，导线的温度就会越高，通常会导致铝导线等熔化，给强磁场的产生带来限制。依据文中信息，请写出应选择哪种极端条件，能减少电流通过导线所产生的热量，从而突破限制，创造强磁场极端条件，并写出选择依据。"
+            }
+          ],
+          "responseKind": "open"
+        }
+      ],
+      "options": [],
+      "blanks": [
+        {
+          "id": "bj2022-q24-blank-1",
+          "label": "一个极端条件",
+          "score": 1,
+          "kind": "text"
+        }
+      ],
+      "solution": {
+        "choices": [],
+        "blanks": {
+          "bj2022-q24-blank-1": {
+            "accepted": [
+              "极低温",
+              "极低温条件",
+              "低温",
+              "特别低的温度",
+              "强磁场",
+              "强磁场条件",
+              "特别强的磁场",
+              "超高压",
+              "超高压条件",
+              "特别高的压强",
+              "超快光场",
+              "超快光场条件"
+            ],
+            "ignoreWhitespace": true
+          }
+        },
+        "partChoices": {
+          "bj2022-block-81": [
+            "c"
+          ]
+        },
+        "explanation": "参考答案：（1）极低温等文中列出的极端条件均可；（2）C。取g≈10N/kg，海水压强约为ρgh=1.0×10⁸Pa，3.8×10¹¹/(1.0×10⁸)=3800，约4000倍。（3）选择极低温极端条件。铝等物质在极低温下可能出现超导，电阻为0，由Q=I²Rt可知电流通过导线产生的热量为0，从而减少发热限制。开放论证2分人工评阅。"
+      },
+      "state": "published",
+      "allowedModes": [
+        "text",
+        "drawing",
+        "photo"
+      ],
+      "source": "2022年北京市初中学业水平考试物理真题；依据本地北京高考在线资料版PDF校录，插图直接截自该PDF，保留原水印。"
+    },
+    {
+      "id": "bj2022-q25",
+      "version": 1,
+      "bankId": "bank-beijing-2022-real",
+      "type": "calculation",
+      "title": "25. 串联电路的电阻与功率",
+      "score": 4,
+      "difficulty": "提升",
+      "tags": [
+        "北京中考真题",
+        "2022",
+        "欧姆定律与电功率"
+      ],
+      "content": [
+        {
+          "id": "bj2022-block-84",
+          "type": "paragraph",
+          "text": "### 五、计算题（共8分，25、26题各4分）"
+        },
+        {
+          "id": "bj2022-block-85",
+          "type": "paragraph",
+          "text": "如图22所示的电路中，电源两端电压为6V并保持不变，电阻 $R_1$ 的阻值为10Ω。闭合开关S后，电压表的示数为2V。求："
+        },
+        {
+          "id": "bj2022-block-86",
+          "type": "image",
+          "assetId": "bj2022-fig-22",
+          "intrinsicWidth": 366,
+          "intrinsicHeight": 366,
+          "alt": "2022北京中考物理图22原图截图",
+          "caption": "图22 · 原卷截图（点击放大）",
+          "width": 60
+        },
+        {
+          "id": "bj2022-block-87",
+          "type": "paragraph",
+          "text": "（1）电阻 $R_2$ 的阻值。\n\n（2）电阻 $R_1$ 消耗的电功率。"
+        }
+      ],
+      "options": [],
+      "blanks": [],
+      "solution": {
+        "choices": [],
+        "blanks": {},
+        "partChoices": {},
+        "explanation": "来源参考解法：（1）U₁=U−U₂=6−2=4V，I₁=U₁/R₁=4/10=0.4A；串联电路I₂=I₁，R₂=U₂/I₂=2/0.4=5Ω。（2）P₁=U₁I₁=4×0.4=1.6W。原题4分，按过程人工评阅。"
+      },
+      "state": "published",
+      "allowedModes": [
+        "text",
+        "drawing",
+        "photo"
+      ],
+      "source": "2022年北京市初中学业水平考试物理真题；依据本地北京高考在线资料版PDF校录，插图直接截自该PDF，保留原水印。"
+    },
+    {
+      "id": "bj2022-q26",
+      "version": 1,
+      "bankId": "bank-beijing-2022-real",
+      "type": "calculation",
+      "title": "26. 俯卧撑的人体杠杆模型",
+      "score": 4,
+      "difficulty": "提升",
+      "tags": [
+        "北京中考真题",
+        "2022",
+        "杠杆与力臂比较"
+      ],
+      "content": [
+        {
+          "id": "bj2022-block-88",
+          "type": "paragraph",
+          "text": "俯卧撑是一项常见的健身项目，采用不同的方式做俯卧撑，健身效果通常不同。图23甲所示的是小京在水平地面上做俯卧撑保持静止时的情境，他的身体与地面平行，可抽象成如图23乙所示的杠杆模型，地面对脚的力作用在O点，对手的力作用在B点，小京的重心在A点。已知小京的体重为750N，OA长为1m，OB长为1.5m。"
+        },
+        {
+          "id": "bj2022-block-89",
+          "type": "image",
+          "assetId": "bj2022-fig-23-24",
+          "intrinsicWidth": 1122,
+          "intrinsicHeight": 285,
+          "alt": "2022北京中考物理图23（甲、乙）及图24原图截图",
+          "caption": "图23（甲、乙）及图24 · 原卷截图（点击放大）",
+          "width": 100
+        },
+        {
+          "id": "bj2022-block-90",
+          "type": "paragraph",
+          "text": "（1）图23乙中，地面对手的力 $F_1$ 与身体垂直，求 $F_1$ 的大小。\n\n（2）图24所示的是小京手扶栏杆做俯卧撑保持静止时的情境，此时他的身体姿态与图23甲相同，只是身体与水平地面成一定角度，栏杆对手的力 $F_2$ 与他的身体垂直，且仍作用在B点。分析并说明 $F_2$ 与 $F_1$ 的大小关系。"
+        }
+      ],
+      "options": [],
+      "blanks": [],
+      "solution": {
+        "choices": [],
+        "blanks": {},
+        "partChoices": {},
+        "explanation": "来源参考解法：（1）以O为支点，由F₁·OB=G·OA得F₁=750×1/1.5=500N。（2）姿态相同而身体倾斜后，重力的力臂减小，垂直身体的动力的力臂仍为OB，故由杠杆平衡条件得F₂<F₁。需说明力臂变化与平衡关系，不能只写不等号。原题4分，人工评阅。"
+      },
+      "state": "published",
+      "allowedModes": [
+        "text",
+        "drawing",
+        "photo"
+      ],
+      "source": "2022年北京市初中学业水平考试物理真题；依据本地北京高考在线资料版PDF校录，插图直接截自该PDF，保留原水印。"
+    }
+  ],
+  "analysis": [
+    {
+      "number": 1,
+      "title": "验电器与电荷间相互作用",
+      "type": "single",
+      "score": 2,
+      "knowledge": "电荷相互作用",
+      "template": "原图题干＋选择模板",
+      "figures": [
+        1
+      ],
+      "pages": [
+        1
+      ],
+      "scoring": "2分自动判分，0分待人工评阅"
+    },
+    {
+      "number": 2,
+      "title": "光现象的辨析",
+      "type": "single",
+      "score": 2,
+      "knowledge": "光的折射",
+      "template": "原图题干＋选择模板",
+      "figures": [
+        2
+      ],
+      "pages": [
+        1
+      ],
+      "scoring": "2分自动判分，0分待人工评阅"
+    },
+    {
+      "number": 3,
+      "title": "琴瑟声音的特性",
+      "type": "single",
+      "score": 2,
+      "knowledge": "声现象",
+      "template": "文字选择模板",
+      "figures": [],
+      "pages": [
+        1
+      ],
+      "scoring": "2分自动判分，0分待人工评阅"
+    },
+    {
+      "number": 4,
+      "title": "物态变化辨析",
+      "type": "single",
+      "score": 2,
+      "knowledge": "物态变化",
+      "template": "原图题干＋选择模板",
+      "figures": [
+        3
+      ],
+      "pages": [
+        1
+      ],
+      "scoring": "2分自动判分，0分待人工评阅"
+    },
+    {
+      "number": 5,
+      "title": "并联电路电流电压",
+      "type": "single",
+      "score": 2,
+      "knowledge": "并联电路与欧姆定律",
+      "template": "原图题干＋选择模板",
+      "figures": [
+        4
+      ],
+      "pages": [
+        2
+      ],
+      "scoring": "2分自动判分，0分待人工评阅"
+    },
+    {
+      "number": 6,
+      "title": "返回舱的机械能",
+      "type": "single",
+      "score": 2,
+      "knowledge": "动能与重力势能",
+      "template": "原图题干＋选择模板",
+      "figures": [
+        5
+      ],
+      "pages": [
+        2
+      ],
+      "scoring": "2分自动判分，0分待人工评阅"
+    },
+    {
+      "number": 7,
+      "title": "放大镜的成像条件",
+      "type": "single",
+      "score": 2,
+      "knowledge": "凸透镜成像",
+      "template": "原图题干＋选择模板",
+      "figures": [
+        6
+      ],
+      "pages": [
+        2
+      ],
+      "scoring": "2分自动判分，0分待人工评阅"
+    },
+    {
+      "number": 8,
+      "title": "冰壶运动与惯性",
+      "type": "single",
+      "score": 2,
+      "knowledge": "惯性与运动状态",
+      "template": "原图题干＋选择模板",
+      "figures": [
+        7
+      ],
+      "pages": [
+        2
+      ],
+      "scoring": "2分自动判分，0分待人工评阅"
+    },
+    {
+      "number": 9,
+      "title": "滑动摩擦力的影响因素",
+      "type": "single",
+      "score": 2,
+      "knowledge": "摩擦力与控制变量",
+      "template": "原图题干＋选择模板",
+      "figures": [
+        8
+      ],
+      "pages": [
+        2
+      ],
+      "scoring": "2分自动判分，0分待人工评阅"
+    },
+    {
+      "number": 10,
+      "title": "发电机工作原理",
+      "type": "single",
+      "score": 2,
+      "knowledge": "电磁感应",
+      "template": "原图题干＋选择模板",
+      "figures": [
+        9
+      ],
+      "pages": [
+        2,
+        3
+      ],
+      "scoring": "2分自动判分，0分待人工评阅"
+    },
+    {
+      "number": 11,
+      "title": "小球稳定后的浮力",
+      "type": "single",
+      "score": 2,
+      "knowledge": "物体浮沉与浮力",
+      "template": "原图题干＋选择模板",
+      "figures": [],
+      "pages": [
+        3
+      ],
+      "scoring": "2分自动判分，0分待人工评阅"
+    },
+    {
+      "number": 12,
+      "title": "液体压强的综合比较",
+      "type": "single",
+      "score": 2,
+      "knowledge": "液体压强",
+      "template": "原图题干＋选择模板",
+      "figures": [
+        10
+      ],
+      "pages": [
+        3
+      ],
+      "scoring": "2分自动判分，0分待人工评阅"
+    },
+    {
+      "number": 13,
+      "title": "内能与热现象",
+      "type": "multiple",
+      "score": 2,
+      "knowledge": "内能与比热容",
+      "template": "文字选择模板",
+      "figures": [],
+      "pages": [
+        3
+      ],
+      "scoring": "全对2分，漏选1分，错选/未选0分"
+    },
+    {
+      "number": 14,
+      "title": "电能时间图像与功率",
+      "type": "multiple",
+      "score": 2,
+      "knowledge": "电功率与图像",
+      "template": "原图题干＋选择模板",
+      "figures": [
+        11
+      ],
+      "pages": [
+        4
+      ],
+      "scoring": "全对2分，漏选1分，错选/未选0分"
+    },
+    {
+      "number": 15,
+      "title": "滑轮组的受力与效率",
+      "type": "multiple",
+      "score": 2,
+      "knowledge": "滑轮组与压强",
+      "template": "原图题干＋选择模板",
+      "figures": [
+        12
+      ],
+      "pages": [
+        4
+      ],
+      "scoring": "全对2分，漏选1分，错选/未选0分"
+    },
+    {
+      "number": 16,
+      "title": "温度计读数",
+      "type": "experiment",
+      "score": 2,
+      "knowledge": "测量与读数",
+      "template": "原图读数＋稳定填空",
+      "figures": [
+        13
+      ],
+      "pages": [
+        4
+      ],
+      "scoring": "2分自动判分，0分待人工评阅"
+    },
+    {
+      "number": 17,
+      "title": "通电螺线管与重力方向",
+      "type": "experiment",
+      "score": 4,
+      "knowledge": "电与磁及重力",
+      "template": "原图组合＋分小问填空",
+      "figures": [
+        14,
+        15
+      ],
+      "pages": [
+        4
+      ],
+      "scoring": "4分自动判分，0分待人工评阅"
+    },
+    {
+      "number": 18,
+      "title": "平面镜成像特点",
+      "type": "experiment",
+      "score": 3,
+      "knowledge": "平面镜成像",
+      "template": "原图＋连续填空",
+      "figures": [
+        16
+      ],
+      "pages": [
+        4,
+        5
+      ],
+      "scoring": "3分自动判分，0分待人工评阅"
+    },
+    {
+      "number": 19,
+      "title": "测量小灯泡额定功率",
+      "type": "experiment",
+      "score": 4,
+      "knowledge": "电学实验与电表读数",
+      "template": "原电路/电表图＋分小问填空",
+      "figures": [
+        17
+      ],
+      "pages": [
+        5
+      ],
+      "scoring": "4分自动判分，0分待人工评阅"
+    },
+    {
+      "number": 20,
+      "title": "测量金属块密度",
+      "type": "experiment",
+      "score": 4,
+      "knowledge": "质量体积测量与密度",
+      "template": "原仪器图＋数值填空",
+      "figures": [
+        18
+      ],
+      "pages": [
+        5
+      ],
+      "scoring": "4分自动判分，0分待人工评阅"
+    },
+    {
+      "number": 21,
+      "title": "水沸腾前后的吸热与温度",
+      "type": "experiment",
+      "score": 3,
+      "knowledge": "沸腾实验与图像",
+      "template": "原实验/图像＋客观及人工填空",
+      "figures": [
+        19
+      ],
+      "pages": [
+        5,
+        6
+      ],
+      "scoring": "1分自动判分，2分待人工评阅"
+    },
+    {
+      "number": 22,
+      "title": "检验浮力与水深关系",
+      "type": "experiment",
+      "score": 4,
+      "knowledge": "控制变量与实验反证",
+      "template": "实验混合模板：方案开放小问＋公式填空",
+      "figures": [],
+      "pages": [
+        6
+      ],
+      "scoring": "2分自动判分，2分待人工评阅"
+    },
+    {
+      "number": 23,
+      "title": "热敏电阻阻值与温度",
+      "type": "experiment",
+      "score": 4,
+      "knowledge": "欧姆定律与实验论证",
+      "template": "实验混合模板：独立开放论证",
+      "figures": [
+        20
+      ],
+      "pages": [
+        6
+      ],
+      "scoring": "0分自动判分，4分待人工评阅"
+    },
+    {
+      "number": 24,
+      "title": "国之重器——综合极端条件实验装置",
+      "type": "reading",
+      "score": 4,
+      "knowledge": "科普阅读与超导",
+      "template": "科普阅读混合模板：材料＋填空＋选择＋论证",
+      "figures": [
+        21
+      ],
+      "pages": [
+        6,
+        7
+      ],
+      "scoring": "2分自动判分，2分待人工评阅"
+    },
+    {
+      "number": 25,
+      "title": "串联电路的电阻与功率",
+      "type": "calculation",
+      "score": 4,
+      "knowledge": "欧姆定律与电功率",
+      "template": "原电路图＋计算混合作答",
+      "figures": [
+        22
+      ],
+      "pages": [
+        7,
+        8
+      ],
+      "scoring": "0分自动判分，4分待人工评阅"
+    },
+    {
+      "number": 26,
+      "title": "俯卧撑的人体杠杆模型",
+      "type": "calculation",
+      "score": 4,
+      "knowledge": "杠杆与力臂比较",
+      "template": "原情境/模型图＋计算与论证混合作答",
+      "figures": [
+        23,
+        24
+      ],
+      "pages": [
+        8
+      ],
+      "scoring": "0分自动判分，4分待人工评阅"
+    }
+  ]
+}

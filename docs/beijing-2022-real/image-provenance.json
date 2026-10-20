@@ -1,0 +1,626 @@
+{
+  "exam": "2022年北京市初中学业水平考试物理",
+  "localSource": "C:\\Users\\chris\\Desktop\\初中物理\\research\\杠杆中高难真题专项12题\\sources\\web_calc\\2022_beijing_zhongkao_physics_with_answers.pdf",
+  "sourceUrl": "https://cdn.gaokzx.com/zixunzhan/202403/ec4449f3-f743-4d24-82d9-913c62e57330.pdf",
+  "sourceSha256": "b5e2439b55a48bcca2c1b0a8fede94c9183b7e6136fd622fd63d0c7e7f6f077c",
+  "sourcePages": 11,
+  "questionPages": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8
+  ],
+  "answerPages": [
+    9,
+    10
+  ],
+  "excludedPages": [
+    11
+  ],
+  "method": "PyMuPDF raster crop at 216dpi; lossless WebP pixel-identical to PNG; source watermarks retained",
+  "assets": [
+    {
+      "id": "bj2022-fig-01",
+      "name": "fig-01",
+      "page": 1,
+      "rect": [
+        465,
+        285,
+        562,
+        391
+      ],
+      "scale": 3,
+      "figures": [
+        1
+      ],
+      "questions": [
+        1
+      ],
+      "width": 291,
+      "height": 318,
+      "png": "fig-01.png",
+      "webp": "fig-01.webp",
+      "pngSha256": "c7135822304fbf6a3165e757799848dcf610eafa792638f742cf597448b54c17",
+      "webpSha256": "3d64b9a848fd092cdfe59f562aea4aa81f62d824afd36bf892a3d40f0d812a42",
+      "pixelSha256": "17318434bc3e0fb4bd205f2ec883f32fe48388efccbbbf40efce9caf942e9f4d"
+    },
+    {
+      "id": "bj2022-fig-02",
+      "name": "fig-02",
+      "page": 1,
+      "rect": [
+        40,
+        390,
+        465,
+        529
+      ],
+      "scale": 3,
+      "figures": [
+        2
+      ],
+      "questions": [
+        2
+      ],
+      "width": 1275,
+      "height": 417,
+      "png": "fig-02.png",
+      "webp": "fig-02.webp",
+      "pngSha256": "894b3d98c55a83ee68ea8c88b12831a1de8719f9e909b8d4e7473faedb9d2796",
+      "webpSha256": "ed85e8fa4f44cca41163e02b7dabde00b84e8d624c77265d60f2d27f126dc2e1",
+      "pixelSha256": "0a5f0cdb96dff5e26d7e885ce4b97d893f8fd057f250ac756c9d0591ba9843bc"
+    },
+    {
+      "id": "bj2022-fig-03",
+      "name": "fig-03",
+      "page": 1,
+      "rect": [
+        40,
+        652,
+        480,
+        789
+      ],
+      "scale": 3,
+      "figures": [
+        3
+      ],
+      "questions": [
+        4
+      ],
+      "width": 1320,
+      "height": 411,
+      "png": "fig-03.png",
+      "webp": "fig-03.webp",
+      "pngSha256": "2e777df459e496b6d21e8f6ffef7ad6d472c8dec96ea51e82ba137ae99bf97d2",
+      "webpSha256": "fcf9eaacf6599ba6fe76926080c0180a5662f5c18baebff89a13bf469bbab51d",
+      "pixelSha256": "6d7a71a0b53a36997df5923dcd4be0864a386ba48f6f33dad6b4ae0a05c35ac3"
+    },
+    {
+      "id": "bj2022-fig-04",
+      "name": "fig-04",
+      "page": 2,
+      "rect": [
+        433,
+        32,
+        562,
+        157
+      ],
+      "scale": 3,
+      "figures": [
+        4
+      ],
+      "questions": [
+        5
+      ],
+      "width": 387,
+      "height": 375,
+      "png": "fig-04.png",
+      "webp": "fig-04.webp",
+      "pngSha256": "f6692ab8aed4254aff96df3644694486056d1a7748859df896a946c70e73fa5e",
+      "webpSha256": "13e53330c701b3300c25ece4388c422f142d119724663303b168ae5878125145",
+      "pixelSha256": "bbfea9ff5ea723a71d3e63f9e3ebfd909db1b63209356318c877deb5af864b63"
+    },
+    {
+      "id": "bj2022-fig-05",
+      "name": "fig-05",
+      "page": 2,
+      "rect": [
+        476,
+        171,
+        563,
+        325
+      ],
+      "scale": 3,
+      "figures": [
+        5
+      ],
+      "questions": [
+        6
+      ],
+      "width": 261,
+      "height": 462,
+      "png": "fig-05.png",
+      "webp": "fig-05.webp",
+      "pngSha256": "659fbd4e8ca2996465c35e6acb58115ab26a518a56beec0bfa5205a6006d95e2",
+      "webpSha256": "c72999dc8dbd55fab24958bf84586645d0e8551d121d2360b2f3e060e58e8652",
+      "pixelSha256": "218da2e14f69edb9e8b9267135b5098b4c1de1df54298e22e28e3a2e0a987baf"
+    },
+    {
+      "id": "bj2022-fig-06",
+      "name": "fig-06",
+      "page": 2,
+      "rect": [
+        476,
+        342,
+        557,
+        433
+      ],
+      "scale": 3,
+      "figures": [
+        6
+      ],
+      "questions": [
+        7
+      ],
+      "width": 243,
+      "height": 273,
+      "png": "fig-06.png",
+      "webp": "fig-06.webp",
+      "pngSha256": "143832b03844f2ef7bd7cc12b37fc76fb353be88f0ba998ba96956b61d84c13b",
+      "webpSha256": "4007697aea3ac8350a297e170d6668b2b44b8564eded3806d84c7cf2f7558e41",
+      "pixelSha256": "826a2e4840b3405c617c4bd9e747e272197737c54e1a26ce948215c8575d7e0e"
+    },
+    {
+      "id": "bj2022-fig-07",
+      "name": "fig-07",
+      "page": 2,
+      "rect": [
+        457,
+        435,
+        558,
+        530
+      ],
+      "scale": 3,
+      "figures": [
+        7
+      ],
+      "questions": [
+        8
+      ],
+      "width": 303,
+      "height": 285,
+      "png": "fig-07.png",
+      "webp": "fig-07.webp",
+      "pngSha256": "c9542ef4d18c9ea94f3b3304ad461de8dc2955541b0d69059bd15e5d503f1592",
+      "webpSha256": "3a1f64c88f1561d91ec63d4c36564fe44d2aceff2a848c56b112a1444a8a5a81",
+      "pixelSha256": "a81a5ed99eb82497a50c8bc0bb5866e7102ca9f6bb2fea802d32299ab6fb3443"
+    },
+    {
+      "id": "bj2022-fig-08",
+      "name": "fig-08",
+      "page": 2,
+      "rect": [
+        35,
+        588,
+        399,
+        671
+      ],
+      "scale": 3,
+      "figures": [
+        8
+      ],
+      "questions": [
+        9
+      ],
+      "width": 1092,
+      "height": 249,
+      "png": "fig-08.png",
+      "webp": "fig-08.webp",
+      "pngSha256": "08994a42f0075d23d4fdd951bacda0d926aafeb48b55f1b2a339a990770429a2",
+      "webpSha256": "e19a5863b784b88fa2f234d4c42202f3feaad625c0b02d43fdba3af49ef99a9c",
+      "pixelSha256": "bcdc085a7bce92b292b818de705491c8184f9f2ad550c47fa2db17cc42818b93"
+    },
+    {
+      "id": "bj2022-fig-09",
+      "name": "fig-09",
+      "page": 3,
+      "rect": [
+        35,
+        32,
+        537,
+        177
+      ],
+      "scale": 3,
+      "figures": [
+        9
+      ],
+      "questions": [
+        10
+      ],
+      "width": 1506,
+      "height": 435,
+      "png": "fig-09.png",
+      "webp": "fig-09.webp",
+      "pngSha256": "be1412fcf1d691e6aada29049ade37913db3db10066987570f91d71a0b720297",
+      "webpSha256": "01db7f1222c1e67c4fbc6969bcf29581c0e5a5add7cd713edbacd6b106aad0f4",
+      "pixelSha256": "d97143f697c5d6fb5e8a5b463f7271bb05f660443c12f112dd29d153fc02c4f3"
+    },
+    {
+      "id": "bj2022-table-11",
+      "name": "table-11",
+      "page": 3,
+      "rect": [
+        348,
+        216,
+        566,
+        299
+      ],
+      "scale": 3,
+      "figures": [],
+      "questions": [
+        11
+      ],
+      "width": 654,
+      "height": 249,
+      "png": "table-11.png",
+      "webp": "table-11.webp",
+      "pngSha256": "2416c003290a774b926daa93cedad7001df64533d26f4221ca2854da72c2795c",
+      "webpSha256": "9155cdcdec05ace80462deb9740fa872862b875c453deb97297f645fb7436eb0",
+      "pixelSha256": "b1377c9bcda0edfad4aceb11249252a3630328034853a76872edda79b20bc585"
+    },
+    {
+      "id": "bj2022-fig-10",
+      "name": "fig-10",
+      "page": 3,
+      "rect": [
+        447,
+        366,
+        558,
+        490
+      ],
+      "scale": 3,
+      "figures": [
+        10
+      ],
+      "questions": [
+        12
+      ],
+      "width": 333,
+      "height": 372,
+      "png": "fig-10.png",
+      "webp": "fig-10.webp",
+      "pngSha256": "28e312b789df6723afc44697bcc032457a2ad73699d2340c35c7ad0f28c48fcc",
+      "webpSha256": "32bed897c80798a5f8ed37e90ccde745ce4d25ce79eb960bdeb3815a24d017fe",
+      "pixelSha256": "dceb68fd87e163cf822a3a6844a8b8765667626ef5ba653957b2f98143174b38"
+    },
+    {
+      "id": "bj2022-fig-11",
+      "name": "fig-11",
+      "page": 4,
+      "rect": [
+        397,
+        32,
+        568,
+        177
+      ],
+      "scale": 3,
+      "figures": [
+        11
+      ],
+      "questions": [
+        14
+      ],
+      "width": 513,
+      "height": 435,
+      "png": "fig-11.png",
+      "webp": "fig-11.webp",
+      "pngSha256": "f3b3077936a9ca882361a6ed1fe3355a530d8cf52f7bf56496af807778ac6b2e",
+      "webpSha256": "ebfa35a9f57ca3ddc5fbdb233516b17778704c197ff9f21da8bd36ff27915f40",
+      "pixelSha256": "ba633c2f49d93aef03b3ec00cc75e0639960fa5195c9b1d32b327e119cffce13"
+    },
+    {
+      "id": "bj2022-fig-12",
+      "name": "fig-12",
+      "page": 4,
+      "rect": [
+        480,
+        174,
+        568,
+        362
+      ],
+      "scale": 3,
+      "figures": [
+        12
+      ],
+      "questions": [
+        15
+      ],
+      "width": 264,
+      "height": 564,
+      "png": "fig-12.png",
+      "webp": "fig-12.webp",
+      "pngSha256": "2624f1b9707353f72ba2f6eaaac06c1fc4b9d3232f553a65dee388c1298f0ade",
+      "webpSha256": "fde0d858fbfd3de213d6fa6c70329a1a39ba0b6440c960ac8c6a92601a960353",
+      "pixelSha256": "686ace4a476d8820b04ae7cd72029b53a9143ad9d28b49cef261e2be490756c3"
+    },
+    {
+      "id": "bj2022-fig-13",
+      "name": "fig-13",
+      "page": 4,
+      "rect": [
+        84,
+        420,
+        181,
+        587
+      ],
+      "scale": 3,
+      "figures": [
+        13
+      ],
+      "questions": [
+        16
+      ],
+      "width": 291,
+      "height": 501,
+      "png": "fig-13.png",
+      "webp": "fig-13.webp",
+      "pngSha256": "399e190d0c1c39418f021d9fdb9d87747a0fdddb4608e6823ceff439162d5c8a",
+      "webpSha256": "be4d042bfe8f063f68dfb051326145c6b3528bb7944f95387eb2bcd9d18cc03b",
+      "pixelSha256": "9f145f182734d307e51241777bfd3c6017c90916fdee83ec19f4b928c685b8c3"
+    },
+    {
+      "id": "bj2022-fig-14",
+      "name": "fig-14",
+      "page": 4,
+      "rect": [
+        211,
+        449,
+        364,
+        587
+      ],
+      "scale": 3,
+      "figures": [
+        14
+      ],
+      "questions": [
+        17
+      ],
+      "width": 459,
+      "height": 414,
+      "png": "fig-14.png",
+      "webp": "fig-14.webp",
+      "pngSha256": "2a7e26fea43977fa3d8bcf43849613b4a0a89b3601e5826bec96580e3e067a29",
+      "webpSha256": "d79361d9805bb14a2e4ab66a197af3226c74a9b5bae701b4ae63df5668d222ef",
+      "pixelSha256": "e0a50de48c16b81669c68c45511f4449ec5f86a432ec1b29fb23ce59aea99102"
+    },
+    {
+      "id": "bj2022-fig-15",
+      "name": "fig-15",
+      "page": 4,
+      "rect": [
+        407,
+        449,
+        521,
+        587
+      ],
+      "scale": 3,
+      "figures": [
+        15
+      ],
+      "questions": [
+        17
+      ],
+      "width": 342,
+      "height": 414,
+      "png": "fig-15.png",
+      "webp": "fig-15.webp",
+      "pngSha256": "a99d1b3322faeea666af5455ea17d7ae6d4c9abcf4d4e9c1711bf42346e860ef",
+      "webpSha256": "73b0f4e456de865e04d27c053054aae8fb0c28d795c3e16b8eb8a114283cec3c",
+      "pixelSha256": "01bdde45d285bc5e3a92096997acac3539b8e523f5d919a593a9e47b07c62a17"
+    },
+    {
+      "id": "bj2022-fig-16",
+      "name": "fig-16",
+      "page": 5,
+      "rect": [
+        35,
+        33,
+        177,
+        140
+      ],
+      "scale": 3,
+      "figures": [
+        16
+      ],
+      "questions": [
+        18
+      ],
+      "width": 426,
+      "height": 321,
+      "png": "fig-16.png",
+      "webp": "fig-16.webp",
+      "pngSha256": "e5a047fa552460256b0a0b36a46f3859a544cec7114126ed397a3e9cf2605bab",
+      "webpSha256": "decafaca3bc4c1b04b1aef4db429efd6f118c33498b32dcbdcd9c30f14a547f4",
+      "pixelSha256": "270ea028f55ef6388b73e49c627775cb3ecd8f298334930b54aaca086086373f"
+    },
+    {
+      "id": "bj2022-fig-17",
+      "name": "fig-17",
+      "page": 5,
+      "rect": [
+        35,
+        162,
+        319,
+        316
+      ],
+      "scale": 3,
+      "figures": [
+        17
+      ],
+      "questions": [
+        19
+      ],
+      "width": 852,
+      "height": 462,
+      "png": "fig-17.png",
+      "webp": "fig-17.webp",
+      "pngSha256": "b833dc9a1e0a3d7b769e3e60d5b59776bc4d5b7e42028a0f2ad36960084d9356",
+      "webpSha256": "63ab345d15b58284fb5d02efe64b36bb6869971ecaf652797f644df41184a83e",
+      "pixelSha256": "2843de5f5331309700429e21672fb593c79648497d703b208f18cc34d52f1d55"
+    },
+    {
+      "id": "bj2022-fig-18",
+      "name": "fig-18",
+      "page": 5,
+      "rect": [
+        39,
+        525,
+        227,
+        696
+      ],
+      "scale": 3,
+      "figures": [
+        18
+      ],
+      "questions": [
+        20
+      ],
+      "width": 564,
+      "height": 513,
+      "png": "fig-18.png",
+      "webp": "fig-18.webp",
+      "pngSha256": "747eea2b88c773c8357701cf4a156ad8cfe52be2acaaabfd0d1158434f5447a8",
+      "webpSha256": "79c3c8405ca8829f9e080291e698fe4074389180293fab228c4e299336e4080a",
+      "pixelSha256": "6f9ce8ec27c718144017de5d064739f284a530f0bc0f5547542a868ff6766bfb"
+    },
+    {
+      "id": "bj2022-fig-19",
+      "name": "fig-19",
+      "page": 5,
+      "rect": [
+        226,
+        464,
+        565,
+        698
+      ],
+      "scale": 3,
+      "figures": [
+        19
+      ],
+      "questions": [
+        21
+      ],
+      "width": 1017,
+      "height": 702,
+      "png": "fig-19.png",
+      "webp": "fig-19.webp",
+      "pngSha256": "f57b59876ed5efd90c30b014795d01419bbf1b3cc9e3a53c56d1fc0a5eafee24",
+      "webpSha256": "0710333c68d6be8acfdf15575eade8f0a9b7e5a20a8efab807eb69768b1a208f",
+      "pixelSha256": "413c7857adb393b9994ea1ea968ecad6bc60b48735cfb8ada26d5c4e0d8eeb8c"
+    },
+    {
+      "id": "bj2022-fig-20",
+      "name": "fig-20",
+      "page": 6,
+      "rect": [
+        35,
+        345,
+        176,
+        457
+      ],
+      "scale": 3,
+      "figures": [
+        20
+      ],
+      "questions": [
+        23
+      ],
+      "width": 423,
+      "height": 336,
+      "png": "fig-20.png",
+      "webp": "fig-20.webp",
+      "pngSha256": "e3da6828eb1be29a21daa0c4d5b01eace37ac5ebf3c959d6360a4a7691c77d96",
+      "webpSha256": "26d6510a455addf641746c05cbfd4a1842f428a4b1a00cf9b8e7381c7e5d5a06",
+      "pixelSha256": "178248473cc4afb84e2bf0c90136f8e0a14182bb123aa13b8ca2fb0d4bfc041b"
+    },
+    {
+      "id": "bj2022-fig-21",
+      "name": "fig-21",
+      "page": 7,
+      "rect": [
+        102,
+        33,
+        502,
+        268
+      ],
+      "scale": 3,
+      "figures": [
+        21
+      ],
+      "questions": [
+        24
+      ],
+      "width": 1200,
+      "height": 705,
+      "png": "fig-21.png",
+      "webp": "fig-21.webp",
+      "pngSha256": "5fa8c25ce36c7adb8536492457d6a5b97e7e65918833562508cf59e286c27f7a",
+      "webpSha256": "ad006f94668e891ba1bccd2aaf2555ce17616096e216d6a34c76bd2908d70587",
+      "pixelSha256": "e64412329176a29ec076b217f7d3cea7494b1edef5c1723a3ecdad5cdf980710"
+    },
+    {
+      "id": "bj2022-fig-22",
+      "name": "fig-22",
+      "page": 8,
+      "rect": [
+        35,
+        33,
+        157,
+        155
+      ],
+      "scale": 3,
+      "figures": [
+        22
+      ],
+      "questions": [
+        25
+      ],
+      "width": 366,
+      "height": 366,
+      "png": "fig-22.png",
+      "webp": "fig-22.webp",
+      "pngSha256": "7ba012a982efa7ecfa2d49ac69494f3ef7eec08b5addcd5e9c66b0a45f653192",
+      "webpSha256": "19603c6e79331956273d68387f2ad4e38001e7ba34697c93cc2616d151779dde",
+      "pixelSha256": "d1904bc174502d5e1e6dbbb4b2e21b431389e5b1529a91442cb948e6b79f8928"
+    },
+    {
+      "id": "bj2022-fig-23-24",
+      "name": "fig-23-24",
+      "page": 8,
+      "rect": [
+        116,
+        234,
+        490,
+        329
+      ],
+      "scale": 3,
+      "figures": [
+        23,
+        24
+      ],
+      "questions": [
+        26
+      ],
+      "width": 1122,
+      "height": 285,
+      "png": "fig-23-24.png",
+      "webp": "fig-23-24.webp",
+      "pngSha256": "1c05400ed9c7de64dd363fb3c1a544ad111da6fbc9a2be4b4f2b5245374730ec",
+      "webpSha256": "9e781f0e05f0e296789e54283ab24e285fa877e607d255b007592aaf140eb5fb",
+      "pixelSha256": "7e0e31af0031748ce64068081230800f138ea80a489193aa801381ba3d724b61"
+    }
+  ]
+}

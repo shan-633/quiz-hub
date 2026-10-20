@@ -57,10 +57,10 @@ it('管理员从可复用混合实验/科普阅读模板建题，拒绝跨题型
   });
   expect(invalid.statusCode).toBe(422);
 });
-it('北京原创卷从公开目录到提交：26题无答案泄露，多选半分与阅读待评阅由服务器计算', async () => {
+it('北京真题卷从公开目录到提交：26题无答案泄露，多选半分与阅读待评阅由服务器计算', async () => {
   const { app } = await setup();
   const library = (await app.inject({ url: '/api/library' })).json();
-  const paper = library.find((x: any) => x.id === 'paper-beijing-original-01');
+  const paper = library.find((x: any) => x.id === 'paper-beijing-2022-real');
   expect(paper.questionCount).toBe(26);
   expect(paper.totalScore).toBe(70);
   const headers = await login(app);
@@ -85,7 +85,7 @@ it('北京原创卷从公开目录到提交：26题无答案泄露，多选半�
   };
   const saved = await app.inject({
     method: 'PUT',
-    url: `/api/attempts/${attempt.id}/answers/bj01-q13`,
+    url: `/api/attempts/${attempt.id}/answers/bj2022-q13`,
     headers,
     payload: { expectedRevision: 0, data: { ...empty, choiceIds: ['a'] } },
   });
@@ -100,7 +100,7 @@ it('北京原创卷从公开目录到提交：26题无答案泄露，多选半�
       expectedRevision: 0,
       data: {
         ...empty,
-        parts: { [open.id]: { ...empty, markdown: '不能确定，28℃保持此前的开关状态。' } },
+        parts: { [open.id]: { ...empty, markdown: '选择极低温，超导状态电阻为零，减少发热。' } },
       },
     },
   });
@@ -111,7 +111,7 @@ it('北京原创卷从公开目录到提交：26题无答案泄露，多选半�
     headers,
   });
   expect(submitted.statusCode).toBe(200);
-  expect(submitted.json().grades['bj01-q13'].earned).toBe(1);
+  expect(submitted.json().grades['bj2022-q13'].earned).toBe(1);
   expect(submitted.json().grades[reading.id].pending).toBe(true);
 });
 

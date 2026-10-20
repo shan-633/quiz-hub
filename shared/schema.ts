@@ -18,6 +18,8 @@ export const blockSchema: z.ZodType<Block> = z.lazy(() =>
       alt: z.string().max(1000),
       caption: z.string().max(1000),
       width: z.number().min(10).max(100),
+      intrinsicWidth: z.number().int().min(1).max(50000).optional(),
+      intrinsicHeight: z.number().int().min(1).max(50000).optional(),
     }),
     z.object({
       id,

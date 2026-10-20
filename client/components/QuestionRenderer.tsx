@@ -128,7 +128,13 @@ export function QuestionRenderer({
               rel="noreferrer"
               aria-label={`放大图片：${b.alt}`}
             >
-              <img src={b.assetId ? assetUrl(b.assetId) : b.src} alt={b.alt} loading="lazy" />
+              <img
+                src={b.assetId ? assetUrl(b.assetId) : b.src}
+                alt={b.alt}
+                loading="lazy"
+                width={b.intrinsicWidth}
+                height={b.intrinsicHeight}
+              />
             </a>
             {b.caption && <figcaption>{b.caption}</figcaption>}
           </figure>

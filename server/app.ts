@@ -9,7 +9,7 @@ import { resolve, join } from 'node:path';
 import { z, ZodError } from 'zod';
 import { Store } from './store';
 import { seed as seedDatabase } from './seed';
-import { installBeijingPaper } from './content/installBeijingPaper';
+import { installRealBeijing2022 } from './content/installRealBeijing2022';
 import {
   registerAuthHooks,
   checkPassword,
@@ -33,7 +33,7 @@ export async function createApp(options: AppOptions) {
   const store = new Store(resolve(options.dataDir));
   if (options.seed ?? true) {
     seedDatabase(store);
-    installBeijingPaper(store);
+    installRealBeijing2022(store);
   }
   await app.register(cookie);
   await app.register(cors, {

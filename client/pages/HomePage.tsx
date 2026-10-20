@@ -232,7 +232,7 @@ export function HomePage() {
       <div className="home-bottom-note">
         <Check size={16} />
         <span>每道题都值得留下完整的思考过程。</span>
-        <span className="sample-note">自编示例题 · 可在后台添加你的题目</span>
+        <span className="sample-note">内容来源见各试卷说明 · 可在后台管理题目</span>
       </div>
     </div>
   );

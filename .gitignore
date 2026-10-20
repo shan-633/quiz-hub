@@ -6,3 +6,4 @@ coverage/
 *.log
 .superpowers/
 artifacts/*.zip
+docs/beijing-2022-real/source-pages/

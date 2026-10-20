@@ -1,0 +1,9 @@
+npm test
+vitest run
+
+Test Files  14 passed (14)
+Tests       47 passed (47)
+Start at    15:09:20
+Duration    14.33s
+
+Actual local verification on 2026-10-20. Full suite includes real paper, source image pixels, HTTP serving, answer privacy and image dimension regression.

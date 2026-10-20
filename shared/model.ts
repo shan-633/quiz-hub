@@ -23,6 +23,8 @@ export type Block =
       alt: string;
       caption: string;
       width: number;
+      intrinsicWidth?: number;
+      intrinsicHeight?: number;
     }
   | { id: string; type: 'table'; headers: string[]; rows: string[][] }
   | { id: string; type: 'group'; layout: 'stack' | 'mediaAside'; children: Block[] }

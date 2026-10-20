@@ -7,6 +7,37 @@ import { emptyAnswer } from '../shared/domain';
 import type { Question } from '../shared/model';
 import { CalculationAnswer } from '../client/components/CalculationAnswer';
 afterEach(cleanup);
+it('原图在网络加载前通过宽高属性预留比例，防止长卷题号跳转后布局漂移', () => {
+  const q: Question = {
+    id: 'original',
+    version: 1,
+    bankId: 'bank',
+    type: 'single',
+    title: '原图',
+    score: 2,
+    difficulty: '基础',
+    tags: [],
+    blanks: [],
+    options: [],
+    state: 'published',
+    content: [
+      {
+        id: 'picture',
+        type: 'image',
+        assetId: 'source-image',
+        alt: '原电表图',
+        caption: '原图',
+        width: 100,
+        intrinsicWidth: 852,
+        intrinsicHeight: 462,
+      } as any,
+    ],
+  };
+  render(<QuestionRenderer question={q} />);
+  const image = screen.getByRole('img', { name: '原电表图' });
+  expect(image.getAttribute('width')).toBe('852');
+  expect(image.getAttribute('height')).toBe('462');
+});
 it('阅读开放小问使用自己的标签，答案写入子题且保留客观填空', () => {
   const q: Question = {
     id: 'read',
