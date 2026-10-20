@@ -12,6 +12,7 @@ import {registerAuthHooks,checkPassword,newSession,HttpError,requireUser,type St
 import {registerLibrary} from './routes/library';
 import {registerQuestions} from './routes/questions';
 import {registerAttempts} from './routes/attempts';
+import {registerUploads} from './routes/uploads';
 export interface AppOptions {dataDir:string;seed?:boolean;origin?:string;logger?:boolean}
 export async function createApp(options:AppOptions){
  const app=Fastify({logger:options.logger??false,bodyLimit:8*1024*1024});const store=new Store(resolve(options.dataDir));
@@ -32,7 +33,7 @@ export async function createApp(options:AppOptions){
  });
  app.get('/api/auth/me',async(req)=>({user:req.user,csrfToken:req.csrfToken}));
  app.post('/api/auth/logout',async(req,reply)=>{requireUser(req);store.delete('sessions',req.sessionId);reply.clearCookie('zhixu_session',{path:'/'});return{ok:true};});
- registerLibrary(app,store);registerQuestions(app,store);registerAttempts(app,store);
+ registerLibrary(app,store);registerQuestions(app,store);registerAttempts(app,store);await registerUploads(app,store);
  const publicDir=resolve('public');if(existsSync(publicDir))await app.register(fastifyStatic,{root:publicDir,prefix:'/',decorateReply:false});
  const dist=resolve('dist');if(existsSync(dist)){
   await app.register(fastifyStatic,{root:dist,prefix:'/',decorateReply:true,wildcard:false});

@@ -15,3 +15,7 @@ Task 2: complete — 6 项真实 SQLite API 集成测试通过。
 Task 3: complete — 3 项渲染测试通过；tsc/Vite 构建通过；浏览器验证学生登录和练习展示。
 Ruling: Windows 环境中 tsx CLI watch 子进程存在但 API 未监听；同模块由 node --import tsx 启动立即监听，改用 Node 原生 watch，复测 npm run dev 双服务均启动。
 V1 scope: 计算文字与公式已完成；多页笔迹、照片和本机离线保存属于 V2，不能将 V1 当作最终交付。
+
+Task 4: complete — 23 项完整套件通过，tsc 与构建通过；两页实际鼠标笔迹刷新恢复、两张测试图片上传、390px 视口检查。Apple Pencil 和系统拍照未做真机验证。
+Ruling: 手写草稿以可编辑笔迹立即落本机并同步；提交时为每页生成服务端预览快照，避免每一笔都上传新图片。
+Ruling: 数学库间接依赖存在旧版低危通告，使用 npm overrides 对齐直接安装的修复版 KaTeX，npm install 复核 0 vulnerabilities。

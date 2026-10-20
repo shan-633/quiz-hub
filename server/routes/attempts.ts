@@ -6,6 +6,7 @@ import {gradeQuestion,publicQuestion,walkBlocks} from '../../shared/domain';
 import {HttpError,requireUser} from '../auth';
 import type {Store} from '../store';
 import {libraryQuestions} from './library';
+import {validateAnswerAssets} from './uploads';
 export function registerAttempts(app:FastifyInstance,store:Store){
  const owned=(req:FastifyRequest,id:string)=>{const user=requireUser(req),a=store.get<Attempt>('attempts',id);if(!a||a.userId!==user.id)throw new HttpError(404,'未找到你的作答记录');return a;};
  const view=(a:Attempt)=>a.status==='active'?{...a,questions:a.questions.map(publicQuestion)}:a;
@@ -27,6 +28,7 @@ export function registerAttempts(app:FastifyInstance,store:Store){
   const ids=new Set(q.options.map(o=>o.id));if(body.data.choiceIds.some(id=>!ids.has(id)))throw new HttpError(422,'答案中包含无效选项');
   if(Object.keys(body.data.blankValues).some(id=>!q.blanks.some(b=>b.id===id)))throw new HttpError(422,'答案中包含无效空格');
   const partIds=new Set(walkBlocks(q.content).filter(b=>b.type==='subquestion').map(b=>b.id));if(Object.keys(body.data.parts).some(id=>!partIds.has(id)))throw new HttpError(422,'答案中包含无效子题');
+  validateAnswerAssets(store,a.userId,a.id,q.id,body.data);
   a.answers[q.id]={data:body.data as AnswerData,revision:(current?.revision??0)+1,updatedAt:new Date().toISOString()};a.updatedAt=new Date().toISOString();store.put('attempts',a.id,a,a.userId);return a.answers[q.id];
  });
  app.post<{Params:{id:string}}>('/api/attempts/:id/submit',async(req)=>{
