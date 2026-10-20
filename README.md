@@ -1,27 +1,63 @@
 # 知序 · 物理练习
 
-中文响应式答题 WebApp，前后端独立。React + TypeScript + Vite 前端；Fastify HTTP API；SQLite 本地持久化。Node.js 24 或更高版本。
+中文响应式答题 WebApp，学生端与管理员端均已实现。React + TypeScript + Vite 前端通过 HTTP API 访问 Fastify 后端，SQLite 保存数据。无需外部 AI 服务或 API Key。
 
-## 本地运行
+## 启动
+
+需要 Node.js 24 或更新版本（已验证 24.15.0）。Windows 解压源码后双击 `START-WEBAPP.cmd`：自动安装依赖、构建并启动。首次安装需要联网。启动后打开 [本地网页版](http://localhost:3001)。关闭启动窗口或 Ctrl+C 停止服务。
+
+也可在项目目录运行：
 
 ```powershell
 npm ci
-npm run dev
+npm run build
+npm start
 ```
 
-打开 http://localhost:5173 。前端 5173，API 3001；开发代理转发 /api。生产式本地运行：`npm run build` 后 `npm start`，打开 http://localhost:3001 。
+开发模式：`npm run dev`，打开 http://localhost:5173；前端 5173，API 3001，Vite 代理 `/api`。两个服务可分别用 `npm run dev:client`、`npm run dev:server` 启动。
 
-本地演示账号：student / Student123!；admin / Admin123!。第二学生账号 student2 / Student123! 用于隔离验证。演示题为自编示例，涵盖五种题型，不是当前资料目录的自动导入结果。
+## 演示账号
 
-## 源码目录
+| 角色 | 用户名 | 密码 |
+| --- | --- | --- |
+| 学生 | student | Student123! |
+| 第二学生 | student2 | Student123! |
+| 管理员 | admin | Admin123! |
 
-- client/：学生端、管理员端、共用题目渲染器。
-- server/：认证、管理、练习 API 与 SQLite 存储。
-- shared/：结构化题目、答案类型、输入校验与判分。
-- tests/：真实数据库 API 集成测试、内容模型与组件测试。
-- public/diagrams/：可复用物理示意图。
-- docs/：设计、版本与验证记录。
+这些是本地演示账号。初始化包含 3 个题库、1 份试卷和 8 道自编物理题，覆盖五种题型。工作目录中的既有试卷、PDF、截图没有自动导入。
 
-`npm test` 运行测试；`npm run build` 执行 TypeScript 检查和前端构建。数据在 data/zhixu.sqlite 和 data/uploads，重启保留，不包含在源码包中。
+## 使用
 
-三个迭代版本见 CHANGELOG.md 和 Git 标签；各版能力以更新日志为准。
+- 学生：首页搜索或筛选题库/试卷 → 开始练习 → 答题与标记 → 提交前检查 → 查看结果与解析。我的作答可继续草稿或重新练习。
+- 计算题：文字/Markdown/数学公式、多页手写、照片可同时保留。手写支持撤销、重做、笔迹橡皮、加页、加长、放大和仅笔模式；照片支持旋转、排序、删除及失败重试。
+- 管理员：后台创建题库 → 新建题目、选择模板 → 排版与答案规则 → 手机/平板/桌面预览 → 保存草稿或发布 → 发布题库。试卷可选择已发布题目版本、调整顺序和分值。
+- 题干由段落、公式、图片、表格、图文组合、子题组成。填空用稳定 ID 关联答案；复制内容会生成新 ID。发布时检查空格引用、图片、分值与公式。
+- 客观题由服务端判分；计算题及开放答案显示待人工评阅。当前不含教师批改工作台、OCR、AI 判过程、批量导入或班级管理。
+
+草稿自动同步，失败时保存在当前浏览器 IndexedDB。重新联网后自动尝试恢复，也可点击重试。提交会等待正在入库/上传的照片及最后答案保存。多页面冲突会要求选择服务器或本机版本。首次加载页面需要后端，当前不是完整离线 PWA；清除浏览器数据会删除尚未同步的本机草稿。
+
+照片支持 JPEG、PNG、WebP，每题最多 10 张、每张 10MB；服务端实际解码、纠正方向、压缩并生成缩略图。HEIC 需先转换。系统拍照入口取决于设备/浏览器。
+
+## 数据与配置
+
+默认数据在 `data/zhixu.sqlite`，附件在 `data/uploads/`；重启保留，源码压缩包不包含运行数据。备份时先停止服务，再复制整个 `data` 目录；恢复时放回同一位置。
+
+复制 `.env.example` 为 `.env` 可设置 `PORT`、`HOST`、`DATA_DIR`、`APP_ORIGIN`、`SECURE_COOKIE`、`DEMO_MODE`。默认仅监听本机 `127.0.0.1`。`DEMO_MODE=false` 仅停止初始化演示数据，不会删除已有账号；正式账号开通流程尚未提供。
+
+前后端分别部署时，前端构建环境设置 `VITE_API_URL`（例如同站点的 API 子域名），后端 `APP_ORIGIN` 设置前端准确来源。请求携带 Cookie，图片也跟随 API 地址。推荐同站点 HTTPS 反向代理：跨站点第三方 Cookie 不属于当前支持范围。正式上线需提供 HTTPS、关闭演示初始化并替换演示账号、配置可信来源和安全 Cookie；本次没有公网部署。
+
+在同一 Wi-Fi 的其他设备访问，需要按实际局域网地址设置 HOST/APP_ORIGIN 并允许本机端口；默认启动地址不能从另一台设备访问。Apple Pencil 压感、防误触和系统相机尚未真机验收。
+
+## 源码与验证
+
+- `client/`：学生端、管理员端、共享渲染器、草稿及附件队列。
+- `server/`：认证、管理、作答、上传 API 与真实 SQLite 存储。
+- `shared/`：结构化题目、答案、发布校验、判分与编辑操作。
+- `tests/`：34 项模型、API、组件、持久化和竞态回归测试。
+- `public/diagrams/`：自编物理示意图。
+- `docs/design/`：竞品调研、设计方案与 ImageGen 原型。
+- `docs/screenshots/`：实际运行页面；`docs/verification.md`：验收范围与限制。
+
+`npm test` 运行测试；`npm run build` 执行 TypeScript 检查和生产构建。`npm run format` 格式化源码。服务端会校验角色、作答/附件所有权、CSRF、来源与 revision；进行中的学生作答不会获得标准答案。已发布题目保留不可变版本，旧作答不随后台修改改变。
+
+三个版本为 Git 标签 `v1.0.0`、`v2.0.0`、`v3.0.0`，详见 CHANGELOG。运行 `powershell -ExecutionPolicy Bypass -File scripts/package.ps1` 可从标签重新生成三个源码包；输出在 `artifacts/`，不包含依赖、数据库、附件、`.env` 或登录会话。

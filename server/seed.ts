@@ -1,28 +1,354 @@
-import type {Question,LibraryItem} from '../shared/model';
-import {validateQuestion} from '../shared/domain';
-import {hashPassword} from './auth';
-import type {Store} from './store';
-function q(id:string,type:Question['type'],title:string,score:number,content:Question['content'],extra:Partial<Question>={}):Question{return{id,version:1,bankId:'bank-mechanics',type,title,score,difficulty:'基础',tags:['力与运动'],content,options:[],blanks:[],state:'published',solution:{choices:[],blanks:{},explanation:'请结合所学物理规律分析。'},...extra};}
-const p=(id:string,text:string)=>({id,type:'paragraph' as const,text});
-export function seed(store:Store){
- if(store.get('users','user-admin'))return;
- const users=[{id:'user-student',username:'student',name:'同学',role:'student'},{id:'user-student2',username:'student2',name:'另一位同学',role:'student'},{id:'user-admin',username:'admin',name:'林老师',role:'admin'}];
- for(const u of users)store.put('users',u.id,{...u,passwordHash:hashPassword(u.role==='admin'?'Admin123!':'Student123!')});
- const questions:Question[]=[
- q('q-force','single','力与运动的关系',3,[p('p-force','关于力和运动，下列说法正确的是（　）。')],{options:[{id:'a',text:'力可以改变物体的运动状态'},{id:'b',text:'物体运动一定受到力的作用'},{id:'c',text:'物体不受力时一定静止'},{id:'d',text:'速度越大，受到的合力越大'}],solution:{choices:['a'],blanks:{},explanation:'力是改变物体运动状态的原因，不是维持物体运动的原因。物体不受力时保持静止或匀速直线运动。'}}),
- q('q-multiple','multiple','认识相互作用力',3,[p('p-multi','关于一对相互作用力，下列说法正确的有（　）。')],{options:[{id:'a',text:'大小相等，方向相反'},{id:'b',text:'作用在同一个物体上'},{id:'c',text:'同时产生，同时消失'},{id:'d',text:'作用在同一条直线上'}],solution:{choices:['a','c','d'],blanks:{},explanation:'相互作用力作用在两个不同物体上，大小相等、方向相反、在同一直线上，同时产生和消失。'}}),
- q('q-speed','fill','用路程与时间求速度',4,[p('p-speed','一辆小车在 20 s 内匀速行驶 120 m，它的速度为 {{speed}} m/s。若小车保持这一速度继续运动 10 s，则通过的路程为 {{distance}} m。')],{blanks:[{id:'speed',label:'小车速度',score:2,kind:'number',unit:'m/s'},{id:'distance',label:'继续通过的路程',score:2,kind:'number',unit:'m'}],solution:{choices:[],blanks:{speed:{accepted:['6'],tolerance:0.01},distance:{accepted:['60'],tolerance:0.01}},explanation:'由 $v=\\frac{s}{t}=\\frac{120}{20}=6\\,\\mathrm{m/s}$，继续通过的路程 $s=vt=6\\times10=60\\,\\mathrm m$。'}}),
- q('q-lab','experiment','探究滑动摩擦力',4,[p('p-lab','小明用弹簧测力计探究影响滑动摩擦力大小的因素，实验装置如图所示。'),{id:'img-lab',type:'image',src:'/diagrams/friction.svg',alt:'木块在水平桌面上被弹簧测力计水平拉动',caption:'图 1　探究滑动摩擦力',width:80},{id:'part-1',type:'subquestion',label:'（1）测量方法',score:2,responseKind:'blanks',children:[p('p-lab1','实验时应水平拉动木块，使其做 {{motion}} 运动，此时测力计示数等于滑动摩擦力大小。')]},{id:'part-2',type:'subquestion',label:'（2）控制变量',score:2,responseKind:'blanks',children:[p('p-lab2','探究压力大小的影响，应控制接触面的 {{roughness}} 不变。')]}],{difficulty:'中等',blanks:[{id:'motion',label:'木块的运动状态',score:2,kind:'text'},{id:'roughness',label:'保持不变的因素',score:2,kind:'text'}],solution:{choices:[],blanks:{motion:{accepted:['匀速直线','匀速直线运动'],ignoreWhitespace:true},roughness:{accepted:['粗糙程度','粗糙度'],ignoreWhitespace:true}},explanation:'匀速直线运动时木块受平衡力，拉力大小等于摩擦力。研究压力的影响时，需保持接触面粗糙程度不变。'}}),
- q('q-work','calculation','小车的速度与牵引力做功',8,[{id:'group-work',type:'group',layout:'mediaAside',children:[p('p-work','一辆小车在水平地面上做匀速直线运动，20 s 内通过的路程为 120 m。小车受到的水平牵引力为 200 N。求：'),{id:'img-work',type:'image',src:'/diagrams/cart.svg',alt:'小车沿水平面向右运动，牵引力 F 向右',caption:'小车沿水平面运动',width:100}]},p('p-work2','（1）小车的平均速度；\n\n（2）这段时间内牵引力做的功。请写出必要的公式和计算过程。')],{difficulty:'中等',allowedModes:['text','drawing','photo'],solution:{choices:[],blanks:{},explanation:'（1）$v=\\frac{s}{t}=\\frac{120\\,\\mathrm m}{20\\,\\mathrm s}=6\\,\\mathrm{m/s}$。\n\n（2）$W=Fs=200\\,\\mathrm N\\times120\\,\\mathrm m=24000\\,\\mathrm J$。本题按计算过程人工评阅。'}}),
- q('q-pressure','single','压力与压强',3,[p('p-pressure','同一块砖平放和竖放在水平桌面上时，下列判断正确的是（　）。')],{options:[{id:'a',text:'平放时压力更小'},{id:'b',text:'竖放时压力更大'},{id:'c',text:'两次压力相等，竖放时压强更大'},{id:'d',text:'两次压力和压强都相等'}],solution:{choices:['c'],blanks:{},explanation:'两次对桌面的压力都等于砖的重力。竖放时受力面积更小，根据 $p=F/S$，压强更大。'}}),
- q('q-electric','single','串联电路中的电流',3,[p('p-elec','在串联电路中，通过各用电器的电流（　）。'),{id:'img-elec',type:'image',src:'/diagrams/circuit.svg',alt:'电池和灯泡组成的单回路电路',caption:'单回路示意图',width:65}],{bankId:'bank-electric',tags:['电学','串联电路'],options:[{id:'a',text:'相等'},{id:'b',text:'靠近正极处更大'},{id:'c',text:'靠近负极处更大'},{id:'d',text:'取决于导线长度'}],solution:{choices:['a'],blanks:{},explanation:'串联电路中电流处处相等。'}}),
- q('q-buoyancy','fill','漂浮条件',2,[p('p-buoyancy','质量为 0.2 kg 的木块漂浮在水面上，取 $g=10\\,\\mathrm{N/kg}$，木块受到的浮力为 {{buoyancy}} N。'),{id:'img-buoyancy',type:'image',src:'/diagrams/buoyancy.svg',alt:'木块漂浮于水面，浮力方向竖直向上',caption:'木块处于漂浮状态',width:65}],{bankId:'bank-buoyancy',tags:['浮力'],blanks:[{id:'buoyancy',label:'木块受到的浮力',score:2,kind:'number',unit:'N'}],solution:{choices:[],blanks:{buoyancy:{accepted:['2'],tolerance:0.01}},explanation:'漂浮时浮力等于重力，$F_浮=G=mg=0.2\\times10=2\\,\\mathrm N$。'}}),
- ];
- const banks:LibraryItem[]=[
- {id:'bank-mechanics',kind:'bank',title:'力与运动',description:'从受力分析到功的计算，循序理解运动背后的规律。',chapter:'八年级 · 力学',accent:'mechanics',state:'published',questionCount:6,minutes:25,totalScore:25},
- {id:'bank-electric',kind:'bank',title:'电学基础',description:'沿着电流的路径，认识电路与电学基本规律。',chapter:'九年级 · 电学',accent:'electric',state:'published',questionCount:1,minutes:5,totalScore:3},
- {id:'bank-buoyancy',kind:'bank',title:'浮力专题',description:'从漂浮现象出发，掌握浮力与受力平衡。',chapter:'八年级 · 浮力',accent:'buoyancy',state:'published',questionCount:1,minutes:5,totalScore:2},
- {id:'paper-midterm',kind:'paper',title:'八年级期中模拟',description:'一份涵盖基础概念、实验探究和计算过程的练习。',chapter:'八年级 · 综合',accent:'exam',state:'published',questionCount:5,minutes:30,totalScore:22,items:questions.slice(0,5).map(q=>({questionId:q.id,version:1,score:q.score}))},
- ];
- store.transaction(()=>{for(const b of banks)store.put('library',b.id,b);for(const question of questions){const issues=validateQuestion(question);if(issues.length)throw new Error(`示例题 ${question.id}: ${issues.join('；')}`);store.publish(question);store.put('questions',question.id,{id:question.id,bankId:question.bankId,latestVersion:1,draft:question,archived:false});}});
+import type { Question, LibraryItem } from '../shared/model';
+import { validateQuestion } from '../shared/domain';
+import { hashPassword } from './auth';
+import type { Store } from './store';
+function q(
+  id: string,
+  type: Question['type'],
+  title: string,
+  score: number,
+  content: Question['content'],
+  extra: Partial<Question> = {},
+): Question {
+  return {
+    id,
+    version: 1,
+    bankId: 'bank-mechanics',
+    type,
+    title,
+    score,
+    difficulty: '基础',
+    tags: ['力与运动'],
+    content,
+    options: [],
+    blanks: [],
+    state: 'published',
+    solution: { choices: [], blanks: {}, explanation: '请结合所学物理规律分析。' },
+    ...extra,
+  };
+}
+const p = (id: string, text: string) => ({ id, type: 'paragraph' as const, text });
+export function seed(store: Store) {
+  if (store.get('users', 'user-admin')) return;
+  const users = [
+    { id: 'user-student', username: 'student', name: '同学', role: 'student' },
+    { id: 'user-student2', username: 'student2', name: '另一位同学', role: 'student' },
+    { id: 'user-admin', username: 'admin', name: '林老师', role: 'admin' },
+  ];
+  for (const u of users)
+    store.put('users', u.id, {
+      ...u,
+      passwordHash: hashPassword(u.role === 'admin' ? 'Admin123!' : 'Student123!'),
+    });
+  const questions: Question[] = [
+    q(
+      'q-force',
+      'single',
+      '力与运动的关系',
+      3,
+      [p('p-force', '关于力和运动，下列说法正确的是（　）。')],
+      {
+        options: [
+          { id: 'a', text: '力可以改变物体的运动状态' },
+          { id: 'b', text: '物体运动一定受到力的作用' },
+          { id: 'c', text: '物体不受力时一定静止' },
+          { id: 'd', text: '速度越大，受到的合力越大' },
+        ],
+        solution: {
+          choices: ['a'],
+          blanks: {},
+          explanation:
+            '力是改变物体运动状态的原因，不是维持物体运动的原因。物体不受力时保持静止或匀速直线运动。',
+        },
+      },
+    ),
+    q(
+      'q-multiple',
+      'multiple',
+      '认识相互作用力',
+      3,
+      [p('p-multi', '关于一对相互作用力，下列说法正确的有（　）。')],
+      {
+        options: [
+          { id: 'a', text: '大小相等，方向相反' },
+          { id: 'b', text: '作用在同一个物体上' },
+          { id: 'c', text: '同时产生，同时消失' },
+          { id: 'd', text: '作用在同一条直线上' },
+        ],
+        solution: {
+          choices: ['a', 'c', 'd'],
+          blanks: {},
+          explanation:
+            '相互作用力作用在两个不同物体上，大小相等、方向相反、在同一直线上，同时产生和消失。',
+        },
+      },
+    ),
+    q(
+      'q-speed',
+      'fill',
+      '用路程与时间求速度',
+      4,
+      [
+        p(
+          'p-speed',
+          '一辆小车在 20 s 内匀速行驶 120 m，它的速度为 {{speed}} m/s。若小车保持这一速度继续运动 10 s，则通过的路程为 {{distance}} m。',
+        ),
+      ],
+      {
+        blanks: [
+          { id: 'speed', label: '小车速度', score: 2, kind: 'number', unit: 'm/s' },
+          { id: 'distance', label: '继续通过的路程', score: 2, kind: 'number', unit: 'm' },
+        ],
+        solution: {
+          choices: [],
+          blanks: {
+            speed: { accepted: ['6'], tolerance: 0.01 },
+            distance: { accepted: ['60'], tolerance: 0.01 },
+          },
+          explanation:
+            '由 $v=\\frac{s}{t}=\\frac{120}{20}=6\\,\\mathrm{m/s}$，继续通过的路程 $s=vt=6\\times10=60\\,\\mathrm m$。',
+        },
+      },
+    ),
+    q(
+      'q-lab',
+      'experiment',
+      '探究滑动摩擦力',
+      4,
+      [
+        p('p-lab', '小明用弹簧测力计探究影响滑动摩擦力大小的因素，实验装置如图所示。'),
+        {
+          id: 'img-lab',
+          type: 'image',
+          src: '/diagrams/friction.svg',
+          alt: '木块在水平桌面上被弹簧测力计水平拉动',
+          caption: '图 1　探究滑动摩擦力',
+          width: 80,
+        },
+        {
+          id: 'part-1',
+          type: 'subquestion',
+          label: '（1）测量方法',
+          score: 2,
+          responseKind: 'blanks',
+          children: [
+            p(
+              'p-lab1',
+              '实验时应水平拉动木块，使其做 {{motion}} 运动，此时测力计示数等于滑动摩擦力大小。',
+            ),
+          ],
+        },
+        {
+          id: 'part-2',
+          type: 'subquestion',
+          label: '（2）控制变量',
+          score: 2,
+          responseKind: 'blanks',
+          children: [p('p-lab2', '探究压力大小的影响，应控制接触面的 {{roughness}} 不变。')],
+        },
+      ],
+      {
+        difficulty: '中等',
+        blanks: [
+          { id: 'motion', label: '木块的运动状态', score: 2, kind: 'text' },
+          { id: 'roughness', label: '保持不变的因素', score: 2, kind: 'text' },
+        ],
+        solution: {
+          choices: [],
+          blanks: {
+            motion: { accepted: ['匀速直线', '匀速直线运动'], ignoreWhitespace: true },
+            roughness: { accepted: ['粗糙程度', '粗糙度'], ignoreWhitespace: true },
+          },
+          explanation:
+            '匀速直线运动时木块受平衡力，拉力大小等于摩擦力。研究压力的影响时，需保持接触面粗糙程度不变。',
+        },
+      },
+    ),
+    q(
+      'q-work',
+      'calculation',
+      '小车的速度与牵引力做功',
+      8,
+      [
+        {
+          id: 'group-work',
+          type: 'group',
+          layout: 'mediaAside',
+          children: [
+            p(
+              'p-work',
+              '一辆小车在水平地面上做匀速直线运动，20 s 内通过的路程为 120 m。小车受到的水平牵引力为 200 N。求：',
+            ),
+            {
+              id: 'img-work',
+              type: 'image',
+              src: '/diagrams/cart.svg',
+              alt: '小车沿水平面向右运动，牵引力 F 向右',
+              caption: '小车沿水平面运动',
+              width: 100,
+            },
+          ],
+        },
+        p(
+          'p-work2',
+          '（1）小车的平均速度；\n\n（2）这段时间内牵引力做的功。请写出必要的公式和计算过程。',
+        ),
+      ],
+      {
+        difficulty: '中等',
+        allowedModes: ['text', 'drawing', 'photo'],
+        solution: {
+          choices: [],
+          blanks: {},
+          explanation:
+            '（1）$v=\\frac{s}{t}=\\frac{120\\,\\mathrm m}{20\\,\\mathrm s}=6\\,\\mathrm{m/s}$。\n\n（2）$W=Fs=200\\,\\mathrm N\\times120\\,\\mathrm m=24000\\,\\mathrm J$。本题按计算过程人工评阅。',
+        },
+      },
+    ),
+    q(
+      'q-pressure',
+      'single',
+      '压力与压强',
+      3,
+      [p('p-pressure', '同一块砖平放和竖放在水平桌面上时，下列判断正确的是（　）。')],
+      {
+        options: [
+          { id: 'a', text: '平放时压力更小' },
+          { id: 'b', text: '竖放时压力更大' },
+          { id: 'c', text: '两次压力相等，竖放时压强更大' },
+          { id: 'd', text: '两次压力和压强都相等' },
+        ],
+        solution: {
+          choices: ['c'],
+          blanks: {},
+          explanation:
+            '两次对桌面的压力都等于砖的重力。竖放时受力面积更小，根据 $p=F/S$，压强更大。',
+        },
+      },
+    ),
+    q(
+      'q-electric',
+      'single',
+      '串联电路中的电流',
+      3,
+      [
+        p('p-elec', '在串联电路中，通过各用电器的电流（　）。'),
+        {
+          id: 'img-elec',
+          type: 'image',
+          src: '/diagrams/circuit.svg',
+          alt: '电池和灯泡组成的单回路电路',
+          caption: '单回路示意图',
+          width: 65,
+        },
+      ],
+      {
+        bankId: 'bank-electric',
+        tags: ['电学', '串联电路'],
+        options: [
+          { id: 'a', text: '相等' },
+          { id: 'b', text: '靠近正极处更大' },
+          { id: 'c', text: '靠近负极处更大' },
+          { id: 'd', text: '取决于导线长度' },
+        ],
+        solution: { choices: ['a'], blanks: {}, explanation: '串联电路中电流处处相等。' },
+      },
+    ),
+    q(
+      'q-buoyancy',
+      'fill',
+      '漂浮条件',
+      2,
+      [
+        p(
+          'p-buoyancy',
+          '质量为 0.2 kg 的木块漂浮在水面上，取 $g=10\\,\\mathrm{N/kg}$，木块受到的浮力为 {{buoyancy}} N。',
+        ),
+        {
+          id: 'img-buoyancy',
+          type: 'image',
+          src: '/diagrams/buoyancy.svg',
+          alt: '木块漂浮于水面，浮力方向竖直向上',
+          caption: '木块处于漂浮状态',
+          width: 65,
+        },
+      ],
+      {
+        bankId: 'bank-buoyancy',
+        tags: ['浮力'],
+        blanks: [{ id: 'buoyancy', label: '木块受到的浮力', score: 2, kind: 'number', unit: 'N' }],
+        solution: {
+          choices: [],
+          blanks: { buoyancy: { accepted: ['2'], tolerance: 0.01 } },
+          explanation: '漂浮时浮力等于重力，$F_浮=G=mg=0.2\\times10=2\\,\\mathrm N$。',
+        },
+      },
+    ),
+  ];
+  const banks: LibraryItem[] = [
+    {
+      id: 'bank-mechanics',
+      kind: 'bank',
+      title: '力与运动',
+      description: '从受力分析到功的计算，循序理解运动背后的规律。',
+      chapter: '八年级 · 力学',
+      accent: 'mechanics',
+      state: 'published',
+      questionCount: 6,
+      minutes: 25,
+      totalScore: 25,
+    },
+    {
+      id: 'bank-electric',
+      kind: 'bank',
+      title: '电学基础',
+      description: '沿着电流的路径，认识电路与电学基本规律。',
+      chapter: '九年级 · 电学',
+      accent: 'electric',
+      state: 'published',
+      questionCount: 1,
+      minutes: 5,
+      totalScore: 3,
+    },
+    {
+      id: 'bank-buoyancy',
+      kind: 'bank',
+      title: '浮力专题',
+      description: '从漂浮现象出发，掌握浮力与受力平衡。',
+      chapter: '八年级 · 浮力',
+      accent: 'buoyancy',
+      state: 'published',
+      questionCount: 1,
+      minutes: 5,
+      totalScore: 2,
+    },
+    {
+      id: 'paper-midterm',
+      kind: 'paper',
+      title: '八年级期中模拟',
+      description: '一份涵盖基础概念、实验探究和计算过程的练习。',
+      chapter: '八年级 · 综合',
+      accent: 'exam',
+      state: 'published',
+      questionCount: 5,
+      minutes: 30,
+      totalScore: 22,
+      items: questions.slice(0, 5).map((q) => ({ questionId: q.id, version: 1, score: q.score })),
+    },
+  ];
+  store.transaction(() => {
+    for (const b of banks) store.put('library', b.id, b);
+    for (const question of questions) {
+      const issues = validateQuestion(question);
+      if (issues.length) throw new Error(`示例题 ${question.id}: ${issues.join('；')}`);
+      store.publish(question);
+      store.put('questions', question.id, {
+        id: question.id,
+        bankId: question.bankId,
+        latestVersion: 1,
+        draft: question,
+        archived: false,
+      });
+    }
+  });
 }

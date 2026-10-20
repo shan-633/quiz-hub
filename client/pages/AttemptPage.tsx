@@ -1,30 +1,402 @@
-import {useState} from 'react';
-import {Link,useParams} from 'react-router-dom';
-import {ArrowLeft,ArrowRight,Check,CheckCircle2,Flag,Send,Cloud,CloudOff,LoaderCircle,ChevronLeft,ChevronRight} from 'lucide-react';
-import type {Attempt} from '../../shared/model';
-import {typeLabels} from '../../shared/model';
-import {isAnswered} from '../../shared/domain';
-import {useLoad} from '../useLoad';
-import {useAnswerSync} from '../useAnswerSync';
-import {api} from '../api';
-import {useToast} from '../context';
-import {UploadContext} from '../uploadContext';
-import {QuestionRenderer} from '../components/QuestionRenderer';
-import {Markdown} from '../components/Markdown';
-import {Loading,ErrorState,Modal} from '../components/ui';
-export function AttemptPage(){const{id}=useParams();const{data,loading,error,reload}=useLoad<Attempt>(`/attempts/${id}`);return loading?<Loading/>:error?<ErrorState message={error} retry={reload}/>:data?<AttemptWorkspace key={data.id} initial={data}/>:null;}
-function AttemptWorkspace({initial}:{initial:Attempt}){const[attempt,setAttempt]=useState(initial),[active,setActive]=useState(0),[confirm,setConfirm]=useState(false),[submitting,setSubmitting]=useState(false);const sync=useAnswerSync(attempt),toast=useToast();const submitted=attempt.status==='submitted';
- const count=attempt.questions.filter(q=>isAnswered(q,sync.get(q.id))).length;const jump=(index:number)=>{setActive(index);document.getElementById(`question-${attempt.questions[index].id}`)?.scrollIntoView({behavior:'smooth',block:'start'});};
- const submit=async()=>{setSubmitting(true);try{await sync.prepareSubmission();const result=await api<Attempt>(`/attempts/${attempt.id}/submit`,{method:'POST'});setAttempt(result);setConfirm(false);toast('练习已提交，答案已保存');window.scrollTo({top:0,behavior:'smooth'});}catch(e){toast((e as Error).message,true);}finally{setSubmitting(false);}};
- const grades=Object.values(attempt.grades??{}),earned=grades.reduce((s,g)=>s+g.earned,0),pending=grades.some(g=>g.pending);
- if(!sync.ready)return<Loading/>;
- return<UploadContext.Provider value={sync.uploads}><div className="page practice-page"><Link to="/library" className="back-link"><ArrowLeft size={16}/>返回试卷与题库</Link><div className="practice-heading"><div><div className="eyebrow">{submitted?'PRACTICE REVIEW':'FOCUS & EXPLORE'}</div><h1>{attempt.title}</h1><div className="practice-meta"><span>{attempt.questions.length} 道题</span><span>{attempt.questions.reduce((s,q)=>s+q.score,0)} 分</span><span>{submitted?'作答已提交':'按自己的节奏，写清思考过程'}</span></div></div><div className="save-state" aria-live="polite">{submitted?<><CheckCircle2 size={17}/>已提交</>:sync.status==='saved'?<><Cloud size={17}/>已保存到服务器</>:sync.status==='local'?<button className="text-button" onClick={()=>void sync.flush().catch(()=>{})}><CloudOff size={17}/>仅保存在本机 · 重试</button>:sync.status==='conflict'?<><CloudOff size={17}/>需要处理版本冲突</>:sync.uploads.pending.length?<><CloudOff size={17}/>照片待同步</>:sync.status==='saving'?<><LoaderCircle size={17} className="spin"/>正在保存…</>:<button className="text-button error-text" onClick={()=>void sync.flush().catch(e=>toast(e.message,true))}><CloudOff size={17}/>保存失败 · 重试</button>}</div></div>
- {submitted&&<div className="result-banner"><div><CheckCircle2 size={29}/><div><h2>这一次练习，已经留下完整的思考。</h2><p>{pending?'客观题已判分；计算过程与开放答案待人工评阅。':'可以对照解析，重新梳理自己的解题思路。'}</p></div></div><strong>{earned}<small> {pending?'客观题得分':'得分'}</small></strong></div>}
- {sync.error&&!submitted&&<div className="inline-error" role="alert">{sync.error}。请重试保存后再离开。</div>}
- {Object.entries(sync.conflicts).map(([id,c])=><section className="conflict-panel" role="alert" key={id}><strong>这道题有两份不同的草稿</strong><p>本机：{c.local.markdown.slice(0,120)||Object.values(c.local.blankValues).join('、')||'包含选择、笔迹或附件'}</p><p>服务器：{c.remote.data.markdown.slice(0,120)||Object.values(c.remote.data.blankValues).join('、')||'包含选择、笔迹或附件'}</p><div><button className="button" onClick={()=>void sync.resolve(id,'remote').catch(e=>toast(e.message,true))}>使用服务器版本</button><button className="button primary" onClick={()=>void sync.resolve(id,'local').catch(e=>toast(e.message,true))}>保留本机版本</button></div></section>)}
- <div className="practice-layout"><aside className="question-navigator"><div className="navigator-title"><h2>答题卡</h2><span>{count}/{attempt.questions.length}</span></div><div className="progress-track"><span style={{width:`${count/attempt.questions.length*100}%`}}/></div><div className="question-numbers">{attempt.questions.map((q,i)=><button key={q.id} className={`${active===i?'active':''} ${isAnswered(q,sync.get(q.id))?'answered':''} ${sync.get(q.id).flagged?'flagged':''}`} aria-label={`第 ${i+1} 题${isAnswered(q,sync.get(q.id))?'，已作答':''}`} aria-current={active===i?'step':undefined} onClick={()=>jump(i)}>{String(i+1).padStart(2,'0')}{sync.get(q.id).flagged&&<i/>}</button>)}</div><div className="navigator-legend"><span><i className="legend-done"/>已作答</span><span><i/>未作答</span><span><Flag size={12}/>待检查</span></div>{!submitted&&<button className="button primary full submit-sidebar" onClick={()=>setConfirm(true)}><Send size={16}/>提交练习</button>}<div className="practice-note"><span>✳</span><p>不急着找到答案，<br/>先把思路写下来。</p></div></aside>
- <div className="question-list">{attempt.questions.map((q,i)=>{const answer=sync.get(q.id),grade=attempt.grades?.[q.id];return<article key={q.id} id={`question-${q.id}`} className={`question-card ${active===i?'focused':''}`} onFocusCapture={()=>setActive(i)}><div className="question-card-heading"><div><span className="question-index">{String(i+1).padStart(2,'0')}</span><span className={`question-type type-${q.type}`}>{typeLabels[q.type]}</span><span className="question-score">{q.score} 分</span>{q.type==='multiple'&&<span className="multi-hint">可多选</span>}</div><button className={`flag-button ${answer.flagged?'marked':''}`} aria-label={answer.flagged?'取消待检查标记':'标记稍后检查'} disabled={submitted||submitting} onClick={()=>sync.update(q.id,{...answer,flagged:!answer.flagged})}><Flag size={16}/><span>{answer.flagged?'待检查':'标记'}</span></button></div><QuestionRenderer question={q} answer={answer} onChange={a=>sync.update(q.id,a)} disabled={submitted||submitting} context={{attemptId:attempt.id,questionId:q.id}}/>{grade&&<div className={`grade-panel grade-${grade.status}`}><div className="grade-heading"><strong>{grade.pending?'待人工评阅':grade.status==='correct'?'回答正确':grade.status==='partial'?'部分正确':grade.status==='unanswered'?'本题未作答':'继续理解这道题'}</strong><span>{grade.pending?'保留原始解题过程':`${grade.earned} / ${grade.max} 分`}</span></div><h4>参考解析</h4><Markdown text={q.solution?.explanation??''}/>{q.solution?.choices.length?<p>正确选项：{q.options.filter(o=>q.solution!.choices.includes(o.id)).map(o=>String.fromCharCode(65+q.options.indexOf(o))).join('、')}</p>:null}</div>}</article>;})}
- <div className="practice-bottom"><span><Check size={16}/>{submitted?'已提交并保存':`已完成 ${count} / ${attempt.questions.length} 题`}</span>{!submitted&&<button className="button primary" onClick={()=>setConfirm(true)}>完成并提交<ArrowRight size={17}/></button>}</div></div></div>
- <div className="practice-mobile-actions"><button className="button" disabled={active===0} onClick={()=>jump(active-1)}><ChevronLeft size={18}/>上一题</button><span>{active+1} / {attempt.questions.length}</span>{active<attempt.questions.length-1?<button className="button primary" onClick={()=>jump(active+1)}>下一题<ChevronRight size={18}/></button>:<button className="button primary" disabled={submitted||submitting} onClick={()=>setConfirm(true)}>{submitted?'已提交':'提交练习'}<Send size={16}/></button>}</div>
- {confirm&&<Modal title="提交前，再看一眼" onClose={()=>{if(!submitting)setConfirm(false);}}><p className="modal-intro">已完成 <strong>{count}</strong> / {attempt.questions.length} 题。{count<attempt.questions.length?'还有未完成的题目，可以返回补充，也可以继续提交。':'每一份思考都已准备好，提交后可查看参考解析。'}</p><div className="submission-overview">{attempt.questions.map((q,i)=>{const a=sync.get(q.id);return<div key={q.id}><span>{String(i+1).padStart(2,'0')} · {typeLabels[q.type]}</span><span>{isAnswered(q,a)?'已作答':'未完成'}{a.markdown?' · 文字':''}{a.drawingPages.length?` · ${a.drawingPages.length} 页笔迹`:''}{a.imagePages.length?` · ${a.imagePages.length} 张照片`:''}</span></div>;})}</div><p className="muted small">提交后无法修改本次答案。计算题及开放答案保留原始内容，等待人工评阅。</p><div className="modal-actions"><button className="button" disabled={submitting} onClick={()=>setConfirm(false)}>返回检查</button><button className="button primary" disabled={submitting} onClick={()=>void submit()}>{submitting?'正在保存并提交…':'确认提交'}<Send size={16}/></button></div></Modal>}</div></UploadContext.Provider>;
+import { useState } from 'react';
+import { Link, useParams } from 'react-router-dom';
+import {
+  ArrowLeft,
+  ArrowRight,
+  Check,
+  CheckCircle2,
+  Flag,
+  Send,
+  Cloud,
+  CloudOff,
+  LoaderCircle,
+  ChevronLeft,
+  ChevronRight,
+} from 'lucide-react';
+import type { Attempt } from '../../shared/model';
+import { typeLabels } from '../../shared/model';
+import { isAnswered } from '../../shared/domain';
+import { useLoad } from '../useLoad';
+import { useAnswerSync } from '../useAnswerSync';
+import { api } from '../api';
+import { useToast } from '../context';
+import { UploadContext } from '../uploadContext';
+import { QuestionRenderer } from '../components/QuestionRenderer';
+import { Markdown } from '../components/Markdown';
+import { Loading, ErrorState, Modal } from '../components/ui';
+export function AttemptPage() {
+  const { id } = useParams();
+  const { data, loading, error, reload } = useLoad<Attempt>(`/attempts/${id}`);
+  return loading ? (
+    <Loading />
+  ) : error ? (
+    <ErrorState message={error} retry={reload} />
+  ) : data ? (
+    <AttemptWorkspace key={data.id} initial={data} />
+  ) : null;
+}
+function AttemptWorkspace({ initial }: { initial: Attempt }) {
+  const [attempt, setAttempt] = useState(initial),
+    [active, setActive] = useState(0),
+    [confirm, setConfirm] = useState(false),
+    [submitting, setSubmitting] = useState(false);
+  const sync = useAnswerSync(attempt),
+    toast = useToast();
+  const submitted = attempt.status === 'submitted';
+  const count = attempt.questions.filter((q) => isAnswered(q, sync.get(q.id))).length;
+  const jump = (index: number) => {
+    setActive(index);
+    document
+      .getElementById(`question-${attempt.questions[index].id}`)
+      ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+  const submit = async () => {
+    setSubmitting(true);
+    try {
+      await sync.prepareSubmission();
+      const result = await api<Attempt>(`/attempts/${attempt.id}/submit`, { method: 'POST' });
+      setAttempt(result);
+      setConfirm(false);
+      toast('练习已提交，答案已保存');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } catch (e) {
+      toast((e as Error).message, true);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+  const grades = Object.values(attempt.grades ?? {}),
+    earned = grades.reduce((s, g) => s + g.earned, 0),
+    pending = grades.some((g) => g.pending);
+  if (!sync.ready) return <Loading />;
+  return (
+    <UploadContext.Provider value={sync.uploads}>
+      <div className="page practice-page">
+        <Link to="/library" className="back-link">
+          <ArrowLeft size={16} />
+          返回试卷与题库
+        </Link>
+        <div className="practice-heading">
+          <div>
+            <div className="eyebrow">{submitted ? 'PRACTICE REVIEW' : 'FOCUS & EXPLORE'}</div>
+            <h1>{attempt.title}</h1>
+            <div className="practice-meta">
+              <span>{attempt.questions.length} 道题</span>
+              <span>{attempt.questions.reduce((s, q) => s + q.score, 0)} 分</span>
+              <span>{submitted ? '作答已提交' : '按自己的节奏，写清思考过程'}</span>
+            </div>
+          </div>
+          <div className="save-state" aria-live="polite">
+            {submitted ? (
+              <>
+                <CheckCircle2 size={17} />
+                已提交
+              </>
+            ) : sync.status === 'saved' ? (
+              <>
+                <Cloud size={17} />
+                已保存到服务器
+              </>
+            ) : sync.status === 'local' ? (
+              <button className="text-button" onClick={() => void sync.flush().catch(() => {})}>
+                <CloudOff size={17} />
+                仅保存在本机 · 重试
+              </button>
+            ) : sync.status === 'conflict' ? (
+              <>
+                <CloudOff size={17} />
+                需要处理版本冲突
+              </>
+            ) : sync.uploads.pending.length ? (
+              <>
+                <CloudOff size={17} />
+                照片待同步
+              </>
+            ) : sync.status === 'saving' ? (
+              <>
+                <LoaderCircle size={17} className="spin" />
+                正在保存…
+              </>
+            ) : (
+              <button
+                className="text-button error-text"
+                onClick={() => void sync.flush().catch((e) => toast(e.message, true))}
+              >
+                <CloudOff size={17} />
+                保存失败 · 重试
+              </button>
+            )}
+          </div>
+        </div>
+        {submitted && (
+          <div className="result-banner">
+            <div>
+              <CheckCircle2 size={29} />
+              <div>
+                <h2>这一次练习，已经留下完整的思考。</h2>
+                <p>
+                  {pending
+                    ? '客观题已判分；计算过程与开放答案待人工评阅。'
+                    : '可以对照解析，重新梳理自己的解题思路。'}
+                </p>
+              </div>
+            </div>
+            <strong>
+              {earned}
+              <small> {pending ? '客观题得分' : '得分'}</small>
+            </strong>
+          </div>
+        )}
+        {sync.error && !submitted && (
+          <div className="inline-error" role="alert">
+            {sync.error}。请重试保存后再离开。
+          </div>
+        )}
+        {Object.entries(sync.conflicts).map(([id, c]) => (
+          <section className="conflict-panel" role="alert" key={id}>
+            <strong>这道题有两份不同的草稿</strong>
+            <p>
+              本机：
+              {c.local.markdown.slice(0, 120) ||
+                Object.values(c.local.blankValues).join('、') ||
+                '包含选择、笔迹或附件'}
+            </p>
+            <p>
+              服务器：
+              {c.remote.data.markdown.slice(0, 120) ||
+                Object.values(c.remote.data.blankValues).join('、') ||
+                '包含选择、笔迹或附件'}
+            </p>
+            <div>
+              <button
+                className="button"
+                onClick={() => void sync.resolve(id, 'remote').catch((e) => toast(e.message, true))}
+              >
+                使用服务器版本
+              </button>
+              <button
+                className="button primary"
+                onClick={() => void sync.resolve(id, 'local').catch((e) => toast(e.message, true))}
+              >
+                保留本机版本
+              </button>
+            </div>
+          </section>
+        ))}
+        <div className="practice-layout">
+          <aside className="question-navigator">
+            <div className="navigator-title">
+              <h2>答题卡</h2>
+              <span>
+                {count}/{attempt.questions.length}
+              </span>
+            </div>
+            <div className="progress-track">
+              <span style={{ width: `${(count / attempt.questions.length) * 100}%` }} />
+            </div>
+            <div className="question-numbers">
+              {attempt.questions.map((q, i) => (
+                <button
+                  key={q.id}
+                  className={`${active === i ? 'active' : ''} ${isAnswered(q, sync.get(q.id)) ? 'answered' : ''} ${sync.get(q.id).flagged ? 'flagged' : ''}`}
+                  aria-label={`第 ${i + 1} 题${isAnswered(q, sync.get(q.id)) ? '，已作答' : ''}`}
+                  aria-current={active === i ? 'step' : undefined}
+                  onClick={() => jump(i)}
+                >
+                  {String(i + 1).padStart(2, '0')}
+                  {sync.get(q.id).flagged && <i />}
+                </button>
+              ))}
+            </div>
+            <div className="navigator-legend">
+              <span>
+                <i className="legend-done" />
+                已作答
+              </span>
+              <span>
+                <i />
+                未作答
+              </span>
+              <span>
+                <Flag size={12} />
+                待检查
+              </span>
+            </div>
+            {!submitted && (
+              <button
+                className="button primary full submit-sidebar"
+                onClick={() => setConfirm(true)}
+              >
+                <Send size={16} />
+                提交练习
+              </button>
+            )}
+            <div className="practice-note">
+              <span>✳</span>
+              <p>
+                不急着找到答案，
+                <br />
+                先把思路写下来。
+              </p>
+            </div>
+          </aside>
+          <div className="question-list">
+            {attempt.questions.map((q, i) => {
+              const answer = sync.get(q.id),
+                grade = attempt.grades?.[q.id];
+              return (
+                <article
+                  key={q.id}
+                  id={`question-${q.id}`}
+                  className={`question-card ${active === i ? 'focused' : ''}`}
+                  onFocusCapture={() => setActive(i)}
+                >
+                  <div className="question-card-heading">
+                    <div>
+                      <span className="question-index">{String(i + 1).padStart(2, '0')}</span>
+                      <span className={`question-type type-${q.type}`}>{typeLabels[q.type]}</span>
+                      <span className="question-score">{q.score} 分</span>
+                      {q.type === 'multiple' && <span className="multi-hint">可多选</span>}
+                    </div>
+                    <button
+                      className={`flag-button ${answer.flagged ? 'marked' : ''}`}
+                      aria-label={answer.flagged ? '取消待检查标记' : '标记稍后检查'}
+                      disabled={submitted || submitting}
+                      onClick={() => sync.update(q.id, { ...answer, flagged: !answer.flagged })}
+                    >
+                      <Flag size={16} />
+                      <span>{answer.flagged ? '待检查' : '标记'}</span>
+                    </button>
+                  </div>
+                  <QuestionRenderer
+                    question={q}
+                    answer={answer}
+                    onChange={(a) => sync.update(q.id, a)}
+                    disabled={submitted || submitting}
+                    context={{ attemptId: attempt.id, questionId: q.id }}
+                  />
+                  {grade && (
+                    <div className={`grade-panel grade-${grade.status}`}>
+                      <div className="grade-heading">
+                        <strong>
+                          {grade.pending
+                            ? '待人工评阅'
+                            : grade.status === 'correct'
+                              ? '回答正确'
+                              : grade.status === 'partial'
+                                ? '部分正确'
+                                : grade.status === 'unanswered'
+                                  ? '本题未作答'
+                                  : '继续理解这道题'}
+                        </strong>
+                        <span>
+                          {grade.pending ? '保留原始解题过程' : `${grade.earned} / ${grade.max} 分`}
+                        </span>
+                      </div>
+                      <h4>参考解析</h4>
+                      <Markdown text={q.solution?.explanation ?? ''} />
+                      {q.solution?.choices.length ? (
+                        <p>
+                          正确选项：
+                          {q.options
+                            .filter((o) => q.solution!.choices.includes(o.id))
+                            .map((o) => String.fromCharCode(65 + q.options.indexOf(o)))
+                            .join('、')}
+                        </p>
+                      ) : null}
+                    </div>
+                  )}
+                </article>
+              );
+            })}
+            <div className="practice-bottom">
+              <span>
+                <Check size={16} />
+                {submitted ? '已提交并保存' : `已完成 ${count} / ${attempt.questions.length} 题`}
+              </span>
+              {!submitted && (
+                <button className="button primary" onClick={() => setConfirm(true)}>
+                  完成并提交
+                  <ArrowRight size={17} />
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+        <div className="practice-mobile-actions">
+          <button className="button" disabled={active === 0} onClick={() => jump(active - 1)}>
+            <ChevronLeft size={18} />
+            上一题
+          </button>
+          <span>
+            {active + 1} / {attempt.questions.length}
+          </span>
+          {active < attempt.questions.length - 1 ? (
+            <button className="button primary" onClick={() => jump(active + 1)}>
+              下一题
+              <ChevronRight size={18} />
+            </button>
+          ) : (
+            <button
+              className="button primary"
+              disabled={submitted || submitting}
+              onClick={() => setConfirm(true)}
+            >
+              {submitted ? '已提交' : '提交练习'}
+              <Send size={16} />
+            </button>
+          )}
+        </div>
+        {confirm && (
+          <Modal
+            title="提交前，再看一眼"
+            onClose={() => {
+              if (!submitting) setConfirm(false);
+            }}
+          >
+            <p className="modal-intro">
+              已完成 <strong>{count}</strong> / {attempt.questions.length} 题。
+              {count < attempt.questions.length
+                ? '还有未完成的题目，可以返回补充，也可以继续提交。'
+                : '每一份思考都已准备好，提交后可查看参考解析。'}
+            </p>
+            <div className="submission-overview">
+              {attempt.questions.map((q, i) => {
+                const a = sync.get(q.id);
+                return (
+                  <div key={q.id}>
+                    <span>
+                      {String(i + 1).padStart(2, '0')} · {typeLabels[q.type]}
+                    </span>
+                    <span>
+                      {isAnswered(q, a) ? '已作答' : '未完成'}
+                      {a.markdown ? ' · 文字' : ''}
+                      {a.drawingPages.length ? ` · ${a.drawingPages.length} 页笔迹` : ''}
+                      {a.imagePages.length ? ` · ${a.imagePages.length} 张照片` : ''}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+            <p className="muted small">
+              提交后无法修改本次答案。计算题及开放答案保留原始内容，等待人工评阅。
+            </p>
+            <div className="modal-actions">
+              <button className="button" disabled={submitting} onClick={() => setConfirm(false)}>
+                返回检查
+              </button>
+              <button
+                className="button primary"
+                disabled={submitting}
+                onClick={() => void submit()}
+              >
+                {submitting ? '正在保存并提交…' : '确认提交'}
+                <Send size={16} />
+              </button>
+            </div>
+          </Modal>
+        )}
+      </div>
+    </UploadContext.Provider>
+  );
 }

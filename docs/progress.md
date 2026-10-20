@@ -19,3 +19,8 @@ V1 scope: 计算文字与公式已完成；多页笔迹、照片和本机离线�
 Task 4: complete — 23 项完整套件通过，tsc 与构建通过；两页实际鼠标笔迹刷新恢复、两张测试图片上传、390px 视口检查。Apple Pencil 和系统拍照未做真机验证。
 Ruling: 手写草稿以可编辑笔迹立即落本机并同步；提交时为每页生成服务端预览快照，避免每一笔都上传新图片。
 Ruling: 数学库间接依赖存在旧版低危通告，使用 npm overrides 对齐直接安装的修复版 KaTeX，npm install 复核 0 vulnerabilities。
+
+Task 5: complete — V3 模板/表格/子题/稳定 ID 编辑、设备宽度预览、发布校验和响应式优化；34 项测试与生产构建通过。
+Task 6: complete — 独立审查的 3 个重要问题均先重现失败后修复，reviewer 复查确认修复范围无阻断；三个源码标签与压缩包、启动脚本、更新日志、实际截图和验收边界已整理。
+Browser evidence: Windows 一键启动成功；后台新建题库与实验题并发布，学生提交得到 4/4；停止 API 时文字保留本机，恢复后重试同步成功，刷新内容完整；手机/平板/PC 视口通过，无页面横向溢出。
+Delivery scope: 三版是已完成的本地可运行实现；Apple Pencil、iPad Safari 和系统相机仍需真机复核，未部署公网。运行数据不打包。

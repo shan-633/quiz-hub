@@ -1,0 +1,16 @@
+
+> zhixu-physics@3.0.0 test
+> vitest run
+
+
+ RUN  v5.0.5 C:/Users/chris/Desktop/初中物理/physics-webapp
+
+
+ Test Files  10 passed (10)
+      Tests  34 passed (34)
+   Start at  09:09:24
+   Duration  13.20s (tests 34%, environment 31%, import 29%, transform 6%, worker 1%)
+
+    Isolate  10 workers spawned · ~530ms startup each (spawn + environment, per file)
+             at least ~4.77s faster with isolate: false — reuses workers across files instead of one per file
+
