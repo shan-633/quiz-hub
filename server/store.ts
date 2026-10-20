@@ -2,7 +2,8 @@ import { DatabaseSync } from 'node:sqlite';
 import { mkdirSync } from 'node:fs';
 import { join } from 'node:path';
 import type { Question } from '../shared/model';
-export type Collection = 'users' | 'sessions' | 'library' | 'questions' | 'attempts' | 'assets';
+export type Collection =
+  'users' | 'sessions' | 'library' | 'questions' | 'attempts' | 'assets' | 'imports';
 export class Store {
   readonly db: DatabaseSync;
   constructor(readonly dataDir: string) {

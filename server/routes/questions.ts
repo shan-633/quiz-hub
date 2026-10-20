@@ -14,7 +14,7 @@ function checkDepth(value: unknown) {
   let count = 0;
   while (queue.length) {
     const { v, d } = queue.pop()!;
-    if (d > 18 || ++count > 20000) throw new HttpError(422, '题目结构过深或过大');
+    if (d > 24 || ++count > 20000) throw new HttpError(422, '题目结构过深或过大');
     if (v && typeof v === 'object')
       for (const child of Object.values(v)) queue.push({ v: child, d: d + 1 });
   }

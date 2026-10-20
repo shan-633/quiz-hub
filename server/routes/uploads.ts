@@ -161,19 +161,18 @@ export async function registerUploads(app: FastifyInstance, store: Store) {
             !(asset.kind === 'question' && req.user.role === 'admin')))
       )
         throw new HttpError(404, '图片不存在');
+      const fileName = req.query.thumbnail === '1' ? asset.thumbnail : asset.fileName;
+      const contentType: Record<string, string> = {
+        webp: 'image/webp',
+        png: 'image/png',
+        jpg: 'image/jpeg',
+        jpeg: 'image/jpeg',
+      };
       return reply
-        .type('image/webp')
+        .type(contentType[fileName.split('.').pop() ?? ''] ?? 'application/octet-stream')
         .header('Cache-Control', 'private, max-age=86400')
         .header('X-Content-Type-Options', 'nosniff')
-        .send(
-          readFileSync(
-            join(
-              store.dataDir,
-              'uploads',
-              req.query.thumbnail === '1' ? asset.thumbnail : asset.fileName,
-            ),
-          ),
-        );
+        .send(readFileSync(join(store.dataDir, 'uploads', fileName)));
     },
   );
 }

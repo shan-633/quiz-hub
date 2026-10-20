@@ -105,6 +105,15 @@ export function gradeQuestion(q: Question, a: AnswerData): Grade {
       );
     }
   }
+  // Normalize floating accumulation noise only; do not round small legitimate scores away.
+  if (
+    Math.abs(earned - q.score) <=
+    Number.EPSILON *
+      Math.max(Math.abs(earned), Math.abs(q.score)) *
+      (Object.keys(details).length + 1) *
+      2
+  )
+    earned = q.score;
   const answered = isAnswered(q, a);
   return {
     earned,

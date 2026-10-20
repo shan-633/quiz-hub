@@ -22,6 +22,7 @@ import { registerLibrary } from './routes/library';
 import { registerQuestions } from './routes/questions';
 import { registerAttempts } from './routes/attempts';
 import { registerUploads } from './routes/uploads';
+import { registerBankImport } from './routes/bankImport';
 export interface AppOptions {
   dataDir: string;
   seed?: boolean;
@@ -94,6 +95,7 @@ export async function createApp(options: AppOptions) {
   registerQuestions(app, store);
   registerAttempts(app, store);
   await registerUploads(app, store);
+  registerBankImport(app, store);
   const publicDir = resolve('public');
   if (existsSync(publicDir))
     await app.register(fastifyStatic, { root: publicDir, prefix: '/', decorateReply: false });

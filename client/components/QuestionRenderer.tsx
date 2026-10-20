@@ -58,12 +58,14 @@ export function QuestionRenderer({
   onChange = () => {},
   disabled = false,
   context,
+  assetSources,
 }: {
   question: Question;
   answer?: AnswerData;
   onChange?: (a: AnswerData) => void;
   disabled?: boolean;
   context?: AnswerContext;
+  assetSources?: Record<string, string>;
 }) {
   const inline = (text: string) => (
     <>
@@ -123,13 +125,13 @@ export function QuestionRenderer({
         return (
           <figure className="question-figure" key={b.id} style={{ maxWidth: `${b.width}%` }}>
             <a
-              href={b.assetId ? assetUrl(b.assetId) : b.src}
+              href={b.assetId ? (assetSources?.[b.assetId] ?? assetUrl(b.assetId)) : b.src}
               target="_blank"
               rel="noreferrer"
               aria-label={`放大图片：${b.alt}`}
             >
               <img
-                src={b.assetId ? assetUrl(b.assetId) : b.src}
+                src={b.assetId ? (assetSources?.[b.assetId] ?? assetUrl(b.assetId)) : b.src}
                 alt={b.alt}
                 loading="lazy"
                 width={b.intrinsicWidth}

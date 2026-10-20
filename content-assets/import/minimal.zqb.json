@@ -1,0 +1,39 @@
+{
+  "format": "zhixu.question-bank",
+  "version": "1.0",
+  "bank": {
+    "title": "协议演示 · 最小题库",
+    "minutes": 5
+  },
+  "questions": [
+    {
+      "id": "q1",
+      "type": "single",
+      "title": "力的单位",
+      "score": 2,
+      "content": [
+        {
+          "id": "stem",
+          "type": "paragraph",
+          "text": "下列哪个是力的国际单位？"
+        }
+      ],
+      "options": [
+        {
+          "id": "a",
+          "text": "牛顿"
+        },
+        {
+          "id": "b",
+          "text": "焦耳"
+        }
+      ],
+      "solution": {
+        "choices": [
+          "a"
+        ],
+        "explanation": "力的国际单位是牛顿，符号为N。"
+      }
+    }
+  ]
+}

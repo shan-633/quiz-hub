@@ -12,6 +12,7 @@ import {
   Layers3,
   ArrowUp,
   ArrowDown,
+  Upload,
 } from 'lucide-react';
 import type { LibraryItem, Question, QuestionType } from '../../shared/model';
 import { typeLabels } from '../../shared/model';
@@ -20,6 +21,7 @@ import { useLoad } from '../useLoad';
 import { api, json } from '../api';
 import { useToast } from '../context';
 import { Loading, ErrorState, EmptyState, Modal } from '../components/ui';
+import { BankImportDialog } from '../components/BankImportDialog';
 export function AdminPage() {
   const [params, setParams] = useSearchParams(),
     tab = params.get('tab') ?? 'banks';
@@ -29,6 +31,7 @@ export function AdminPage() {
     navigate = useNavigate(),
     toast = useToast();
   const [editing, setEditing] = useState<Partial<LibraryItem> | null>(null),
+    [importing, setImporting] = useState(false),
     [adding, setAdding] = useState(false),
     [bankId, setBankId] = useState(''),
     [type, setType] = useState<QuestionType>('single'),
@@ -71,30 +74,36 @@ export function AdminPage() {
           <h1>好题目，从这里开始。</h1>
           <p>组织题库、编排试卷，让每道题都清楚地表达。</p>
         </div>
-        <button
-          className="button primary"
-          onClick={() => {
-            if (tab === 'questions') {
-              setBankId(
-                params.get('bank') ?? banks.data?.find((b) => b.state !== 'archived')?.id ?? '',
-              );
-              setAdding(true);
-            } else
-              setEditing({
-                kind: tab === 'papers' ? 'paper' : 'bank',
-                state: 'draft',
-                title: '',
-                description: '',
-                chapter: '八年级 · 力学',
-                accent: tab === 'papers' ? 'exam' : 'mechanics',
-                minutes: 30,
-                items: [],
-              });
-          }}
-        >
-          <Plus size={18} />
-          {tab === 'questions' ? '录入题目' : tab === 'papers' ? '创建试卷' : '创建题库'}
-        </button>
+        <div className="admin-heading-actions">
+          <button className="button" onClick={() => setImporting(true)}>
+            <Upload size={18} />
+            导入题库
+          </button>
+          <button
+            className="button primary"
+            onClick={() => {
+              if (tab === 'questions') {
+                setBankId(
+                  params.get('bank') ?? banks.data?.find((b) => b.state !== 'archived')?.id ?? '',
+                );
+                setAdding(true);
+              } else
+                setEditing({
+                  kind: tab === 'papers' ? 'paper' : 'bank',
+                  state: 'draft',
+                  title: '',
+                  description: '',
+                  chapter: '八年级 · 力学',
+                  accent: tab === 'papers' ? 'exam' : 'mechanics',
+                  minutes: 30,
+                  items: [],
+                });
+            }}
+          >
+            <Plus size={18} />
+            {tab === 'questions' ? '录入题目' : tab === 'papers' ? '创建试卷' : '创建题库'}
+          </button>
+        </div>
       </div>
       <div className="admin-tabs">
         <div className="line-tabs">
@@ -256,6 +265,9 @@ export function AdminPage() {
             <EmptyState title="这里还没有内容" description="点击右上角按钮，创建你的第一份内容。" />
           )}
         </div>
+      )}
+      {importing && (
+        <BankImportDialog onClose={() => setImporting(false)} onImported={() => refresh()} />
       )}
       {adding && (
         <Modal title="录入一道新题" onClose={() => setAdding(false)}>

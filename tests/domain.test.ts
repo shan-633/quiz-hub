@@ -8,6 +8,34 @@ import {
 } from '../shared/domain';
 import type { Question } from '../shared/model';
 
+it('十进制分值累计的浮点误差不能把全对填空判为部分正确', () => {
+  const q: Question = {
+    id: 'decimal',
+    bankId: 'b',
+    version: 1,
+    state: 'published',
+    type: 'fill',
+    title: '小数分值',
+    score: 0.3,
+    difficulty: '基础',
+    tags: [],
+    options: [],
+    content: [{ id: 'p', type: 'paragraph', text: '{{a}}，{{b}}' }],
+    blanks: [
+      { id: 'a', kind: 'number', label: '第一空', score: 0.1 },
+      { id: 'b', kind: 'number', label: '第二空', score: 0.2 },
+    ],
+    solution: {
+      choices: [],
+      blanks: { a: { accepted: ['1'] }, b: { accepted: ['2'] } },
+      explanation: '分别为1和2。',
+    },
+  };
+  const answer = { ...emptyAnswer(), blankValues: { a: '1', b: '2' } };
+  expect(gradeQuestion(q, answer)).toMatchObject({ earned: 0.3, max: 0.3, status: 'correct' });
+  expect(gradeQuestion(q, { ...answer, blankValues: { a: '1' } }).status).toBe('partial');
+});
+
 const multiple: Question = {
   id: 'q1',
   version: 1,

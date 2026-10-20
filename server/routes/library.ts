@@ -34,6 +34,17 @@ export function enrichLibrary(store: Store, item: LibraryItem): LibraryItem {
   return { ...item, questionCount: qs.length, totalScore: qs.reduce((sum, q) => sum + q.score, 0) };
 }
 export function registerLibrary(app: FastifyInstance, store: Store) {
+  const adminItem = (item: LibraryItem): LibraryItem => {
+    if (item.kind !== 'bank') return enrichLibrary(store, item);
+    const questions = store
+      .list<StoredQuestion>('questions')
+      .filter((q) => q.bankId === item.id && !q.archived);
+    return {
+      ...item,
+      questionCount: questions.length,
+      totalScore: questions.reduce((s, q) => s + q.draft.score, 0),
+    };
+  };
   app.get('/api/library', async () =>
     store
       .list<LibraryItem>('library')
@@ -51,7 +62,7 @@ export function registerLibrary(app: FastifyInstance, store: Store) {
       store
         .list<LibraryItem>('library')
         .filter((b) => b.kind === kind)
-        .map((b) => enrichLibrary(store, b)),
+        .map((b) => adminItem(b)),
     );
     const save = (raw: unknown, id: string) => {
       const parsed = librarySchema.parse(raw);
@@ -66,7 +77,7 @@ export function registerLibrary(app: FastifyInstance, store: Store) {
       if (item.state === 'published' && !libraryQuestions(store, item).length)
         throw new HttpError(422, '请先添加并发布至少一道题目');
       store.put('library', id, item);
-      return enrichLibrary(store, item);
+      return adminItem(item);
     };
     app.post(`/api/admin/${path}`, async (req, reply) => {
       const result = save(req.body, crypto.randomUUID());
