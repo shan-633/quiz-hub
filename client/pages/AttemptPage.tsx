@@ -19,6 +19,7 @@ import {
 import type { Attempt } from '../../shared/model';
 import { typeLabels } from '../../shared/model';
 import { isAnswered } from '../../shared/domain';
+import { referenceAnswer } from '../../shared/teacherReview';
 import { useLoad } from '../useLoad';
 import { useAnswerSync } from '../useAnswerSync';
 import { api } from '../api';
@@ -42,10 +43,14 @@ export function AttemptPage() {
   ) : error ? (
     <ErrorState message={error} retry={reload} />
   ) : data ? (
-    <AttemptWorkspace key={data.id} initial={data} />
+    <AttemptWorkspace
+      key={`${data.id}-${data.review?.revision ?? 0}`}
+      initial={data}
+      reload={reload}
+    />
   ) : null;
 }
-function AttemptWorkspace({ initial }: { initial: Attempt }) {
+function AttemptWorkspace({ initial, reload }: { initial: Attempt; reload: () => void }) {
   const [attempt, setAttempt] = useState(initial),
     [active, setActive] = useState(0),
     [confirm, setConfirm] = useState(false),
@@ -53,6 +58,7 @@ function AttemptWorkspace({ initial }: { initial: Attempt }) {
   const sync = useAnswerSync(attempt),
     toast = useToast();
   const submitted = attempt.status === 'submitted';
+  const waiting = submitted && !!attempt.review && attempt.review.state !== 'published';
   const count = attempt.questions.filter((q) => isAnswered(q, sync.get(q.id))).length;
   const jump = (index: number) => {
     setActive(index);
@@ -67,7 +73,7 @@ function AttemptWorkspace({ initial }: { initial: Attempt }) {
       const result = await api<Attempt>(`/attempts/${attempt.id}/submit`, { method: 'POST' });
       setAttempt(result);
       setConfirm(false);
-      toast('练习已提交，答案已保存');
+      toast('已交卷，教师已收到你的作答');
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (e) {
       toast((e as Error).message, true);
@@ -146,7 +152,19 @@ function AttemptWorkspace({ initial }: { initial: Attempt }) {
             )}
           </div>
         </div>
-        {submitted && (
+        {waiting && (
+          <section className="waiting-banner" aria-live="polite">
+            <Clock3 size={30} />
+            <div>
+              <h2>已交卷，教师已收到</h2>
+              <p>原始作答已保存。教师正在核对和批改，发布后即可查看分数、正确答案与评语。</p>
+            </div>
+            <button className="button" onClick={reload}>
+              刷新批改结果
+            </button>
+          </section>
+        )}
+        {submitted && !waiting && (
           <div className={`result-banner result-${feedback.band}`}>
             <div>
               <FeedbackIcon size={29} aria-hidden="true" />
@@ -374,17 +392,25 @@ function AttemptWorkspace({ initial }: { initial: Attempt }) {
                           {grade.pending ? '保留原始解题过程' : `${grade.earned} / ${grade.max} 分`}
                         </span>
                       </div>
-                      <h4>参考解析</h4>
-                      <Markdown text={q.solution?.explanation ?? ''} />
-                      {q.solution?.choices.length ? (
-                        <p>
-                          正确选项：
-                          {q.options
-                            .filter((o) => q.solution!.choices.includes(o.id))
-                            .map((o) => String.fromCharCode(65 + q.options.indexOf(o)))
-                            .join('、')}
-                        </p>
-                      ) : null}
+                      <h4>
+                        {attempt.teacherFeedback?.[q.id]?.correctAnswer
+                          ? '教师提供的正确答案'
+                          : '参考答案与解析'}
+                      </h4>
+                      <Markdown
+                        text={attempt.teacherFeedback?.[q.id]?.correctAnswer || referenceAnswer(q)}
+                      />
+                      {attempt.teacherFeedback?.[q.id] && (
+                        <div className="teacher-feedback">
+                          <h4>教师评语</h4>
+                          <Markdown
+                            text={attempt.teacherFeedback[q.id].comment || '本题未填写评语。'}
+                          />
+                          <p className="feedback-author">
+                            {attempt.teacherFeedback[q.id].teacherName} · 已批改
+                          </p>
+                        </div>
+                      )}
                     </div>
                   )}
                 </article>
@@ -439,7 +465,7 @@ function AttemptWorkspace({ initial }: { initial: Attempt }) {
               已完成 <strong>{count}</strong> / {attempt.questions.length} 题。
               {count < attempt.questions.length
                 ? '还有未完成的题目，可以返回补充，也可以继续提交。'
-                : '每一份思考都已准备好，提交后可查看参考解析。'}
+                : '每一份思考都已准备好，提交后将交给教师批改。'}
             </p>
             <div className="submission-overview">
               {attempt.questions.map((q, i) => {
@@ -460,7 +486,7 @@ function AttemptWorkspace({ initial }: { initial: Attempt }) {
               })}
             </div>
             <p className="muted small">
-              提交后无法修改本次答案。计算题及开放答案保留原始内容，等待人工评阅。
+              提交后无法修改本次答案。教师收到试卷或答题卡并完成批改，发布后即可查看成绩与反馈。
             </p>
             <div className="modal-actions">
               <button className="button" disabled={submitting} onClick={() => setConfirm(false)}>

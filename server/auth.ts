@@ -46,6 +46,11 @@ export function requireAdmin(req: FastifyRequest): User {
   if (user.role !== 'admin') throw new HttpError(403, '需要管理员权限');
   return user;
 }
+export function requireTeacher(req: FastifyRequest): User {
+  const user = requireUser(req);
+  if (user.role !== 'teacher' && user.role !== 'admin') throw new HttpError(403, '需要教师权限');
+  return user;
+}
 export function registerAuthHooks(app: FastifyInstance, store: Store, origin: string) {
   app.decorateRequest('user', null);
   app.decorateRequest('csrfToken', '');
@@ -84,7 +89,7 @@ export function registerAuthHooks(app: FastifyInstance, store: Store, origin: st
         req.headers['sec-fetch-site'] === 'cross-site')
     )
       throw new HttpError(403, '请求来源不受信任');
-    if (req.url.startsWith('/api/admin')) requireAdmin(req);
+    if (req.url.startsWith('/api/admin') || req.url.startsWith('/api/teacher')) requireTeacher(req);
     if (write && req.url !== '/api/auth/login') {
       requireUser(req);
       if (req.headers['x-csrf-token'] !== req.csrfToken)

@@ -1,0 +1,649 @@
+.teacher-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 24px;
+}
+.teacher-heading h1 {
+  font-size: clamp(25px, 2.4vw, 34px);
+  line-height: 1.45;
+  margin: 8px 0;
+}
+.teacher-heading p {
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.8;
+  margin: 0;
+}
+.staff-shortcuts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin-bottom: 26px;
+}
+.staff-shortcuts a {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 14px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  font-size: 13px;
+  background: white;
+}
+.staff-shortcuts a.active {
+  background: #e9f2ed;
+  color: #316a55;
+  border-color: #c8ded2;
+}
+.teacher-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+  margin-bottom: 26px;
+}
+.teacher-stats > div {
+  padding: 22px 24px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+}
+.teacher-stats > div:first-child {
+  background: #edf4ef;
+  border-color: #d4e4d9;
+}
+.teacher-stats span {
+  display: block;
+  font-size: 13px;
+  color: #66766d;
+}
+.teacher-stats strong {
+  display: block;
+  font-size: 32px;
+  font-weight: 600;
+  margin-top: 12px;
+  color: #315a49;
+}
+.teacher-stats small {
+  font-size: 12px;
+  font-weight: 400;
+  margin-left: 10px;
+  color: #78837c;
+}
+.teacher-inbox {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 15px;
+  overflow: hidden;
+}
+.teacher-toolbar {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px;
+  border-bottom: 1px solid var(--line);
+  align-items: center;
+}
+.teacher-toolbar input {
+  max-width: 290px;
+  font-size: 13px;
+}
+.teacher-filters {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+.teacher-filters button {
+  border: 0;
+  background: transparent;
+  padding: 9px 13px;
+  border-radius: 8px;
+  font-size: 13px;
+  color: #747a75;
+}
+.teacher-filters button.active {
+  background: #edf3ef;
+  color: #315e4b;
+  font-weight: 600;
+}
+.teacher-submission {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 25px;
+  border-bottom: 1px solid var(--line);
+}
+.teacher-submission:last-child {
+  border: 0;
+}
+.submission-avatar {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 46px;
+  height: 46px;
+  background: #f1eee5;
+  border-radius: 12px;
+  color: #83704a;
+}
+.submission-copy {
+  flex: 1;
+  min-width: 0;
+}
+.submission-copy > div {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+.submission-copy h2 {
+  font-size: 17px;
+  margin: 11px 0 7px;
+  overflow-wrap: anywhere;
+}
+.submission-copy p {
+  font-size: 13px;
+  margin: 5px 0;
+}
+.review-tag {
+  display: inline-flex;
+  padding: 4px 8px;
+  border-radius: 5px;
+  font-size: 11px;
+}
+.review-pending {
+  background: #fff3dc;
+  color: #926a20;
+}
+.review-in_progress {
+  background: #edf0fa;
+  color: #68608f;
+}
+.review-published {
+  background: #e8f3eb;
+  color: #397052;
+}
+.review-legacy {
+  background: #f0f0ed;
+  color: #757975;
+}
+.teacher-policy {
+  line-height: 1.9;
+  margin-top: 22px;
+}
+.review-overview {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  background: #edf2ee;
+  border: 1px solid #d5e2d9;
+  border-radius: 13px;
+  padding: 22px 26px;
+  margin: 22px 0;
+}
+.review-overview > div:first-child > strong {
+  font-size: 18px;
+  color: #355f4a;
+}
+.review-overview p {
+  font-size: 13px;
+  line-height: 1.8;
+  margin: 7px 0 0;
+  color: #65796a;
+}
+.review-overview-score {
+  flex-shrink: 0;
+  text-align: right;
+}
+.review-overview-score > strong {
+  display: block;
+  font-size: 29px;
+  color: #385c47;
+}
+.review-overview-score small {
+  font-size: 17px;
+  font-weight: 400;
+}
+.review-overview-score > span {
+  font-size: 11px;
+  color: #687a6b;
+}
+.review-workspace {
+  display: grid;
+  grid-template-columns: 170px minmax(0, 1fr) 310px;
+  align-items: start;
+  gap: 18px;
+}
+.review-answer-card,
+.review-grading-panel {
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  padding: 20px;
+}
+.review-answer-card {
+  position: sticky;
+  top: 24px;
+}
+.review-answer-card h2 {
+  font-size: 15px;
+  margin: 0 0 18px;
+}
+.review-answer-card h2 small {
+  display: block;
+  font-size: 11px;
+  font-weight: 400;
+  color: #7b857e;
+  margin-top: 8px;
+}
+.review-answer-card .question-numbers {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 7px;
+}
+.review-answer-card .question-numbers button {
+  font-size: 12px;
+  min-width: 0;
+  aspect-ratio: 1;
+}
+.review-answer-card > p {
+  font-size: 11px;
+  line-height: 1.9;
+  margin: 17px 0;
+}
+.review-publish-area {
+  border-top: 1px solid var(--line);
+  padding-top: 18px;
+}
+.review-publish-area .button {
+  font-size: 12px;
+  padding: 11px 5px;
+  gap: 5px;
+}
+.review-publish-area p {
+  font-size: 11px;
+  line-height: 1.8;
+}
+.review-published-label {
+  color: #407858;
+  display: flex;
+  align-items: center;
+  font-size: 13px;
+  gap: 5px;
+}
+.review-student-paper {
+  margin: 0;
+  min-width: 0;
+  padding: 26px !important;
+}
+.review-question-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  border-top: 1px solid var(--line);
+  padding-top: 20px;
+  margin-top: 26px;
+}
+.review-question-pagination span {
+  font-size: 12px;
+  color: #7c817a;
+}
+.review-question-pagination .button {
+  font-size: 12px;
+  padding: 8px 12px;
+}
+.review-grading-panel {
+  min-width: 0;
+}
+.grading-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 7px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+.grading-title h2 {
+  font-size: 16px;
+  margin: 0;
+}
+.grading-title > span {
+  font-size: 10px;
+  color: #857242;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.grading-current {
+  font-size: 12px;
+  color: #7c817b;
+  line-height: 1.8;
+}
+.grading-current strong {
+  font-size: 18px;
+  color: #414e44;
+  margin: 0 5px;
+}
+.verdict-buttons {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+  margin: 18px 0;
+}
+.verdict-buttons button {
+  border: 1px solid #e1e5df;
+  border-radius: 8px;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  padding: 11px 2px;
+  font-size: 12px;
+  color: #7c827c;
+}
+.verdict-buttons .verdict-correct.selected {
+  background: #e8f4ed;
+  border-color: #7db295;
+  color: #2f7650;
+}
+.verdict-buttons .verdict-incorrect.selected {
+  background: #fbecea;
+  border-color: #d89c95;
+  color: #aa4e45;
+}
+.verdict-buttons .verdict-partial.selected {
+  background: #fff4dc;
+  border-color: #d9bc71;
+  color: #936f23;
+}
+.grading-score-input {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+  color: #7c827a;
+}
+.grading-score-input input {
+  width: 100px;
+  font-size: 22px;
+  font-weight: 600;
+}
+.review-grading-panel textarea {
+  font-size: 13px;
+  line-height: 1.8;
+  resize: vertical;
+  min-width: 0;
+}
+.review-grading-panel > .muted {
+  font-size: 11px;
+  line-height: 1.8;
+}
+.grading-save-state {
+  color: #7b857a;
+  text-align: center;
+  font-size: 11px;
+  min-height: 16px;
+}
+.review-grading-panel h3 {
+  font-size: 13px;
+  color: #617264;
+  margin: 20px 0 8px;
+}
+.review-grading-panel .markdown {
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+.review-reference {
+  border-top: 1px solid var(--line);
+  margin-top: 20px;
+  padding-top: 17px;
+  font-size: 12px;
+  line-height: 1.9;
+}
+.review-reference summary {
+  cursor: pointer;
+  color: #708173;
+  margin-bottom: 10px;
+}
+.review-grading-panel .inline-error {
+  margin: 12px 0;
+  font-size: 12px;
+}
+.teacher-page .inline-error {
+  overflow-wrap: anywhere;
+}
+.teacher-page .button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.teacher-review-page .back-link {
+  margin-bottom: 18px;
+}
+.waiting-banner {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+  background: #edf2f3;
+  border: 1px solid #d2dfe2;
+  color: #43636c;
+  border-radius: 14px;
+  padding: 25px 28px;
+  margin: 25px 0;
+}
+.waiting-banner > div {
+  flex: 1;
+  min-width: 200px;
+}
+.waiting-banner h2 {
+  font-size: 20px;
+  margin: 0 0 8px;
+}
+.waiting-banner p {
+  font-size: 13px;
+  margin: 0;
+  line-height: 1.8;
+}
+.teacher-feedback {
+  border-top: 1px dashed #cddbcf;
+  margin-top: 18px;
+  padding-top: 6px;
+}
+.teacher-feedback h4 {
+  margin-bottom: 8px;
+}
+.teacher-feedback .feedback-author {
+  font-size: 11px;
+  color: #6f7e72;
+}
+.review-student-paper .question-figure {
+  max-width: 100%;
+}
+.review-student-paper .question-figure img {
+  height: auto;
+}
+.teacher-review-page h1 {
+  overflow-wrap: anywhere;
+}
+@media (min-width: 1600px) {
+  .review-workspace {
+    grid-template-columns: 180px minmax(0, 1fr) 345px;
+    gap: 22px;
+  }
+}
+@media (max-width: 1250px) {
+  .review-workspace {
+    grid-template-columns: 145px minmax(0, 1fr);
+  }
+  .review-grading-panel {
+    grid-column: 2;
+  }
+  .review-answer-card {
+    grid-row: span 2;
+  }
+  .review-answer-card .question-numbers {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .verdict-buttons {
+    max-width: 380px;
+  }
+  .verdict-buttons button {
+    flex-direction: row;
+    justify-content: center;
+  }
+  .grading-title > span {
+    font-size: 12px;
+  }
+}
+@media (max-width: 700px) {
+  .teacher-heading {
+    align-items: flex-start;
+    flex-direction: column;
+    margin-bottom: 18px;
+    gap: 12px;
+  }
+  .teacher-heading p {
+    font-size: 12px;
+  }
+  .teacher-stats {
+    gap: 8px;
+  }
+  .teacher-stats > div {
+    padding: 15px 10px;
+    border-radius: 10px;
+  }
+  .teacher-stats span {
+    font-size: 10px;
+  }
+  .teacher-stats strong {
+    font-size: 24px;
+  }
+  .teacher-stats small {
+    display: block;
+    margin: 5px 0 0;
+    font-size: 10px;
+  }
+  .teacher-toolbar {
+    padding: 14px;
+    align-items: stretch;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .teacher-toolbar input {
+    max-width: none;
+  }
+  .teacher-filters {
+    justify-content: space-between;
+    gap: 1px;
+  }
+  .teacher-filters button {
+    font-size: 12px;
+    padding: 8px 11px;
+  }
+  .teacher-submission {
+    padding: 18px;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .submission-avatar {
+    width: 36px;
+    height: 36px;
+  }
+  .submission-copy {
+    flex-basis: calc(100% - 50px);
+  }
+  .teacher-submission > .button {
+    margin-left: 48px;
+    font-size: 12px;
+  }
+  .submission-copy h2 {
+    font-size: 15px;
+    line-height: 1.6;
+  }
+  .submission-copy p {
+    font-size: 11px;
+    line-height: 1.7;
+  }
+  .review-overview {
+    padding: 18px;
+    gap: 15px;
+    align-items: flex-start;
+  }
+  .review-overview > div:first-child > strong {
+    font-size: 16px;
+  }
+  .review-overview p {
+    font-size: 11px;
+  }
+  .review-overview-score > strong {
+    font-size: 23px;
+  }
+  .review-overview-score > span {
+    font-size: 10px;
+  }
+  .review-workspace {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  .review-answer-card,
+  .review-student-paper,
+  .review-grading-panel {
+    width: 100%;
+    position: static;
+  }
+  .review-answer-card h2 small {
+    display: inline;
+    margin-left: 12px;
+  }
+  .review-answer-card .question-numbers {
+    grid-template-columns: repeat(auto-fill, minmax(36px, 1fr));
+    gap: 8px;
+  }
+  .review-answer-card .question-numbers button {
+    max-width: 46px;
+  }
+  .review-answer-card > p {
+    margin: 12px 0;
+  }
+  .review-publish-area {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+    padding-top: 14px;
+  }
+  .review-publish-area > .button {
+    width: auto;
+    padding: 11px 16px;
+  }
+  .review-publish-area p {
+    margin: 0;
+  }
+  .review-student-paper {
+    padding: 20px !important;
+  }
+  .review-student-paper .question-card-heading {
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .waiting-banner {
+    padding: 20px;
+    gap: 14px;
+  }
+  .waiting-banner h2 {
+    font-size: 18px;
+  }
+  .waiting-banner > div {
+    min-width: 170px;
+  }
+  .staff-shortcuts a {
+    font-size: 12px;
+    padding: 8px 10px;
+  }
+  .teacher-review-page {
+    padding-bottom: 30px;
+  }
+}

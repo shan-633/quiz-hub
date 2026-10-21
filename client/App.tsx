@@ -21,6 +21,13 @@ import {
 import { AuthProvider, ToastProvider, useAuth, useToast } from './context';
 import { Loading, Modal } from './components/ui';
 import { HomePage } from './pages/HomePage';
+import './teacher.css';
+const TeacherInboxPage = lazy(() =>
+  import('./pages/TeacherInboxPage').then((m) => ({ default: m.TeacherInboxPage })),
+);
+const TeacherReviewPage = lazy(() =>
+  import('./pages/TeacherReviewPage').then((m) => ({ default: m.TeacherReviewPage })),
+);
 const LoginPage = lazy(() => import('./pages/LoginPage').then((m) => ({ default: m.LoginPage })));
 const AttemptPage = lazy(() =>
   import('./pages/AttemptPage').then((m) => ({ default: m.AttemptPage })),
@@ -36,10 +43,10 @@ function Protected({ children, admin = false }: { children: React.ReactNode; adm
   const { user, loading } = useAuth(),
     location = useLocation();
   if (loading) return <Loading />;
-  if (!user || (admin && user.role !== 'admin'))
+  if (!user || (admin && user.role !== 'admin' && user.role !== 'teacher'))
     return (
       <Navigate
-        to={`/login${admin ? '?admin=1' : ''}`}
+        to={`/login${admin ? (location.pathname.startsWith('/teacher') ? '?teacher=1' : '?admin=1') : ''}`}
         state={{ from: location.pathname }}
         replace
       />
@@ -51,7 +58,7 @@ function Shell() {
     toast = useToast();
   const [help, setHelp] = useState(false);
   const location = useLocation(),
-    admin = location.pathname.startsWith('/admin');
+    admin = location.pathname.startsWith('/admin') || location.pathname.startsWith('/teacher');
   const links = [
     { to: '/', icon: House, label: '学习首页' },
     { to: '/library', icon: BookOpen, label: '试卷与题库' },
@@ -78,6 +85,10 @@ function Shell() {
         <nav aria-label="主要导航">
           {admin ? (
             <>
+              <NavLink to="/teacher">
+                <NotebookPen size={19} />
+                收卷与批改
+              </NavLink>
               <Link
                 to="/admin"
                 className={
@@ -127,7 +138,13 @@ function Shell() {
               <span className="avatar">{user.name.slice(-1)}</span>
               <span>
                 <strong>{user.name}</strong>
-                <small>{user.role === 'admin' ? '管理员' : '保持好奇，继续探索'}</small>
+                <small>
+                  {user.role === 'admin'
+                    ? '管理员'
+                    : user.role === 'teacher'
+                      ? '教师'
+                      : '保持好奇，继续探索'}
+                </small>
               </span>
               <button
                 className="icon-button"
@@ -169,6 +186,22 @@ function Shell() {
               <Route path="/" element={<HomePage />} />
               <Route path="/library" element={<HomePage />} />
               <Route path="/login" element={<LoginPage />} />
+              <Route
+                path="/teacher"
+                element={
+                  <Protected admin>
+                    <TeacherInboxPage />
+                  </Protected>
+                }
+              />
+              <Route
+                path="/teacher/attempts/:id"
+                element={
+                  <Protected admin>
+                    <TeacherReviewPage />
+                  </Protected>
+                }
+              />
               <Route
                 path="/history"
                 element={
@@ -232,7 +265,7 @@ function Shell() {
               <li>选择题点击选项，多选题可勾选多个答案。</li>
               <li>填空题与实验题直接填写题干中的空格；单位已给出时只填写数值。</li>
               <li>计算题可以输入文字与公式，也可以手写或上传纸面答案。</li>
-              <li>查看页面保存状态，完成后提交；主观题保留原始过程并标记待评阅。</li>
+              <li>查看保存状态，完成后交卷；教师批改并发布后，可以查看成绩和评语。</li>
             </ol>
             <p className="muted">本地演示数据为自编示例。iPad 手写建议使用触控笔。</p>
             <button className="button primary" onClick={() => setHelp(false)}>

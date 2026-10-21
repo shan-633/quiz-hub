@@ -75,6 +75,10 @@ export function AdminPage() {
           <p>组织题库、编排试卷，让每道题都清楚地表达。</p>
         </div>
         <div className="admin-heading-actions">
+          <Link className="button" to="/teacher">
+            <NotebookPen size={18} />
+            收卷与批改
+          </Link>
           <button className="button" onClick={() => setImporting(true)}>
             <Upload size={18} />
             导入题库

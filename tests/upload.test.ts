@@ -18,7 +18,11 @@ async function login(username = 'student') {
   const r = await app.inject({
     method: 'POST',
     url: '/api/auth/login',
-    payload: { username, password: username === 'admin' ? 'Admin123!' : 'Student123!' },
+    payload: {
+      username,
+      password:
+        username === 'teacher' ? 'Teacher123!' : username === 'admin' ? 'Admin123!' : 'Student123!',
+    },
   });
   return {
     cookie: r.cookies.map((c: any) => `${c.name}=${c.value}`).join('; '),
@@ -127,4 +131,39 @@ it('照片经真实解码后保存，重复上传幂等，其他学生无法读�
       })
     ).statusCode,
   ).toBe(422);
+  const teacher = await login('teacher'),
+    admin = await login('admin');
+  const uploadedUrl = `/api/uploads/${asset.id}`;
+  expect((await app.inject({ url: uploadedUrl, headers: teacher })).statusCode).toBe(404);
+  const orphanForm = multipart(
+    { kind: 'answer', attemptId: a.id, questionId: 'q-work', clientId: 'unused-photo' },
+    bytes,
+  );
+  const orphan = (
+    await app.inject({
+      method: 'POST',
+      url: '/api/uploads',
+      headers: { ...headers, ...orphanForm.headers },
+      payload: orphanForm.payload,
+    })
+  ).json();
+  expect(
+    (
+      await app.inject({
+        method: 'PUT',
+        url: `/api/attempts/${a.id}/answers/q-work`,
+        headers,
+        payload: { data: answer, expectedRevision: 0 },
+      })
+    ).statusCode,
+  ).toBe(200);
+  expect(
+    (await app.inject({ method: 'POST', url: `/api/attempts/${a.id}/submit`, headers })).statusCode,
+  ).toBe(200);
+  expect((await app.inject({ url: uploadedUrl, headers: teacher })).statusCode).toBe(200);
+  expect((await app.inject({ url: uploadedUrl, headers: admin })).statusCode).toBe(200);
+  expect((await app.inject({ url: uploadedUrl, headers: other })).statusCode).toBe(404);
+  expect(
+    (await app.inject({ url: `/api/uploads/${orphan.id}`, headers: teacher })).statusCode,
+  ).toBe(404);
 });

@@ -6,7 +6,7 @@ import sharp, { type Metadata } from 'sharp';
 import { z } from 'zod';
 import type { Attempt } from '../../shared/model';
 import { walkBlocks } from '../../shared/domain';
-import { HttpError, requireUser, requireAdmin } from '../auth';
+import { HttpError, requireUser, requireTeacher } from '../auth';
 import type { Store } from '../store';
 export interface Asset {
   id: string;
@@ -74,7 +74,7 @@ export async function registerUploads(app: FastifyInstance, store: Store) {
           clientId: z.string().regex(/^[a-zA-Z0-9_-]{1,128}$/),
         })
         .parse(fields);
-      if (body.kind === 'question') requireAdmin(req);
+      if (body.kind === 'question') requireTeacher(req);
       else {
         const a = store.get<Attempt>('attempts', body.attemptId ?? '');
         const q = a?.questions.find((q) => q.id === body.questionId);
@@ -154,11 +154,25 @@ export async function registerUploads(app: FastifyInstance, store: Store) {
           .some((q) =>
             walkBlocks(q.content).some((b) => b.type === 'image' && b.assetId === asset.id),
           );
+      const staff = req.user?.role === 'teacher' || req.user?.role === 'admin';
+      const attempt =
+        asset.kind === 'answer' && asset.attemptId
+          ? store.get<Attempt>('attempts', asset.attemptId)
+          : undefined;
+      const response = attempt?.answers[asset.questionId ?? '']?.data;
+      const value = asset.partId ? response?.parts[asset.partId] : response;
+      const submittedAttachment =
+        staff &&
+        attempt?.status === 'submitted' &&
+        attempt.userId === asset.ownerId &&
+        attempt.questions.some((q) => q.id === asset.questionId) &&
+        !!value &&
+        (value.imagePages.some((p) => p.assetId === asset.id) ||
+          value.drawingPages.some((p) => p.previewAssetId === asset.id));
       if (
         !published &&
-        (!req.user ||
-          (req.user.id !== asset.ownerId &&
-            !(asset.kind === 'question' && req.user.role === 'admin')))
+        !submittedAttachment &&
+        (!req.user || (req.user.id !== asset.ownerId && !(asset.kind === 'question' && staff)))
       )
         throw new HttpError(404, '图片不存在');
       const fileName = req.query.thumbnail === '1' ? asset.thumbnail : asset.fileName;

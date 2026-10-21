@@ -94,6 +94,39 @@ function mount(a: Attempt) {
     </MemoryRouter>,
   );
 }
+it('交卷待批改只显示收卷确认，发布后才能看到分数与教师反馈', () => {
+  const a = fixture(['correct']);
+  a.review = {
+    state: 'pending',
+    revision: 1,
+    autoEligible: true,
+    autoCount: 1,
+    autoReason: '已初评',
+    receivedAt: 'now',
+  };
+  delete a.grades;
+  const first = mount(a);
+  expect(screen.getByText('已交卷，教师已收到')).toBeTruthy();
+  expect(first.container.querySelector('.grade-panel')).toBeNull();
+  expect(screen.getByRole('button', { name: '刷新批改结果' })).toBeTruthy();
+  cleanup();
+  const published = fixture(['correct']);
+  published.review = { ...a.review, state: 'published' };
+  published.teacherFeedback = {
+    q0: {
+      verdict: 'correct',
+      score: 100,
+      correctAnswer: '教师标准答案',
+      comment: '思路清楚',
+      teacherId: 't',
+      teacherName: '老师',
+      updatedAt: 'now',
+    },
+  };
+  mount(published);
+  expect(screen.getByText('教师标准答案')).toBeTruthy();
+  expect(screen.getByText('思路清楚')).toBeTruthy();
+});
 it('顶部按分值加权显示得分，部分分计入；答题卡对错和光圈保持独立', () => {
   const { container } = mount(
     fixture(['correct', 'incorrect', 'partial', 'unanswered', 'pending']),
@@ -122,6 +155,36 @@ it('顶部按分值加权显示得分，部分分计入；答题卡对错和光�
   expect(
     screen.getByRole('button', { name: /第 5 题，待评阅/ }).classList.contains('nav-pending'),
   ).toBe(true);
+});
+it('混合题直接采用自动初评并发布，仍展示选择小问正确答案', () => {
+  const a = fixture(['incorrect']),
+    q = a.questions[0];
+  q.type = 'experiment';
+  q.content = [
+    {
+      id: 'part',
+      type: 'subquestion',
+      label: '小问一',
+      score: q.score,
+      responseKind: 'single',
+      options: [
+        { id: 'a', text: '甲' },
+        { id: 'b', text: '乙' },
+      ],
+      children: [],
+    },
+  ];
+  q.solution!.partChoices = { part: ['b'] };
+  a.review = {
+    state: 'published',
+    revision: 2,
+    autoEligible: true,
+    autoCount: 1,
+    autoReason: '已初评',
+    receivedAt: 'now',
+  };
+  mount(a);
+  expect(screen.getByText('小问一：B')).toBeTruthy();
 });
 it('全部待评阅不显示红色或虚假的100%正确率', () => {
   const { container } = mount(fixture(['pending']));

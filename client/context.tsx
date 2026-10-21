@@ -5,7 +5,7 @@ import { X, CheckCircle2, AlertCircle } from 'lucide-react';
 interface Auth {
   user: User | null;
   loading: boolean;
-  login: (username: string, password: string) => Promise<void>;
+  login: (username: string, password: string) => Promise<User>;
   logout: () => Promise<void>;
 }
 const AuthContext = createContext<Auth>(null!);
@@ -28,6 +28,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const result = await api('/auth/login', { method: 'POST', body: json({ username, password }) });
     setUser(result.user);
     setCsrf(result.csrfToken);
+    return result.user as User;
   };
   const logout = async () => {
     await api('/auth/logout', { method: 'POST' });

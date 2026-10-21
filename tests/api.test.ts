@@ -111,8 +111,14 @@ it('北京真题卷从公开目录到提交：26题无答案泄露，多选半�
     headers,
   });
   expect(submitted.statusCode).toBe(200);
-  expect(submitted.json().grades['bj2022-q13'].earned).toBe(1);
-  expect(submitted.json().grades[reading.id].pending).toBe(true);
+  expect(submitted.json().grades).toBeUndefined();
+  const teacher = await login(app, 'admin');
+  const review = (
+    await app.inject({ url: `/api/teacher/attempts/${attempt.id}`, headers: teacher })
+  ).json();
+  expect(review.grades['bj2022-q13'].earned).toBe(1);
+  expect(review.kind).toBe('paper');
+  expect(review.grades[reading.id].pending).toBe(true);
 });
 
 describe('真实 SQLite API 与权限边界', () => {

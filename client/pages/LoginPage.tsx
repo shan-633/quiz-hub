@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, useSearchParams, useLocation, Link } from 'react-router-dom';
-import { ArrowRight, GraduationCap, ShieldCheck, Atom } from 'lucide-react';
+import { ArrowRight, GraduationCap, ShieldCheck, Atom, NotebookPen } from 'lucide-react';
 import { useAuth, useToast } from '../context';
 import { api, json } from '../api';
 export function LoginPage() {
@@ -10,23 +10,34 @@ export function LoginPage() {
     [params] = useSearchParams(),
     location = useLocation();
   const admin = params.has('admin');
-  const [username, setUsername] = useState(admin ? 'admin' : 'student'),
-    [password, setPassword] = useState(admin ? 'Admin123!' : 'Student123!'),
+  const teacher = params.has('teacher');
+  const [username, setUsername] = useState(teacher ? 'teacher' : admin ? 'admin' : 'student'),
+    [password, setPassword] = useState(
+      teacher ? 'Teacher123!' : admin ? 'Admin123!' : 'Student123!',
+    ),
     [busy, setBusy] = useState(false),
     [error, setError] = useState('');
   const submit = async (user = username, pass = password) => {
     setBusy(true);
     setError('');
     try {
-      await login(user, pass);
+      const authenticated = await login(user, pass);
       const libraryId = params.get('library');
       if (libraryId) {
         const a = await api('/attempts', { method: 'POST', body: json({ libraryId }) });
         navigate(`/attempts/${a.id}`, { replace: true });
       } else
-        navigate((location.state as any)?.from ?? (user === 'admin' ? '/admin' : '/'), {
-          replace: true,
-        });
+        navigate(
+          (location.state as any)?.from ??
+            (authenticated.role === 'teacher'
+              ? '/teacher'
+              : authenticated.role === 'admin'
+                ? '/admin'
+                : '/'),
+          {
+            replace: true,
+          },
+        );
     } catch (e) {
       setError((e as Error).message);
     } finally {
@@ -59,7 +70,7 @@ export function LoginPage() {
         <span className="login-logo">
           <Atom size={30} />
         </span>
-        <h2>{admin ? '进入管理工作台' : '进入学习空间'}</h2>
+        <h2>{teacher ? '进入教师工作台' : admin ? '进入管理工作台' : '进入学习空间'}</h2>
         <p>使用本地演示账号，体验完整流程。</p>
         <form
           onSubmit={(e) => {
@@ -103,6 +114,14 @@ export function LoginPage() {
           <button
             className="button"
             disabled={busy}
+            onClick={() => void submit('teacher', 'Teacher123!')}
+          >
+            <NotebookPen size={18} />
+            教师端
+          </button>
+          <button
+            className="button"
+            disabled={busy}
             onClick={() => void submit('student', 'Student123!')}
           >
             <GraduationCap size={18} />
@@ -119,6 +138,8 @@ export function LoginPage() {
         </div>
         <p className="demo-accounts">
           学生 student / Student123!
+          <br />
+          教师 teacher / Teacher123!
           <br />
           管理员 admin / Admin123!
         </p>

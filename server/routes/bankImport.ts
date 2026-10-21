@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { MAX_IMPORT_BYTES } from '../../shared/bankImport';
-import { HttpError, requireAdmin } from '../auth';
+import { HttpError, requireTeacher } from '../auth';
 import type { Store } from '../store';
 import { prepareBankImport, commitBankImport, previousBankImport } from '../import/bankImport';
 
@@ -38,7 +38,7 @@ export function registerBankImport(app: FastifyInstance, store: Store) {
   app.get<{ Params: { name: string } }>(
     '/api/admin/bank-import/files/:name',
     async (req, reply) => {
-      requireAdmin(req);
+      requireTeacher(req);
       const name = req.params.name;
       if (
         ![
@@ -64,7 +64,7 @@ export function registerBankImport(app: FastifyInstance, store: Store) {
       `/api/admin/bank-import/${endpoint}`,
       { config: { rateLimit: { max: 20, timeWindow: '1 minute' } } },
       async (req, reply) => {
-        const user = requireAdmin(req);
+        const user = requireTeacher(req);
         const { text, fields } = await readFile(req);
         const options = z
           .object({

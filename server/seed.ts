@@ -29,6 +29,14 @@ function q(
 }
 const p = (id: string, text: string) => ({ id, type: 'paragraph' as const, text });
 export function seed(store: Store) {
+  if (!store.get('users', 'user-teacher'))
+    store.put('users', 'user-teacher', {
+      id: 'user-teacher',
+      username: 'teacher',
+      name: '陈老师',
+      role: 'teacher',
+      passwordHash: hashPassword('Teacher123!'),
+    });
   if (store.get('users', 'user-admin')) return;
   const users = [
     { id: 'user-student', username: 'student', name: '同学', role: 'student' },

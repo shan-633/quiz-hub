@@ -108,6 +108,7 @@ export interface SavedAnswer {
   updatedAt: string;
 }
 export interface Grade {
+  source?: 'auto' | 'teacher' | 'pending' | 'mixed';
   earned: number;
   max: number;
   pending: boolean;
@@ -130,7 +131,7 @@ export interface LibraryItem {
 export interface User {
   id: string;
   name: string;
-  role: 'student' | 'admin';
+  role: 'student' | 'teacher' | 'admin';
   username: string;
 }
 export interface Attempt {
@@ -145,6 +146,27 @@ export interface Attempt {
   answers: Record<string, SavedAnswer>;
   grades?: Record<string, Grade>;
   submittedAt?: string;
+  review?: Review;
+  teacherFeedback?: Record<string, TeacherFeedback>;
+}
+export interface Review {
+  state: 'pending' | 'in_progress' | 'published';
+  revision: number;
+  autoEligible: boolean;
+  autoCount: number;
+  autoReason: string;
+  receivedAt: string;
+  publishedAt?: string;
+  publishedBy?: string;
+}
+export interface TeacherFeedback {
+  verdict: 'correct' | 'incorrect' | 'partial';
+  score: number;
+  correctAnswer: string;
+  comment: string;
+  teacherId: string;
+  teacherName: string;
+  updatedAt: string;
 }
 export const typeLabels: Record<QuestionType, string> = {
   single: '单选题',

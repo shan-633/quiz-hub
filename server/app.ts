@@ -21,6 +21,7 @@ import {
 import { registerLibrary } from './routes/library';
 import { registerQuestions } from './routes/questions';
 import { registerAttempts } from './routes/attempts';
+import { registerTeacher } from './routes/teacher';
 import { registerUploads } from './routes/uploads';
 import { registerBankImport } from './routes/bankImport';
 export interface AppOptions {
@@ -94,6 +95,7 @@ export async function createApp(options: AppOptions) {
   registerLibrary(app, store);
   registerQuestions(app, store);
   registerAttempts(app, store);
+  registerTeacher(app, store);
   await registerUploads(app, store);
   registerBankImport(app, store);
   const publicDir = resolve('public');

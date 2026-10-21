@@ -2,7 +2,8 @@ import type { FastifyInstance, FastifyRequest } from 'fastify';
 import { z } from 'zod';
 import type { AnswerData, Attempt, LibraryItem } from '../../shared/model';
 import { answerSchema } from '../../shared/schema';
-import { gradeQuestion, publicQuestion, walkBlocks } from '../../shared/domain';
+import { publicQuestion, walkBlocks } from '../../shared/domain';
+import { initialReview } from '../../shared/teacherReview';
 import { HttpError, requireUser } from '../auth';
 import type { Store } from '../store';
 import { libraryQuestions } from './library';
@@ -14,12 +15,18 @@ export function registerAttempts(app: FastifyInstance, store: Store) {
     if (!a || a.userId !== user.id) throw new HttpError(404, '未找到你的作答记录');
     return a;
   };
-  const view = (a: Attempt) =>
-    a.status === 'active' ? { ...a, questions: a.questions.map(publicQuestion) } : a;
+  const view = (a: Attempt) => {
+    if (a.status === 'active' || (a.review && a.review.state !== 'published')) {
+      const { grades, teacherFeedback, ...safe } = a;
+      return { ...safe, questions: a.questions.map(publicQuestion) };
+    }
+    return a;
+  };
   app.get('/api/attempts', async (req) =>
     store
       .list<Attempt>('attempts', requireUser(req).id)
       .reverse()
+      .map(view)
       .map((a) => ({
         id: a.id,
         title: a.title,
@@ -31,6 +38,7 @@ export function registerAttempts(app: FastifyInstance, store: Store) {
         answeredCount: Object.keys(a.answers).length,
         earned: a.grades ? Object.values(a.grades).reduce((s, g) => s + g.earned, 0) : undefined,
         pending: a.grades ? Object.values(a.grades).some((g) => g.pending) : undefined,
+        reviewState: a.review?.state,
       })),
   );
   app.post('/api/attempts', async (req, reply) => {
@@ -109,20 +117,7 @@ export function registerAttempts(app: FastifyInstance, store: Store) {
       if (a.status === 'submitted') return view(a);
       a.status = 'submitted';
       a.submittedAt = a.updatedAt = new Date().toISOString();
-      a.grades = {};
-      for (const q of a.questions)
-        a.grades[q.id] = gradeQuestion(
-          q,
-          a.answers[q.id]?.data ?? {
-            choiceIds: [],
-            blankValues: {},
-            markdown: '',
-            drawingPages: [],
-            imagePages: [],
-            parts: {},
-            flagged: false,
-          },
-        );
+      Object.assign(a, initialReview(a.questions, a.answers));
       store.put('attempts', a.id, a, a.userId);
       return view(a);
     });

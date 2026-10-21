@@ -25,6 +25,9 @@ export function HistoryPage() {
         <div className="eyebrow">YOUR LEARNING JOURNEY</div>
         <h1>每一步思考，都有迹可循。</h1>
         <p>继续未完成的练习，或回看已经走过的解题过程。</p>
+        <button className="button" onClick={reload}>
+          刷新批改状态
+        </button>
       </div>
       {loading ? (
         <Loading />
@@ -51,16 +54,24 @@ export function HistoryPage() {
                 <span
                   className={`status-tag ${a.status === 'submitted' ? 'status-published' : 'status-draft'}`}
                 >
-                  {a.status === 'submitted' ? '已提交' : '进行中'}
+                  {a.status === 'active'
+                    ? '进行中'
+                    : a.reviewState === 'published'
+                      ? '已批改'
+                      : a.reviewState
+                        ? '教师批改中'
+                        : '已提交'}
                 </span>
                 <h2>{a.title}</h2>
                 <p>
                   {a.questionCount} 道题 ·{' '}
                   {a.status === 'active'
                     ? `已保存 ${a.answeredCount} 题`
-                    : a.pending
-                      ? '包含主观题，待评阅'
-                      : `得分 ${a.earned} 分`}
+                    : a.reviewState && a.reviewState !== 'published'
+                      ? '已交卷，等待教师发布结果'
+                      : a.pending
+                        ? '包含主观题，待评阅'
+                        : `得分 ${a.earned} 分`}
                   <span>更新于 {formatDate(a.updatedAt)}</span>
                 </p>
               </div>
