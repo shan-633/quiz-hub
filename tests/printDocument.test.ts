@@ -1,6 +1,5 @@
 import { expect, it } from 'vitest';
 import type { Question, LibraryItem } from '../shared/model';
-import { printOptionsSchema } from '../shared/schema';
 import { renderPrintDocument } from '../server/print/PrintDocument';
 const item: LibraryItem = {
   id: 'b',
@@ -52,16 +51,10 @@ const question: Question = {
     explanation: '绝不能进入学生PDF的解析',
   },
 };
-it('打印设置只允许两种版式与字级，禁止携带答案开关', () => {
-  expect(printOptionsSchema.parse({})).toEqual({ mode: 'reading', fontSize: 'standard' });
-  expect(printOptionsSchema.safeParse({ includeAnswers: true }).success).toBe(false);
-  expect(printOptionsSchema.safeParse({ mode: 'random', fontSize: 4 }).success).toBe(false);
-});
 it('打印渲染包含原图、公式、空格、小问和表格，不含答案或交互输入', () => {
   const html = renderPrintDocument({
     item,
     questions: [question],
-    options: printOptionsSchema.parse({}),
     images: { fig: 'data:image/png;base64,AAAA' },
     fontCss: '',
     mathCss: '',
@@ -79,7 +72,7 @@ it('打印渲染包含原图、公式、空格、小问和表格，不含答案�
   expect(html).not.toContain('点击放大');
   expect(html).not.toContain('answer-space');
 });
-it('作答版给计算题与开放小问书写空间，支持大字与原有选择规则', () => {
+it('计算题与开放小问只保留题目，选择题保留选项与分值规则', () => {
   const calc: Question = {
     ...question,
     id: 'calc',
@@ -101,13 +94,14 @@ it('作答版给计算题与开放小问书写空间，支持大字与原有选�
   const html = renderPrintDocument({
     item,
     questions: [question, calc, multiple],
-    options: printOptionsSchema.parse({ mode: 'writing', fontSize: 'large' }),
     images: { fig: 'data:image/png;base64,AAAA' },
     fontCss: '',
     mathCss: '',
   });
-  expect(html).toContain('font-large');
-  expect(html).toContain('answer-space');
+  expect(html).not.toContain('font-large');
+  expect(html).not.toContain('answer-space');
+  expect(html).not.toContain('student-details');
+  expect(html).toContain('求功率');
   expect(html).toContain('选对但不全');
   expect(html).toContain('A.');
   expect(html).toContain('B.');
@@ -139,7 +133,6 @@ it('小幅选择题插图与文字并排，末尾不生成只有结束标记的�
   const html = renderPrintDocument({
     item,
     questions: [q],
-    options: printOptionsSchema.parse({}),
     images: { fig: 'data:image/png;base64,AAAA' },
     fontCss: '',
     mathCss: '',

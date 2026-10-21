@@ -1,8 +1,7 @@
 import type { FastifyInstance } from 'fastify';
 import type { LibraryItem } from '../../shared/model';
 import { publicQuestion } from '../../shared/domain';
-import { printModeLabels } from '../../shared/print';
-import { printOptionsSchema } from '../../shared/schema';
+import { z } from 'zod';
 import { HttpError, requireUser } from '../auth';
 import type { Store } from '../store';
 import { libraryQuestions } from './library';
@@ -16,8 +15,10 @@ export function registerPrint(app: FastifyInstance, store: Store, provided?: Pdf
     { config: { rateLimit: { max: 8, timeWindow: '1 minute' } } },
     async (req, reply) => {
       requireUser(req);
-      const options = printOptionsSchema.parse(req.body ?? {}),
-        item = store.get<LibraryItem>('library', req.params.id);
+      z.object({})
+        .strict()
+        .parse(req.body ?? {});
+      const item = store.get<LibraryItem>('library', req.params.id);
       if (!item || item.state !== 'published') throw new HttpError(404, '未找到已发布的试卷或题库');
       const questions = libraryQuestions(store, item).map(publicQuestion);
       if (!questions.length) throw new HttpError(422, '这里还没有可打印的已发布题目');
@@ -28,7 +29,7 @@ export function registerPrint(app: FastifyInstance, store: Store, provided?: Pdf
         loadPrintStyles(),
       ]);
       const { renderPrintDocument } = await import('../print/PrintDocument');
-      const html = renderPrintDocument({ item, questions, options, images, ...styles });
+      const html = renderPrintDocument({ item, questions, images, ...styles });
       let result;
       try {
         result = await renderer.render(html);
@@ -41,7 +42,7 @@ export function registerPrint(app: FastifyInstance, store: Store, provided?: Pdf
           .slice(0, 90)
           .join('')
           .replace(/[. ]+$/g, '') || '物理练习';
-      const name = `${safeName}_${printModeLabels[options.mode]}_A4.pdf`,
+      const name = `${safeName}_阅读版_A4.pdf`,
         encoded = encodeURIComponent(name).replace(
           /[!'()*]/g,
           (c) => `%${c.charCodeAt(0).toString(16).toUpperCase()}`,

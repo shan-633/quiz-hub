@@ -3,36 +3,16 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import katex from 'katex';
 import type { Block, LibraryItem, Question } from '../../shared/model';
 import { typeLabels } from '../../shared/model';
-import type { PrintOptions } from '../../shared/print';
-import { answerSpaceMm, printModeLabels } from '../../shared/print';
 import { Markdown } from '../../client/components/Markdown';
 
 export interface PrintDocumentInput {
   item: LibraryItem;
   questions: Question[];
-  options: PrintOptions;
   images: Record<string, string>;
   fontCss: string;
   mathCss: string;
 }
-function WorkSpace({ score, calculation = false }: { score: number; calculation?: boolean }) {
-  const height = answerSpaceMm(score, calculation);
-  return (
-    <div className="answer-space" style={{ height: `${height}mm` }}>
-      {Array.from({ length: Math.floor((height - 1) / 8) }, (_, i) => (
-        <i key={i} style={{ top: `${(i + 1) * 8}mm` }} />
-      ))}
-      <span>作答区域</span>
-    </div>
-  );
-}
-function Options({
-  options,
-  multiple = false,
-}: {
-  options: Question['options'];
-  multiple?: boolean;
-}) {
+function Options({ options, multiple = false }: { options: Question['options']; multiple?: boolean }) {
   const short = options.every(
     (o) => o.text.replace(/\$[^$]+\$/g, '公式').length <= 26 && !o.text.includes('\n'),
   );
@@ -55,12 +35,10 @@ function Options({
 function PrintQuestion({
   question: q,
   index,
-  options,
   images,
 }: {
   question: Question;
   index: number;
-  options: PrintOptions;
   images: Record<string, string>;
 }) {
   const inline = (text: string): ReactNode => (
@@ -146,9 +124,6 @@ function PrintQuestion({
             {(b.responseKind === 'single' || b.responseKind === 'multiple') && (
               <Options options={b.options ?? []} multiple={b.responseKind === 'multiple'} />
             )}{' '}
-            {b.responseKind === 'open' && options.mode === 'writing' && (
-              <WorkSpace score={b.score} />
-            )}
           </section>
         );
     }
@@ -201,9 +176,6 @@ function PrintQuestion({
           {(q.type === 'single' || q.type === 'multiple') && (
             <Options options={q.options} multiple={q.type === 'multiple'} />
           )}{' '}
-          {q.type === 'calculation' && options.mode === 'writing' && (
-            <WorkSpace score={q.score} calculation />
-          )}
         </div>
       </article>
     </>
@@ -212,7 +184,6 @@ function PrintQuestion({
 export function renderPrintDocument({
   item,
   questions,
-  options,
   images,
   fontCss,
   mathCss,
@@ -227,29 +198,24 @@ export function renderPrintDocument({
           httpEquiv="Content-Security-Policy"
           content="default-src 'none'; img-src data:; style-src 'unsafe-inline'; font-src data:; script-src 'none'"
         />
-        <title>{`${item.title} · ${printModeLabels[options.mode]}`}</title>
+        <title>{`${item.title} · 阅读版`}</title>
         <style dangerouslySetInnerHTML={{ __html: fontCss + '\n' + mathCss }} />
       </head>
-      <body className={`font-${options.fontSize} mode-${options.mode}`}>
+      <body>
         <main>
           <header className="document-heading">
             <div className="document-brand">
-              知序 · 物理练习<span>{printModeLabels[options.mode]} / A4</span>
+              知序 · 物理练习<span>阅读版 / A4</span>
             </div>
             <h1>{item.title}</h1>
             <p>
               {item.kind === 'paper' ? '试卷' : '题库'} · {questions.length} 道题 ·{' '}
               {Number(total.toFixed(3))} 分 · 建议用时 {item.minutes} 分钟
             </p>
-            {options.mode === 'writing' && (
-              <div className="student-details">
-                姓名：____________　班级：____________　日期：____________
-              </div>
-            )}
           </header>
           <div className="print-questions">
             {questions.map((q, i) => (
-              <PrintQuestion key={q.id} question={q} index={i} options={options} images={images} />
+              <PrintQuestion key={q.id} question={q} index={i} images={images} />
             ))}
           </div>
         </main>

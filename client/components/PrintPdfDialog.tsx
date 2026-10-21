@@ -1,24 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import {
-  Printer,
-  Download,
-  ExternalLink,
-  CheckCircle2,
-  LoaderCircle,
-  FileText,
-  PenLine,
-} from 'lucide-react';
+import { Printer, Download, ExternalLink, CheckCircle2, LoaderCircle } from 'lucide-react';
 import type { LibraryItem } from '../../shared/model';
-import type { PrintOptions } from '../../shared/print';
-import { printFontLabels, printModeLabels } from '../../shared/print';
 import { apiFile, json, type DownloadFile } from '../api';
 import { useAuth } from '../context';
 import { Modal } from './ui';
 import '../print.css';
 export function PrintPdfDialog({ item, onClose }: { item: LibraryItem; onClose: () => void }) {
   const { user } = useAuth(),
-    [options, setOptions] = useState<PrintOptions>({ mode: 'reading', fontSize: 'standard' }),
     [busy, setBusy] = useState(false),
     [error, setError] = useState(''),
     [file, setFile] = useState<(DownloadFile & { url: string }) | null>(null);
@@ -39,12 +28,6 @@ export function PrintPdfDialog({ item, onClose }: { item: LibraryItem; onClose: 
       release();
     };
   }, []);
-  const change = (patch: Partial<PrintOptions>) => {
-    setOptions((v) => ({ ...v, ...patch }));
-    release();
-    setFile(null);
-    setError('');
-  };
   const generate = async () => {
     setBusy(true);
     setError('');
@@ -55,7 +38,7 @@ export function PrintPdfDialog({ item, onClose }: { item: LibraryItem; onClose: 
     try {
       const result = await apiFile(`/library/${encodeURIComponent(item.id)}/pdf`, {
         method: 'POST',
-        body: json(options),
+        body: json({}),
         signal: controller.signal,
       });
       if (!state.current.alive) return;
@@ -69,133 +52,27 @@ export function PrintPdfDialog({ item, onClose }: { item: LibraryItem; onClose: 
     }
   };
   return (
-    <Modal title="生成打印 PDF" onClose={onClose} wide>
-      <div className="pdf-dialog-grid">
-        <div className="pdf-settings">
-          <div className="pdf-selected-item">
-            <span className="pdf-icon">
-              <Printer size={22} />
-            </span>
-            <div>
-              <strong>{item.title}</strong>
-              <p>
-                {item.kind === 'paper' ? '试卷' : '题库'} · {item.questionCount} 道题 ·{' '}
-                {item.totalScore} 分
-              </p>
-            </div>
-          </div>
-          <fieldset className="pdf-mode-options" disabled={busy}>
-            <legend>打印用途</legend>
-            {(['reading', 'writing'] as const).map((mode) => (
-              <label
-                className={`pdf-mode-option ${options.mode === mode ? 'selected' : ''}`}
-                key={mode}
-              >
-                <input
-                  type="radio"
-                  name="pdf-mode"
-                  aria-label={printModeLabels[mode]}
-                  value={mode}
-                  checked={options.mode === mode}
-                  onChange={() => change({ mode })}
-                />
-                <span className="pdf-mode-icon">
-                  {mode === 'reading' ? <FileText size={19} /> : <PenLine size={19} />}
-                </span>
-                <span>
-                  <strong>{printModeLabels[mode]}</strong>
-                  <small>
-                    {mode === 'reading'
-                      ? '题目紧凑排版，适合阅读与讲解'
-                      : '计算题、开放小问保留书写区域'}
-                  </small>
-                </span>
-                <CheckCircle2 className="pdf-selected-check" size={17} />
-              </label>
-            ))}
-          </fieldset>
-          <fieldset className="pdf-font-options" disabled={busy}>
-            <legend>正文字号</legend>
-            <div>
-              {(['standard', 'large'] as const).map((size) => (
-                <label key={size} className={options.fontSize === size ? 'selected' : ''}>
-                  <input
-                    type="radio"
-                    name="pdf-font-size"
-                    aria-label={printFontLabels[size]}
-                    checked={options.fontSize === size}
-                    onChange={() => change({ fontSize: size })}
-                  />
-                  {printFontLabels[size]}
-                </label>
-              ))}
-            </div>
-          </fieldset>
-          <p className="pdf-answer-note">
-            只导出题目与原图，填空保留空线；不包含标准答案、你的作答或教师评语。
+    <Modal title="生成打印 PDF" onClose={onClose}>
+      <div className="pdf-selected-item">
+        <span className="pdf-icon">
+          <Printer size={22} />
+        </span>
+        <div>
+          <strong>{item.title}</strong>
+          <p>
+            {item.kind === 'paper' ? '试卷' : '题库'} · {item.questionCount} 道题 ·{' '}
+            {item.totalScore} 分
           </p>
-          <details className="pdf-print-tips">
-            <summary>打印建议</summary>
-            <p>
-              A4竖向，按“实际大小 /
-              100%”打印。双面打印可选长边翻转。图片保留原色，黑白打印也保留题目结构。实际页数生成后显示。
-            </p>
-          </details>
         </div>
-        <aside className="pdf-layout-preview" aria-label="版式示意">
-          <div className={`pdf-mini-page ${options.fontSize === 'large' ? 'large' : ''}`}>
-            <div className="pdf-mini-top">
-              知序 · 物理练习<span>A4</span>
-            </div>
-            <h3>{item.title}</h3>
-            <div className="pdf-mini-meta">
-              {item.questionCount} 道题 · {printModeLabels[options.mode]}
-            </div>
-            <div className="pdf-mini-rule" />
-            <div className="pdf-mini-question">
-              <b>01</b>
-              <span>题干、公式与原图</span>
-            </div>
-            <i className="pdf-mini-line" />
-            <i className="pdf-mini-line short" />
-            <div className="pdf-mini-illustration">
-              <span>F</span>
-              <i />
-              <span>→</span>
-            </div>
-            <div className="pdf-mini-choices">
-              <span>A. ______</span>
-              <span>B. ______</span>
-              <span>C. ______</span>
-              <span>D. ______</span>
-            </div>
-            <div className="pdf-mini-rule" />
-            <div className="pdf-mini-question">
-              <b>02</b>
-              <span>计算与开放题</span>
-            </div>
-            <i className="pdf-mini-line" />
-            <i className="pdf-mini-line short" />
-            {options.mode === 'writing' ? (
-              <div className="pdf-mini-answer">作答区域</div>
-            ) : (
-              <>
-                <i className="pdf-mini-line" />
-                <div className="pdf-mini-question last">
-                  <b>03</b>
-                  <span>接着下一道题</span>
-                </div>
-              </>
-            )}
-            <div className="pdf-mini-footer">1 / …</div>
-          </div>
-          <p>版式示意 · 非最终预览</p>
-          <div className="pdf-layout-dimensions">
-            <span>210 × 297 mm</span>
-            <span>左右边距 18 mm</span>
-          </div>
-        </aside>
       </div>
+      <p className="pdf-format">A4 阅读版 · 正文 12 磅</p>
+      <p className="pdf-answer-note">
+        保留题干、原图、公式与填空线，不包含标准答案、你的作答或教师评语。
+      </p>
+      <details className="pdf-print-tips">
+        <summary>打印建议</summary>
+        <p>A4竖向，按“实际大小 / 100%”打印。双面打印可选长边翻转。实际页数生成后显示。</p>
+      </details>
       {error && (
         <div className="inline-error pdf-error" role="alert">
           {error}

@@ -37,13 +37,19 @@ for number, sample in enumerate(manifest):
         pages.append({'page':index+1,'characters':len(text),'images':len(page.get_images())})
     assert headers == list(range(1,sample['questions']+1)), headers
     all_text = '\n'.join(page.get_text() for page in pdf)
-    if number < 2:
+    if number == 0:
         assert images == 24, images
         assert '标准答案' not in all_text and '参考解析' not in all_text
-    if number == 3:
+    if number == 2:
         assert all(f'第{i}段材料' in all_text for i in range(1,25))
         assert '根据第100次实验' in all_text
-        assert all_text.count('实验次数') == 4  # repeated table headers on all four table pages
+        table_pages = [p.get_text() for p in pdf if '实验次数' in p.get_text()]
+        assert len(table_pages) >= 2
+        assert all('路程 / m' in text and '时间 / s' in text for text in table_pages)
+        # PDF text order can put earlier math glyphs after the table; use page coordinates.
+        table_text = '\n'.join(p.get_text(clip=fitz.Rect(40, p.search_for('实验次数')[0].y1 + 1, 555, 800)) for p in pdf if p.search_for('实验次数'))
+        rows = re.findall(r'(?m)^(\d+)\n(\d+)\n(\d+)$', table_text)
+        assert [(int(a),int(b),int(c)) for a,b,c in rows] == [(i,2*i,i) for i in range(1,101)]
     sheet = Image.new('RGB', (960,450*((len(thumbs)+2)//3)), 'white')
     for i,thumb in enumerate(thumbs): sheet.paste(thumb, ((i%3)*320,(i//3)*450))
     sheet.save(target / f'contact-{number}.png')

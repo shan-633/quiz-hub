@@ -50,10 +50,7 @@ export async function preparePrintLayout(): Promise<string> {
     });
   document.querySelectorAll<HTMLElement>('.print-question').forEach((el, i) => {
     const room = (pageHeight - (i === 0 ? heading + 30 : 0)) * 0.95;
-    const limit =
-      document.body.classList.contains('mode-writing') && el.classList.contains('type-calculation')
-        ? room
-        : Math.min(room, pageHeight * 0.43);
+    const limit = Math.min(room, pageHeight * 0.43);
     if (el.getBoundingClientRect().height < limit) el.classList.add('keep-question');
   });
   return '';

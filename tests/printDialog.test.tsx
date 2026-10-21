@@ -45,26 +45,27 @@ afterEach(() => {
 });
 const file = () => ({
   blob: new Blob(['%PDF-1.7'], { type: 'application/pdf' }),
-  filename: '力学题库_作答版_A4.pdf',
+  filename: '力学题库_阅读版_A4.pdf',
   pages: 3,
   questionCount: 6,
 });
-it('选择作答/大字后生成真PDF，显示页数与预览/下载，改变设置使旧文件失效并释放URL', async () => {
+it('固定阅读版直接生成PDF，没有版式/字号选择，显示预览下载并在卸载时释放URL', async () => {
   vi.mocked(apiFile).mockResolvedValue(file());
   const view = render(
     <MemoryRouter>
       <PrintPdfDialog item={bank} onClose={() => {}} />
     </MemoryRouter>,
   );
-  fireEvent.click(screen.getByLabelText('作答版'));
-  fireEvent.click(screen.getByLabelText('大字 · 14 磅'));
+  expect(screen.queryByRole('radio')).toBeNull();
+  expect(screen.queryByText('打印用途')).toBeNull();
+  expect(screen.queryByText('正文字号')).toBeNull();
   fireEvent.click(screen.getByRole('button', { name: '生成 PDF' }));
   await screen.findByRole('link', { name: '下载 PDF' });
   expect(apiFile).toHaveBeenCalledWith(
     '/library/b/pdf',
     expect.objectContaining({
       method: 'POST',
-      body: JSON.stringify({ mode: 'writing', fontSize: 'large' }),
+      body: JSON.stringify({}),
     }),
   );
   expect(screen.getByText(/共 3 页/)).toBeTruthy();
@@ -72,12 +73,10 @@ it('选择作答/大字后生成真PDF，显示页数与预览/下载，改变�
     'blob:print-test',
   );
   expect(screen.getByRole('link', { name: '下载 PDF' }).getAttribute('download')).toBe(
-    '力学题库_作答版_A4.pdf',
+    '力学题库_阅读版_A4.pdf',
   );
-  fireEvent.click(screen.getByLabelText('标准 · 12 磅'));
-  expect(screen.queryByRole('link', { name: '下载 PDF' })).toBeNull();
-  expect(URL.revokeObjectURL).toHaveBeenCalledWith('blob:print-test');
   view.unmount();
+  expect(URL.revokeObjectURL).toHaveBeenCalledWith('blob:print-test');
 });
 it('生成失败明确显示原因，可以重试；匿名需先登录', async () => {
   vi.mocked(apiFile)

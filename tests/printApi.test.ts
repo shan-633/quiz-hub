@@ -41,20 +41,20 @@ it('学生可导出已发布题库为PDF，文件名/页数正确且不创建作
     method: 'POST',
     url: '/api/library/bank-mechanics/pdf',
     headers,
-    payload: { mode: 'writing', fontSize: 'large' },
+    payload: {},
   });
   expect(r.statusCode).toBe(200);
   expect(r.headers['content-type']).toContain('application/pdf');
   expect(r.headers['content-disposition']).toContain("filename*=UTF-8''");
   expect(decodeURIComponent(r.headers['content-disposition'] as string)).toContain(
-    '力与运动_作答版_A4.pdf',
+    '力与运动_阅读版_A4.pdf',
   );
   expect(r.headers['x-pdf-page-count']).toBe('3');
   expect(r.headers['cache-control']).toContain('no-store');
   expect(r.rawPayload.subarray(0, 5).toString()).toBe('%PDF-');
   const html = render.mock.calls[0][0];
-  expect(html).toContain('font-large');
-  expect(html).toContain('answer-space');
+  expect(html).not.toContain('font-large');
+  expect(html).not.toContain('answer-space');
   expect(html).not.toContain('solution');
   expect(html).not.toContain('力改变物体');
   expect(store.list('attempts')).toEqual(before);
@@ -114,6 +114,13 @@ it('匿名/缺CSRF、草稿与空题库、答案开关均不能生成PDF', async
     (await app.inject({ method: 'POST', url, headers, payload: { includeAnswers: true } }))
       .statusCode,
   ).toBe(422);
+  for (const payload of [
+    { mode: 'writing' },
+    { fontSize: 'large' },
+    { mode: 'reading', fontSize: 'standard' },
+  ]) {
+    expect((await app.inject({ method: 'POST', url, headers, payload })).statusCode).toBe(422);
+  }
   const bank = store.get<LibraryItem>('library', 'bank-mechanics')!;
   store.put('library', bank.id, { ...bank, state: 'draft' });
   expect((await app.inject({ method: 'POST', url, headers, payload: {} })).statusCode).toBe(404);

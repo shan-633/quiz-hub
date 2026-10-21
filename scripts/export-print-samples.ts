@@ -26,7 +26,7 @@ const app = await createApp({
   store = new Store(dir);
 mkdirSync('output/pdf', { recursive: true });
 mkdirSync('tmp/pdfs/print', { recursive: true });
-const manifest: { file: string; pages: number; questions: number; mode: string }[] = [];
+const manifest: { file: string; pages: number; questions: number }[] = [];
 try {
   const login = await app.inject({
       method: 'POST',
@@ -115,17 +115,16 @@ try {
   };
   makePaper('print-stress', '长材料、跨页表格与公式 · 排版验收', [reading, table]);
   const specs = [
-    ['paper-beijing-2022-real', 'reading', 'standard', 'output/pdf/2022北京中考物理_阅读版.pdf'],
-    ['paper-beijing-2022-real', 'writing', 'standard', 'output/pdf/2022北京中考物理_作答版.pdf'],
-    ['print-six', 'writing', 'large', 'tmp/pdfs/print/六题型_大字作答.pdf'],
-    ['print-stress', 'writing', 'standard', 'tmp/pdfs/print/长题与长表格.pdf'],
+    ['paper-beijing-2022-real', 'output/pdf/2022北京中考物理_阅读版.pdf'],
+    ['print-six', 'tmp/pdfs/print/六题型_阅读版.pdf'],
+    ['print-stress', 'tmp/pdfs/print/长题与长表格.pdf'],
   ];
-  for (const [id, mode, fontSize, file] of specs) {
+  for (const [id, file] of specs) {
     const r = await app.inject({
       method: 'POST',
       url: `/api/library/${id}/pdf`,
       headers,
-      payload: { mode, fontSize },
+      payload: {},
     });
     if (r.statusCode !== 200) throw new Error(`${id}: ${r.statusCode} ${r.body}`);
     writeFileSync(file, r.rawPayload);
@@ -133,7 +132,6 @@ try {
       file: resolve(file),
       pages: Number(r.headers['x-pdf-page-count']),
       questions: Number(r.headers['x-pdf-question-count']),
-      mode,
     };
     manifest.push(info);
     console.log(info);
