@@ -2,6 +2,8 @@
 
 中文响应式答题 WebApp，学生端与教师端均已实现。React + TypeScript + Vite 前端通过 HTTP API 访问 Fastify 后端，SQLite 保存数据。无需外部 AI 服务或 API Key。
 
+性能实验：[当前轮询与摘要＋SSE的三轮压测报告](docs/performance/report.md)，附原始数据、配对范围、正确性验证和重现脚本。优化方案仅用于隔离实验，当前应用仍使用3.5.0实现。
+
 ## 启动
 
 需要 Node.js 24 或更新版本（已验证 24.15.0）。Windows 解压源码后双击 `START-WEBAPP.cmd`：自动安装依赖、构建并启动。首次安装需要联网。启动后打开 [本地网页版](http://localhost:3001)。关闭启动窗口或 Ctrl+C 停止服务。

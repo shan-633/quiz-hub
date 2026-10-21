@@ -1,0 +1,148 @@
+{
+  "comparisons": [
+    {
+      "type": "query",
+      "active": 100,
+      "path": "requestsPerSecond",
+      "baseline": 0.8327703198742621,
+      "optimized": 966.0100769661974,
+      "ratio": 1168.7715927332983,
+      "minRatio": 1076.4032624357508,
+      "maxRatio": 1179.6607023447907,
+      "baselineRange": [
+        0.8188880709903079,
+        0.8913717454610883
+      ],
+      "optimizedRange": [
+        896.3966891723194,
+        1041.8099746600165
+      ]
+    },
+    {
+      "type": "query",
+      "active": 300,
+      "path": "requestsPerSecond",
+      "baseline": 0.32796375118982757,
+      "optimized": 386.5564608040539,
+      "ratio": 1357.6514909517111,
+      "minRatio": 1171.013933188029,
+      "maxRatio": 1360.334821765691,
+      "baselineRange": [
+        0.273448585349292,
+        0.3301040660990879
+      ],
+      "optimizedRange": [
+        371.98163261320946,
+        445.2604757809854
+      ]
+    },
+    {
+      "type": "write",
+      "active": 100,
+      "path": "requestsPerSecond",
+      "baseline": 330.6310288377212,
+      "optimized": 288.8761326816243,
+      "ratio": 0.892547306849686,
+      "minRatio": 0.7655904279576272,
+      "maxRatio": 0.9242361797181404,
+      "baselineRange": [
+        323.65358168099203,
+        332.01794872698673
+      ],
+      "optimizedRange": [
+        254.18976345550732,
+        305.58115898925377
+      ]
+    },
+    {
+      "type": "write",
+      "active": 100,
+      "path": "p95Ms",
+      "baseline": 32.62089999997988,
+      "optimized": 37.65429999999469,
+      "ratio": 0.8821513948531388,
+      "minRatio": 0.7357722650369236,
+      "maxRatio": 0.8872612158504953,
+      "baselineRange": [
+        32.26949999999488,
+        33.4091999999946
+      ],
+      "optimizedRange": [
+        36.978799999982584,
+        43.85800000000745
+      ]
+    },
+    {
+      "type": "mixed",
+      "active": 100,
+      "path": "writeLatency.p95Ms",
+      "baseline": 1664.9717999999993,
+      "optimized": 10.099300000001676,
+      "ratio": 193.98257040022244,
+      "minRatio": 142.7127515417032,
+      "maxRatio": 337.1387620923677,
+      "baselineRange": [
+        1548.1621999999625,
+        3404.8655000000144
+      ],
+      "optimizedRange": [
+        8.583099999988917,
+        10.848100000002887
+      ]
+    },
+    {
+      "type": "mixed",
+      "active": 100,
+      "path": "visibilityLatency.p95Ms",
+      "baseline": 6079.108000000007,
+      "optimized": 9.499500000034459,
+      "ratio": 731.5500788222705,
+      "minRatio": 587.7493199170016,
+      "maxRatio": 781.7381651637539,
+      "baselineRange": [
+        6028.015799999994,
+        7426.121700000018
+      ],
+      "optimizedRange": [
+        8.309899999992922,
+        10.256099999998696
+      ]
+    },
+    {
+      "type": "mixed",
+      "active": 100,
+      "path": "cpuMs",
+      "baseline": 20547,
+      "optimized": 813,
+      "ratio": 28.156211562115622,
+      "minRatio": 23.509153318077804,
+      "maxRatio": 31.617845117845118,
+      "baselineRange": [
+        18781,
+        22891
+      ],
+      "optimizedRange": [
+        594,
+        874
+      ]
+    },
+    {
+      "type": "mixed",
+      "active": 100,
+      "path": "teacherBodyBytes",
+      "baseline": 955786,
+      "optimized": 556290,
+      "ratio": 1.7181434144061551,
+      "minRatio": 1.5859785363749124,
+      "maxRatio": 1.7842258534217763,
+      "baselineRange": [
+        882264,
+        992547
+      ],
+      "optimizedRange": [
+        556290,
+        556290
+      ]
+    }
+  ]
+}
