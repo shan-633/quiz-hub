@@ -28,7 +28,8 @@ import { QuestionRenderer } from '../components/QuestionRenderer';
 import { Markdown } from '../components/Markdown';
 import { Loading, ErrorState, Modal } from '../components/ui';
 import {
-  getAccuracyFeedback,
+  getScoreFeedback,
+  summarizeScore,
   summarizeResult,
   navigatorState,
   navigatorLabels,
@@ -75,7 +76,8 @@ function AttemptWorkspace({ initial }: { initial: Attempt }) {
     }
   };
   const result = summarizeResult(attempt.questions, attempt.grades),
-    feedback = getAccuracyFeedback(result.accuracy),
+    score = summarizeScore(attempt.questions, attempt.grades),
+    feedback = getScoreFeedback(score.scoreRate),
     FeedbackIcon =
       feedback.band === 'pending'
         ? Clock3
@@ -150,24 +152,30 @@ function AttemptWorkspace({ initial }: { initial: Attempt }) {
               <FeedbackIcon size={29} aria-hidden="true" />
               <div>
                 <h2>
-                  {result.pending > 0 && feedback.band === 'perfect'
-                    ? '已判题全部答对，其余答案等待评阅。'
+                  {score.pendingScore > 0 && feedback.band === 'perfect'
+                    ? '已判部分拿到满分，其余答案等待评阅。'
                     : feedback.title}
                 </h2>
                 <p>{feedback.description}</p>
                 <p className="result-scope">
-                  {result.graded > 0 ? `答对 ${result.correct} / ${result.graded} 题。` : ''}
-                  {result.pending > 0
-                    ? ` ${result.graded > 0 ? '仅统计已判题，另有' : '共有'} ${result.pending} 题待评阅。`
+                  {score.scoreRate !== null
+                    ? `${score.pendingScore > 0 ? '已判部分得分率' : '得分率'} ${score.displayScoreRate}%。`
+                    : ''}
+                  {score.pendingScore > 0
+                    ? ` ${score.pendingScore} 分待评阅，最终得分以评阅后为准。`
                     : ''}
                 </p>
               </div>
             </div>
             <strong>
-              {result.displayAccuracy}
-              {result.accuracy !== null ? '%' : ''}
+              {score.scoreRate === null && score.earnedScore === 0 ? '—' : score.earnedScore} /{' '}
+              {score.totalScore}
               <small>
-                {result.accuracy === null ? '等待评阅' : result.pending ? '已判题正确率' : '正确率'}
+                {score.scoreRate === null
+                  ? '分 · 等待评阅'
+                  : score.pendingScore
+                    ? '分 · 当前得分'
+                    : '分 · 总得分'}
               </small>
             </strong>
           </div>

@@ -4,7 +4,7 @@ export type FeedbackBand =
   'perfect' | 'excellent' | 'secure' | 'caution' | 'warning' | 'danger' | 'pending';
 const feedback: Record<FeedbackBand, { title: string; description: string }> = {
   perfect: {
-    title: '全部答对，这次掌握得很扎实。',
+    title: '拿到满分，这次掌握得很扎实。',
     description: '继续保持，也试着把解题思路讲清楚。',
   },
   excellent: {
@@ -32,22 +32,70 @@ const feedback: Record<FeedbackBand, { title: string; description: string }> = {
     description: '开放作答还需要人工评阅，可以先对照解析回顾思路。',
   },
 };
-export function getAccuracyFeedback(accuracy: number | null) {
+export function getScoreFeedback(scoreRate: number | null) {
   const band: FeedbackBand =
-    accuracy === null
+    scoreRate === null
       ? 'pending'
-      : accuracy >= 100
+      : scoreRate >= 100
         ? 'perfect'
-        : accuracy >= 90
+        : scoreRate >= 90
           ? 'excellent'
-          : accuracy >= 85
+          : scoreRate >= 85
             ? 'secure'
-            : accuracy >= 75
+            : scoreRate >= 75
               ? 'caution'
-              : accuracy >= 60
+              : scoreRate >= 60
                 ? 'warning'
                 : 'danger';
   return { band, ...feedback[band] };
+}
+export function summarizeScore(
+  questions: { id: string; score: number }[],
+  grades: Attempt['grades'],
+) {
+  let earnedScore = 0,
+    gradedScore = 0,
+    pendingScore = 0,
+    totalScore = 0,
+    gradedEarned = 0;
+  for (const q of questions) {
+    totalScore += q.score;
+    const grade = grades?.[q.id];
+    if (!grade) {
+      pendingScore += q.score;
+      continue;
+    }
+    earnedScore += grade.earned;
+    if (grade.pending || grade.status === 'pending') {
+      const parts = Object.values(grade.details);
+      const ungraded = parts.length
+        ? parts.filter((p) => p.pending).reduce((sum, p) => sum + p.max, 0)
+        : q.score;
+      pendingScore += ungraded;
+      gradedScore += Math.max(0, q.score - ungraded);
+      gradedEarned += parts.filter((p) => !p.pending).reduce((sum, p) => sum + p.earned, 0);
+    } else {
+      gradedScore += q.score;
+      gradedEarned += grade.earned;
+    }
+  }
+  const clean = (value: number) => Number(value.toPrecision(12));
+  earnedScore = clean(earnedScore);
+  gradedScore = clean(gradedScore);
+  pendingScore = clean(pendingScore);
+  totalScore = clean(totalScore);
+  const scoreRate =
+    gradedScore > 0
+      ? Math.min(100, Math.max(0, clean((clean(gradedEarned) * 100) / gradedScore)))
+      : null;
+  return {
+    earnedScore,
+    gradedScore,
+    pendingScore,
+    totalScore,
+    scoreRate,
+    displayScoreRate: scoreRate === null ? '—' : String(Math.floor(scoreRate * 10) / 10),
+  };
 }
 export function summarizeResult(questions: { id: string }[], grades: Attempt['grades']) {
   let correct = 0,
