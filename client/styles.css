@@ -1016,6 +1016,59 @@ strong {
   line-height: 1.8;
   overflow-wrap: anywhere;
 }
+.history-tabs {
+  display: flex;
+  gap: 6px;
+  border-bottom: 1px solid var(--line);
+  margin: 26px 0 24px;
+  overflow-x: auto;
+}
+.history-tabs > button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex: 1 0 auto;
+  padding: 15px 12px;
+  border-bottom: 2px solid transparent;
+  border-radius: 0;
+  color: #7e9088;
+  font-size: 13px;
+  white-space: nowrap;
+}
+.history-tabs > button > span {
+  padding: 2px 7px;
+  border-radius: 10px;
+  background: #edf1ee;
+  font-size: 10px;
+  min-width: 23px;
+}
+.history-tabs > button[aria-selected='true'] {
+  color: var(--teal);
+  border-bottom-color: var(--teal);
+  font-weight: 600;
+}
+.history-tabs > button[aria-selected='true'] > span {
+  background: #e1f0e8;
+}
+.history-panel .status-waiting {
+  background: #fff0dc;
+  color: #a67535;
+}
+@media (max-width: 600px) {
+  .history-tabs {
+    gap: 0;
+  }
+  .history-tabs > button {
+    gap: 5px;
+    padding: 13px 4px;
+    font-size: 12px;
+  }
+  .history-tabs > button > span {
+    min-width: 18px;
+    padding: 2px 4px;
+  }
+}
 .history-list {
   display: grid;
   gap: 15px;
