@@ -24,11 +24,14 @@ import { registerAttempts } from './routes/attempts';
 import { registerTeacher } from './routes/teacher';
 import { registerUploads } from './routes/uploads';
 import { registerBankImport } from './routes/bankImport';
+import { registerPrint } from './routes/print';
+import type { PdfRenderer } from './print/pdf';
 export interface AppOptions {
   dataDir: string;
   seed?: boolean;
   origin?: string;
   logger?: boolean;
+  pdfRenderer?: PdfRenderer;
 }
 export async function createApp(options: AppOptions) {
   const app = Fastify({ logger: options.logger ?? false, bodyLimit: 8 * 1024 * 1024 });
@@ -41,6 +44,7 @@ export async function createApp(options: AppOptions) {
   await app.register(cors, {
     origin: options.origin ?? process.env.APP_ORIGIN ?? 'http://localhost:5173',
     credentials: true,
+    exposedHeaders: ['Content-Disposition', 'X-PDF-Page-Count', 'X-PDF-Question-Count'],
   });
   await app.register(rateLimit, { max: 500, timeWindow: '1 minute' });
   registerAuthHooks(
@@ -99,6 +103,7 @@ export async function createApp(options: AppOptions) {
   registerLibrary(app, store);
   registerQuestions(app, store);
   registerAttempts(app, store);
+  registerPrint(app, store, options.pdfRenderer);
   registerTeacher(app, store);
   await registerUploads(app, store);
   registerBankImport(app, store);

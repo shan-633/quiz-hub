@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Link, useNavigate, useLocation, useSearchParams } from 'react-router-dom';
 import {
   ArrowRight,
   Search,
@@ -10,12 +10,14 @@ import {
   BookOpen,
   Check,
   MoveRight,
+  Printer,
 } from 'lucide-react';
 import type { LibraryItem } from '../../shared/model';
 import { useLoad } from '../useLoad';
 import { api, json } from '../api';
 import { useAuth, useToast } from '../context';
 import { Loading, ErrorState, EmptyState } from '../components/ui';
+import { PrintPdfDialog } from '../components/PrintPdfDialog';
 const diagram: Record<string, string> = {
   mechanics: 'cart',
   electric: 'circuit',
@@ -32,7 +34,19 @@ export function HomePage() {
     [query, setQuery] = useState(''),
     [chapter, setChapter] = useState('all'),
     [busy, setBusy] = useState(''),
-    [recent, setRecent] = useState<any>(null);
+    [recent, setRecent] = useState<any>(null),
+    [printing, setPrinting] = useState<LibraryItem | null>(null);
+  const [params, setParams] = useSearchParams();
+  useEffect(() => {
+    const id = params.get('print'),
+      item = data?.find((x) => x.id === id);
+    if (item) {
+      setPrinting(item);
+      const next = new URLSearchParams(params);
+      next.delete('print');
+      setParams(next, { replace: true });
+    }
+  }, [data, params, setParams]);
   useEffect(() => {
     if (user)
       api<any[]>('/attempts')
@@ -219,10 +233,24 @@ export function HomePage() {
                     </span>
                     <span>{item.totalScore} 分</span>
                   </div>
-                  <button className="card-start" onClick={() => void start(item)} disabled={!!busy}>
-                    <span>{busy === item.id ? '正在准备…' : '开始练习'}</span>
-                    <ArrowUpRight size={20} />
-                  </button>
+                  <div className="card-actions">
+                    <button
+                      className="card-start"
+                      onClick={() => void start(item)}
+                      disabled={!!busy}
+                    >
+                      <span>{busy === item.id ? '正在准备…' : '开始练习'}</span>
+                      <ArrowUpRight size={20} />
+                    </button>
+                    <button
+                      className="card-print"
+                      disabled={!item.questionCount}
+                      onClick={() => setPrinting(item)}
+                    >
+                      <Printer size={16} />
+                      打印 PDF
+                    </button>
+                  </div>
                 </div>
               </article>
             ))}
@@ -234,6 +262,9 @@ export function HomePage() {
         <span>每道题都值得留下完整的思考过程。</span>
         <span className="sample-note">内容来源见各试卷说明 · 可在后台管理题目</span>
       </div>
+      {printing && (
+        <PrintPdfDialog key={printing.id} item={printing} onClose={() => setPrinting(null)} />
+      )}
     </div>
   );
 }

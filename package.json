@@ -1,6 +1,6 @@
 {
   "name": "zhixu-physics",
-  "version": "3.3.0",
+  "version": "3.4.0",
   "private": true,
   "type": "module",
   "engines": {
@@ -26,6 +26,8 @@
     "idb": "^8.0.4",
     "katex": "^0.19.0",
     "lucide-react": "^1.59.0",
+    "pdf-lib": "^1.17.1",
+    "puppeteer-core": "^25.15.0",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
     "react-markdown": "^10.1.0",

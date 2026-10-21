@@ -1,5 +1,11 @@
 import { z } from 'zod';
 import type { Block } from './model';
+export const printOptionsSchema = z
+  .object({
+    mode: z.enum(['reading', 'writing']).default('reading'),
+    fontSize: z.enum(['standard', 'large']).default('standard'),
+  })
+  .strict();
 const id = z.string().regex(/^[a-zA-Z0-9_-]{1,128}$/);
 const text = z.string().max(100000);
 const option = z.object({ id, text: z.string().max(5000) });

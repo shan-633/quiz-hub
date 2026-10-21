@@ -23,7 +23,9 @@ export function LoginPage() {
       const destination =
         from?.startsWith('/teacher') && authenticated.role !== 'teacher' ? '/' : from;
       const libraryId = params.get('library');
-      if (libraryId) {
+      const printId = params.get('print');
+      if (printId) navigate(`/library?print=${encodeURIComponent(printId)}`, { replace: true });
+      else if (libraryId) {
         const a = await api('/attempts', { method: 'POST', body: json({ libraryId }) });
         navigate(`/attempts/${a.id}`, { replace: true });
       } else
