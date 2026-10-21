@@ -117,6 +117,105 @@
 .teacher-submission:last-child {
   border: 0;
 }
+.review-active {
+  background: #eaf0f8;
+  color: #4a648c;
+}
+.progress-live-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 20px 25px;
+  background: #f6f9fc;
+  border-bottom: 1px solid var(--line);
+  color: #526983;
+}
+.progress-live-note > svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.progress-live-note > div {
+  flex: 1;
+  min-width: 0;
+}
+.progress-live-note strong {
+  font-size: 13px;
+  font-weight: 600;
+}
+.progress-live-note p {
+  font-size: 12px;
+  line-height: 1.8;
+  margin: 5px 0 0;
+}
+.progress-live-note > span {
+  white-space: nowrap;
+}
+.student-progress-meter {
+  width: 230px;
+  flex-shrink: 0;
+}
+.progress-meter-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  color: #466b8d;
+}
+.progress-meter-heading strong {
+  font-size: 22px;
+  font-weight: 600;
+}
+.progress-meter-heading small {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--muted);
+}
+.progress-meter-heading > span {
+  font-size: 13px;
+}
+.student-progress-track {
+  height: 7px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #eaf0f5;
+  margin: 10px 0;
+}
+.student-progress-track > span {
+  display: block;
+  height: 100%;
+  background: #668eae;
+  border-radius: inherit;
+  transition: width 0.35s ease;
+}
+.student-progress-meter p {
+  margin: 0;
+  font-size: 11px;
+}
+.progress-sync-error {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 16px 25px;
+  color: #936d25;
+  background: #fff7e8;
+  font-size: 12px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .student-progress-track > span {
+    transition: none;
+  }
+}
+@media (max-width: 1000px) and (min-width: 701px) {
+  .progress-submission {
+    flex-wrap: wrap;
+  }
+  .student-progress-meter {
+    width: calc(100% - 64px);
+    margin-left: 64px;
+  }
+}
 .submission-avatar {
   display: grid;
   place-items: center;
@@ -498,6 +597,22 @@
   }
 }
 @media (max-width: 700px) {
+  .progress-live-note {
+    padding: 16px 18px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .progress-live-note > span {
+    flex-basis: 100%;
+    margin-left: 25px;
+  }
+  .student-progress-meter {
+    width: calc(100% - 48px);
+    margin-left: 48px;
+  }
+  .progress-sync-error {
+    padding: 15px 18px;
+  }
   .teacher-heading {
     align-items: flex-start;
     flex-direction: column;

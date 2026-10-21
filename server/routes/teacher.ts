@@ -2,6 +2,7 @@ import type { FastifyInstance } from 'fastify';
 import { z } from 'zod';
 import type { Attempt, LibraryItem, User } from '../../shared/model';
 import { initialReview } from '../../shared/teacherReview';
+import { attemptProgress, type StudentProgress } from '../../shared/progress';
 import { HttpError, requireTeacher } from '../auth';
 import type { Store } from '../store';
 
@@ -24,6 +25,27 @@ export function registerTeacher(app: FastifyInstance, store: Store) {
       throw new HttpError(409, '批改已在其他页面更新。你的输入仍保留，请载入最新版本后核对。');
   };
   const revisionSchema = z.object({ expectedRevision: z.number().int().min(0) });
+  app.get('/api/teacher/progress', async (req, reply): Promise<StudentProgress[]> => {
+    requireTeacher(req);
+    reply.header('Cache-Control', 'no-store');
+    return store
+      .list<Attempt>('attempts')
+      .filter((a) => a.status === 'active')
+      .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))
+      .map((a) => {
+        const { student, kind } = detail(a);
+        return {
+          id: a.id,
+          title: a.title,
+          libraryId: a.libraryId,
+          kind,
+          student,
+          createdAt: a.createdAt,
+          updatedAt: a.updatedAt,
+          ...attemptProgress(a),
+        };
+      });
+  });
   app.get('/api/teacher/attempts', async (req) => {
     requireTeacher(req);
     return store

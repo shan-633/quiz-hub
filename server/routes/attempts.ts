@@ -4,6 +4,7 @@ import type { AnswerData, Attempt, LibraryItem } from '../../shared/model';
 import { answerSchema } from '../../shared/schema';
 import { publicQuestion, walkBlocks } from '../../shared/domain';
 import { initialReview } from '../../shared/teacherReview';
+import { attemptProgress } from '../../shared/progress';
 import { HttpError, requireUser } from '../auth';
 import type { Store } from '../store';
 import { libraryQuestions } from './library';
@@ -35,7 +36,7 @@ export function registerAttempts(app: FastifyInstance, store: Store) {
         createdAt: a.createdAt,
         updatedAt: a.updatedAt,
         questionCount: a.questions.length,
-        answeredCount: Object.keys(a.answers).length,
+        answeredCount: attemptProgress(a).answeredCount,
         earned: a.grades ? Object.values(a.grades).reduce((s, g) => s + g.earned, 0) : undefined,
         pending: a.grades ? Object.values(a.grades).some((g) => g.pending) : undefined,
         reviewState: a.review?.state,

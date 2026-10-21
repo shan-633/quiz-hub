@@ -4,6 +4,7 @@ import { ArrowUpRight, RefreshCw, Inbox, ClipboardCheck, BookOpen } from 'lucide
 import { useLoad } from '../useLoad';
 import { Loading, ErrorState, EmptyState, formatDate } from '../components/ui';
 import '../teacher.css';
+import { TeacherProgress } from '../components/TeacherProgress';
 export interface InboxItem {
   id: string;
   title: string;
@@ -27,7 +28,8 @@ export const reviewLabels = {
 export function TeacherInboxPage() {
   const { data, loading, error, reload } = useLoad<InboxItem[]>('/teacher/attempts');
   const [filter, setFilter] = useState('todo'),
-    [search, setSearch] = useState('');
+    [search, setSearch] = useState(''),
+    [progressRefresh, setProgressRefresh] = useState(0);
   const all = data ?? [],
     rows = all.filter(
       (a) =>
@@ -44,9 +46,15 @@ export function TeacherInboxPage() {
         <div>
           <div className="eyebrow">TEACHER WORKSPACE</div>
           <h1>每一份思考，都值得回应。</h1>
-          <p>收取试卷与题库答题卡，核对初评，再把反馈交还给学生。</p>
+          <p>关注作答进度，收取试卷与题库答题卡，再把反馈交还给学生。</p>
         </div>
-        <button className="button" onClick={reload}>
+        <button
+          className="button"
+          onClick={() => {
+            reload();
+            setProgressRefresh((n) => n + 1);
+          }}
+        >
           <RefreshCw size={16} />
           刷新收卷箱
         </button>
@@ -92,6 +100,7 @@ export function TeacherInboxPage() {
         <div className="teacher-toolbar">
           <div className="teacher-filters" role="group" aria-label="答卷状态">
             {[
+              ['active', '进行中'],
               ['todo', '待处理'],
               ['published', '已发布'],
               ['legacy', '历史记录'],
@@ -100,7 +109,11 @@ export function TeacherInboxPage() {
               <button
                 key={id}
                 className={filter === id ? 'active' : ''}
-                onClick={() => setFilter(id)}
+                aria-pressed={filter === id}
+                onClick={() => {
+                  if (filter === 'active' && id !== 'active') reload();
+                  setFilter(id);
+                }}
               >
                 {label}
               </button>
@@ -113,7 +126,9 @@ export function TeacherInboxPage() {
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
-        {loading ? (
+        {filter === 'active' ? (
+          <TeacherProgress search={search} refreshKey={progressRefresh} />
+        ) : loading ? (
           <Loading />
         ) : error ? (
           <ErrorState message={error} retry={reload} />

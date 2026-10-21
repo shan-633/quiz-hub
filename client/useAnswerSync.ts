@@ -33,6 +33,7 @@ export function useAnswerSync(attempt: Attempt) {
     [localError, setLocalError] = useState('');
   const alive = useRef(true),
     timer = useRef<ReturnType<typeof setTimeout> | null>(null),
+    maxTimer = useRef<ReturnType<typeof setTimeout> | null>(null),
     uploadRunning = useRef<Promise<void> | null>(null);
   const pendingAdds = useRef(new Set<Promise<void>>());
   const engineRef = useRef<AnswerSyncEngine | null>(null);
@@ -116,9 +117,17 @@ export function useAnswerSync(attempt: Attempt) {
       uploadRunning.current = null;
     }
   };
+  const flushScheduled = () => {
+    if (timer.current) clearTimeout(timer.current);
+    if (maxTimer.current) clearTimeout(maxTimer.current);
+    timer.current = maxTimer.current = null;
+    return engine.flush();
+  };
   const schedule = () => {
     if (timer.current) clearTimeout(timer.current);
-    timer.current = setTimeout(() => void engine.flush().catch(() => {}), 700);
+    const save = () => void flushScheduled().catch(() => {});
+    timer.current = setTimeout(save, 700);
+    maxTimer.current ??= setTimeout(save, 2000);
   };
   const update = (id: string, value: AnswerData) => {
     void engine.update(id, value).catch((e) => setLocalError((e as Error).message));
@@ -201,13 +210,23 @@ export function useAnswerSync(attempt: Attempt) {
     const before = (e: BeforeUnloadEvent) => {
       if (engine.hasUnsaved || pending.length) e.preventDefault();
     };
+    const saveOnLeave = () => {
+      if (attempt.status === 'active') void flushScheduled().catch(() => {});
+    };
+    const visibility = () => {
+      if (document.visibilityState === 'hidden') saveOnLeave();
+    };
     window.addEventListener('online', online);
     window.addEventListener('beforeunload', before);
+    window.addEventListener('pagehide', saveOnLeave);
+    document.addEventListener('visibilitychange', visibility);
     return () => {
       alive.current = false;
       window.removeEventListener('online', online);
       window.removeEventListener('beforeunload', before);
-      if (timer.current) clearTimeout(timer.current);
+      window.removeEventListener('pagehide', saveOnLeave);
+      document.removeEventListener('visibilitychange', visibility);
+      saveOnLeave();
     };
   }, [attempt.id, attempt.status]);
   const prepareSubmission = async () => {
