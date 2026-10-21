@@ -1170,10 +1170,13 @@ strong {
 }
 .progress-track > span {
   display: block;
-  background: #7da18f;
+  background: #8796bf;
   height: 100%;
   border-radius: 2px;
   transition: width 0.2s;
+}
+.progress-track.review-progress > span {
+  background: #40986a;
 }
 .question-numbers {
   display: grid;
@@ -1190,15 +1193,58 @@ strong {
   background: #fff;
   font-variant-numeric: tabular-nums;
 }
-.question-numbers > button.answered {
-  background: #edf5ef;
-  color: #6b9984;
-  border-color: #e0ece3;
+.question-numbers > button.nav-answered {
+  background: #eef1fa;
+  color: #52658f;
+  border-color: #dce2f1;
 }
-.question-numbers > button.active {
-  background: var(--teal);
-  color: #fff;
-  border-color: var(--teal);
+.question-numbers > button.nav-correct {
+  background: #e3f3e8;
+  color: #24613c;
+  border-color: #afcfba;
+}
+.question-numbers > button.nav-incorrect,
+.question-numbers > button.nav-partial,
+.question-numbers > button.nav-unanswered {
+  background: #fbe7e5;
+  color: #a23435;
+  border-color: #e5b6b2;
+}
+.question-numbers > button.nav-pending {
+  background: #eef1f5;
+  color: #68758b;
+  border-color: #d6dce5;
+}
+.question-numbers > button.active::after {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border: 2px solid #6364c1;
+  border-radius: 8px;
+  pointer-events: none;
+  animation: question-current-pulse 1.8s ease-in-out infinite;
+}
+.question-numbers > button:focus-visible {
+  outline: 2px solid #6364c1;
+  outline-offset: 3px;
+}
+@keyframes question-current-pulse {
+  0%,
+  100% {
+    opacity: 0.55;
+    box-shadow: 0 0 0 0 #6364c100;
+  }
+  50% {
+    opacity: 1;
+    box-shadow: 0 0 0 3px #6364c125;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .question-numbers > button.active::after {
+    animation: none;
+    opacity: 1;
+    box-shadow: none;
+  }
 }
 .question-numbers > button > i {
   position: absolute;
@@ -1229,7 +1275,23 @@ strong {
   border-radius: 1px;
 }
 .navigator-legend .legend-done {
-  background: #cde0d3;
+  background: #dce2f1;
+}
+.navigator-legend .legend-correct {
+  background: #b7dbc2;
+  border-color: #afcfba;
+}
+.navigator-legend .legend-incorrect {
+  background: #edbeb9;
+  border-color: #e5b6b2;
+}
+.navigator-legend .legend-pending {
+  background: #d6dce5;
+  border-color: #c5cedb;
+}
+.navigator-legend .legend-current {
+  background: transparent;
+  border-color: #6364c1;
 }
 .practice-note {
   border-top: 1px solid #edf1ed;
@@ -1588,8 +1650,11 @@ strong {
   color: #93a595;
 }
 .result-banner {
-  background: #eaf4eb;
-  border: 1px solid #dbeadd;
+  --result-bg: #eef2f7;
+  --result-border: #cfd7e3;
+  --result-ink: #4a5a73;
+  background: var(--result-bg);
+  border: 1px solid var(--result-border);
   border-radius: 8px;
   padding: 24px;
   display: flex;
@@ -1598,30 +1663,67 @@ strong {
   gap: 20px;
   margin-bottom: 25px;
 }
+.result-banner.result-perfect {
+  --result-bg: #dcf4e6;
+  --result-border: #97cdb0;
+  --result-ink: #175a3b;
+}
+.result-banner.result-excellent {
+  --result-bg: #e7f5e8;
+  --result-border: #b6d7b5;
+  --result-ink: #2b633a;
+}
+.result-banner.result-secure {
+  --result-bg: #eef7e7;
+  --result-border: #c5dcaf;
+  --result-ink: #416735;
+}
+.result-banner.result-caution {
+  --result-bg: #fff5d7;
+  --result-border: #e9cf81;
+  --result-ink: #7d5b13;
+}
+.result-banner.result-warning {
+  --result-bg: #ffead6;
+  --result-border: #edb882;
+  --result-ink: #97491e;
+}
+.result-banner.result-danger {
+  --result-bg: #fde5e4;
+  --result-border: #e8aaa7;
+  --result-ink: #9f3034;
+}
 .result-banner > div {
   display: flex;
   gap: 16px;
   align-items: center;
-  color: #77a085;
+  color: var(--result-ink);
+}
+.result-banner > div > svg {
+  flex-shrink: 0;
 }
 .result-banner h2 {
   font-size: 16px;
 }
 .result-banner p {
   font-size: 10px;
-  color: #8aa08e;
+  color: var(--result-ink);
   margin-top: 6px;
+  line-height: 1.8;
 }
 .result-banner > strong {
   font-family: Georgia, serif;
   font-size: 30px;
-  color: var(--teal);
+  color: var(--result-ink);
   white-space: nowrap;
 }
 .result-banner small {
   font-family: inherit;
   font-size: 10px;
   font-weight: 400;
+  display: block;
+  margin-top: 4px;
+  text-align: right;
 }
 .grade-panel {
   margin-top: 24px;
@@ -2960,7 +3062,7 @@ strong {
     gap: 7px;
     flex-wrap: nowrap;
     overflow-x: auto;
-    padding: 2px;
+    padding: 7px;
   }
   .question-numbers > button {
     width: 36px;

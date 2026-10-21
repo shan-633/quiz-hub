@@ -75,7 +75,7 @@ npm start
 - `client/`：学生端、管理员端、共享渲染器、草稿及附件队列。
 - `server/`：认证、管理、作答、上传 API 与真实 SQLite 存储。
 - `shared/`：结构化题目、答案、发布校验、判分与编辑操作。
-- `tests/`：71 项模型、API、组件、持久化、竞态与真实原图回归测试。
+- `tests/`：88 项模型、API、组件、持久化、竞态、原图与结果反馈回归测试。
 - `content-assets/beijing-2022/`：真实试卷原图截图、无损WebP和来源清单。
 - `public/diagrams/`：自编物理示意图。
 - `docs/design/`：竞品调研、设计方案与 ImageGen 原型。

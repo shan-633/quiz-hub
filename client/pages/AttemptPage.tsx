@@ -12,6 +12,9 @@ import {
   LoaderCircle,
   ChevronLeft,
   ChevronRight,
+  AlertTriangle,
+  CircleAlert,
+  Clock3,
 } from 'lucide-react';
 import type { Attempt } from '../../shared/model';
 import { typeLabels } from '../../shared/model';
@@ -24,6 +27,12 @@ import { UploadContext } from '../uploadContext';
 import { QuestionRenderer } from '../components/QuestionRenderer';
 import { Markdown } from '../components/Markdown';
 import { Loading, ErrorState, Modal } from '../components/ui';
+import {
+  getAccuracyFeedback,
+  summarizeResult,
+  navigatorState,
+  navigatorLabels,
+} from '../practiceFeedback';
 export function AttemptPage() {
   const { id } = useParams();
   const { data, loading, error, reload } = useLoad<Attempt>(`/attempts/${id}`);
@@ -65,9 +74,16 @@ function AttemptWorkspace({ initial }: { initial: Attempt }) {
       setSubmitting(false);
     }
   };
-  const grades = Object.values(attempt.grades ?? {}),
-    earned = grades.reduce((s, g) => s + g.earned, 0),
-    pending = grades.some((g) => g.pending);
+  const result = summarizeResult(attempt.questions, attempt.grades),
+    feedback = getAccuracyFeedback(result.accuracy),
+    FeedbackIcon =
+      feedback.band === 'pending'
+        ? Clock3
+        : feedback.band === 'danger'
+          ? CircleAlert
+          : ['caution', 'warning'].includes(feedback.band)
+            ? AlertTriangle
+            : CheckCircle2;
   if (!sync.ready) return <Loading />;
   return (
     <UploadContext.Provider value={sync.uploads}>
@@ -129,21 +145,30 @@ function AttemptWorkspace({ initial }: { initial: Attempt }) {
           </div>
         </div>
         {submitted && (
-          <div className="result-banner">
+          <div className={`result-banner result-${feedback.band}`}>
             <div>
-              <CheckCircle2 size={29} />
+              <FeedbackIcon size={29} aria-hidden="true" />
               <div>
-                <h2>这一次练习，已经留下完整的思考。</h2>
-                <p>
-                  {pending
-                    ? '客观题已判分；计算过程与开放答案待人工评阅。'
-                    : '可以对照解析，重新梳理自己的解题思路。'}
+                <h2>
+                  {result.pending > 0 && feedback.band === 'perfect'
+                    ? '已判题全部答对，其余答案等待评阅。'
+                    : feedback.title}
+                </h2>
+                <p>{feedback.description}</p>
+                <p className="result-scope">
+                  {result.graded > 0 ? `答对 ${result.correct} / ${result.graded} 题。` : ''}
+                  {result.pending > 0
+                    ? ` ${result.graded > 0 ? '仅统计已判题，另有' : '共有'} ${result.pending} 题待评阅。`
+                    : ''}
                 </p>
               </div>
             </div>
             <strong>
-              {earned}
-              <small> {pending ? '客观题得分' : '得分'}</small>
+              {result.displayAccuracy}
+              {result.accuracy !== null ? '%' : ''}
+              <small>
+                {result.accuracy === null ? '等待评阅' : result.pending ? '已判题正确率' : '正确率'}
+              </small>
             </strong>
           </div>
         )}
@@ -188,34 +213,82 @@ function AttemptWorkspace({ initial }: { initial: Attempt }) {
             <div className="navigator-title">
               <h2>答题卡</h2>
               <span>
-                {count}/{attempt.questions.length}
+                {submitted
+                  ? result.graded
+                    ? `${result.correct}/${result.graded} 正确`
+                    : '待评阅'
+                  : `${count}/${attempt.questions.length}`}
               </span>
             </div>
-            <div className="progress-track">
-              <span style={{ width: `${(count / attempt.questions.length) * 100}%` }} />
+            <div
+              className={`progress-track ${submitted ? 'review-progress' : ''}`}
+              role="progressbar"
+              aria-label={submitted ? '已判题正确率' : '作答进度'}
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-valuenow={
+                submitted
+                  ? (result.accuracy ?? 0)
+                  : attempt.questions.length
+                    ? (count / attempt.questions.length) * 100
+                    : 0
+              }
+            >
+              <span
+                style={{
+                  width: `${submitted ? (result.accuracy ?? 0) : attempt.questions.length ? (count / attempt.questions.length) * 100 : 0}%`,
+                }}
+              />
             </div>
             <div className="question-numbers">
-              {attempt.questions.map((q, i) => (
-                <button
-                  key={q.id}
-                  className={`${active === i ? 'active' : ''} ${isAnswered(q, sync.get(q.id)) ? 'answered' : ''} ${sync.get(q.id).flagged ? 'flagged' : ''}`}
-                  aria-label={`第 ${i + 1} 题${isAnswered(q, sync.get(q.id)) ? '，已作答' : ''}`}
-                  aria-current={active === i ? 'step' : undefined}
-                  onClick={() => jump(i)}
-                >
-                  {String(i + 1).padStart(2, '0')}
-                  {sync.get(q.id).flagged && <i />}
-                </button>
-              ))}
+              {attempt.questions.map((q, i) => {
+                const answer = sync.get(q.id),
+                  state = navigatorState(submitted, isAnswered(q, answer), attempt.grades?.[q.id]);
+                return (
+                  <button
+                    key={q.id}
+                    className={`nav-${state} ${active === i ? 'active' : ''} ${answer.flagged ? 'flagged' : ''}`}
+                    aria-label={`第 ${i + 1} 题，${navigatorLabels[state]}`}
+                    aria-current={active === i ? 'step' : undefined}
+                    onClick={() => jump(i)}
+                  >
+                    {String(i + 1).padStart(2, '0')}
+                    {sync.get(q.id).flagged && <i />}
+                  </button>
+                );
+              })}
             </div>
             <div className="navigator-legend">
+              {submitted ? (
+                <>
+                  <span>
+                    <i className="legend-correct" />
+                    正确
+                  </span>
+                  <span title="错误、部分正确和未作答">
+                    <i className="legend-incorrect" />
+                    未全对
+                  </span>
+                  <span>
+                    <i className="legend-pending" />
+                    待评阅
+                  </span>
+                </>
+              ) : (
+                <>
+                  <span>
+                    <i className="legend-done" />
+                    已作答
+                  </span>
+                  <span>
+                    <i />
+                    未作答
+                  </span>
+                </>
+              )}
               <span>
-                <i className="legend-done" />
-                已作答
-              </span>
-              <span>
-                <i />
-                未作答
+                <i className="legend-current" />
+                当前题
               </span>
               <span>
                 <Flag size={12} />
