@@ -56,7 +56,7 @@ export function TeacherInboxPage() {
           <Inbox size={16} />
           收卷与批改
         </Link>
-        <Link to="/admin">
+        <Link to="/teacher/library">
           <BookOpen size={16} />
           题库与试卷
         </Link>

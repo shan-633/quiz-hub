@@ -269,7 +269,7 @@ strong {
 .sidebar-help svg:last-child {
   margin-left: auto;
 }
-.admin-entry {
+.workspace-entry {
   display: flex;
   gap: 10px;
   align-items: center;
@@ -277,7 +277,7 @@ strong {
   color: #6c7d81;
   font-size: 12px;
 }
-.admin-entry svg:last-child {
+.workspace-entry svg:last-child {
   margin-left: auto;
 }
 .user-card {
@@ -403,7 +403,7 @@ strong {
   margin-top: 12px;
 }
 .page-heading p,
-.admin-page-heading p,
+.teacher-library-heading p,
 .editor-page-heading p {
   color: #89979b;
   font-size: 12px;
@@ -1783,18 +1783,18 @@ strong {
   font-size: 10px;
   color: #8ba08d;
 }
-.admin-page-heading {
+.teacher-library-heading {
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-bottom: 30px;
   gap: 20px;
 }
-.admin-page-heading h1 {
+.teacher-library-heading h1 {
   margin-top: 10px;
   font-size: 29px;
 }
-.admin-tabs {
+.teacher-tabs {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -1831,31 +1831,31 @@ strong {
   border-radius: 4px;
   color: #91a08f;
 }
-.admin-tabs > .line-tabs {
+.teacher-tabs > .line-tabs {
   flex: 1;
 }
-.admin-tabs .search-box {
+.teacher-tabs .search-box {
   width: 220px;
 }
-.admin-library-grid {
+.teacher-library-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 20px;
 }
-.admin-library-card {
+.teacher-library-card {
   background: #fff;
   border: 1px solid var(--line);
   border-radius: 8px;
   padding: 23px;
   min-width: 0;
 }
-.admin-card-top {
+.teacher-card-top {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 18px;
 }
-.admin-card-icon {
+.teacher-card-icon {
   display: grid;
   place-items: center;
   height: 43px;
@@ -1864,55 +1864,55 @@ strong {
   background: #edf4ed;
   color: #689475;
 }
-.admin-card-icon.accent-electric {
+.teacher-card-icon.accent-electric {
   background: #eef2f7;
   color: #7c94af;
 }
-.admin-card-icon.accent-buoyancy {
+.teacher-card-icon.accent-buoyancy {
   background: #edf5f4;
   color: #679c9b;
 }
-.admin-card-icon.accent-exam {
+.teacher-card-icon.accent-exam {
   background: #f7f1e8;
   color: #b0976e;
 }
-.admin-library-card h2 {
+.teacher-library-card h2 {
   font-size: 20px;
   margin: 10px 0;
 }
-.admin-library-card > p {
+.teacher-library-card > p {
   font-size: 11px;
   color: #8e9d90;
   min-height: 40px;
 }
-.admin-card-meta {
+.teacher-card-meta {
   display: flex;
   gap: 20px;
   color: #a0ad9e;
   font-size: 10px;
   margin: 20px 0;
 }
-.admin-card-meta > span {
+.teacher-card-meta > span {
   display: flex;
   align-items: center;
   gap: 6px;
 }
-.admin-card-actions {
+.teacher-card-actions {
   border-top: 1px solid #ecf0e8;
   padding-top: 13px;
   display: flex;
   justify-content: space-between;
   gap: 12px;
 }
-.admin-card-actions .text-button {
+.teacher-card-actions .text-button {
   font-size: 11px;
 }
-.admin-table-scroll {
+.teacher-table-scroll {
   overflow-x: auto;
   border: 1px solid var(--line);
   border-radius: 7px;
 }
-.admin-table {
+.teacher-table {
   width: 100%;
   border-collapse: collapse;
   background: #fff;
@@ -1920,44 +1920,44 @@ strong {
   min-width: 650px;
   font-size: 11px;
 }
-.admin-table th {
+.teacher-table th {
   font-size: 10px;
   font-weight: 500;
   color: #8fa08f;
   background: #f1f6ef;
   padding: 14px 17px;
 }
-.admin-table td {
+.teacher-table td {
   padding: 18px 17px;
   border-top: 1px solid #edf1e8;
 }
-.admin-table td strong {
+.teacher-table td strong {
   font-size: 12px;
 }
-.admin-table td small {
+.teacher-table td small {
   font-size: 9px;
   display: block;
   color: #a0ae9e;
   margin-top: 5px;
 }
-.admin-table tr:hover td {
+.teacher-table tr:hover td {
   background: #fdfefa;
 }
-.admin-filter {
+.teacher-filter {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
   margin-bottom: 19px;
 }
-.admin-filter > label {
+.teacher-filter > label {
   display: flex;
   gap: 10px;
   align-items: center;
   font-size: 11px;
   color: #8b9d8c;
 }
-.admin-filter select {
+.teacher-filter select {
   font-size: 11px;
   padding: 8px;
 }
@@ -2415,7 +2415,7 @@ strong {
   .editor-page {
     max-width: 1550px;
   }
-  .admin-library-grid {
+  .teacher-library-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
@@ -2485,13 +2485,13 @@ strong {
   .preview-viewport {
     padding: 18px 15px;
   }
-  .admin-tabs {
+  .teacher-tabs {
     flex-wrap: wrap;
   }
-  .admin-tabs .search-box {
+  .teacher-tabs .search-box {
     width: 100%;
   }
-  .admin-tabs > .line-tabs {
+  .teacher-tabs > .line-tabs {
     flex: 1;
   }
   .login-page {
@@ -2712,31 +2712,31 @@ strong {
   .editor-page-heading .eyebrow {
     font-size: 8px;
   }
-  .admin-page-heading h1 {
+  .teacher-library-heading h1 {
     font-size: 25px;
   }
-  .admin-page-heading .button {
+  .teacher-library-heading .button {
     font-size: 10px;
     padding: 10px;
   }
-  .admin-library-grid {
+  .teacher-library-grid {
     gap: 15px;
   }
-  .admin-library-card {
+  .teacher-library-card {
     padding: 18px;
   }
-  .admin-library-card h2 {
+  .teacher-library-card h2 {
     font-size: 17px;
   }
-  .admin-card-actions {
+  .teacher-card-actions {
     flex-wrap: wrap;
     gap: 5px;
   }
-  .admin-filter {
+  .teacher-filter {
     align-items: flex-start;
     flex-direction: column;
   }
-  .admin-tabs > .line-tabs {
+  .teacher-tabs > .line-tabs {
     gap: 20px;
   }
   .history-card {
@@ -3319,23 +3319,23 @@ strong {
     font-size: 14px;
     min-height: 44px;
   }
-  .admin-page-heading {
+  .teacher-library-heading {
     align-items: flex-start;
     flex-wrap: wrap;
     gap: 18px;
     margin-bottom: 20px;
   }
-  .admin-page-heading h1 {
+  .teacher-library-heading h1 {
     font-size: 27px;
     margin-top: 10px;
   }
-  .admin-page-heading p {
+  .teacher-library-heading p {
     font-size: 10px;
   }
-  .admin-page-heading > .button {
+  .teacher-library-heading > .button {
     font-size: 11px;
   }
-  .admin-tabs > .line-tabs {
+  .teacher-tabs > .line-tabs {
     gap: 18px;
   }
   .line-tabs > button {
@@ -3349,37 +3349,37 @@ strong {
   .line-tabs > button > span {
     font-size: 8px;
   }
-  .admin-library-grid {
+  .teacher-library-grid {
     grid-template-columns: 1fr;
   }
-  .admin-library-card {
+  .teacher-library-card {
     padding: 21px;
   }
-  .admin-library-card h2 {
+  .teacher-library-card h2 {
     font-size: 20px;
   }
-  .admin-library-card > p {
+  .teacher-library-card > p {
     font-size: 12px;
   }
-  .admin-card-actions .text-button {
+  .teacher-card-actions .text-button {
     font-size: 12px;
     min-height: 40px;
   }
-  .admin-card-meta {
+  .teacher-card-meta {
     font-size: 11px;
   }
-  .admin-tabs .search-box {
+  .teacher-tabs .search-box {
     width: 100%;
     min-width: 0;
   }
-  .admin-filter > label {
+  .teacher-filter > label {
     font-size: 11px;
   }
-  .admin-filter .small {
+  .teacher-filter .small {
     font-size: 10px;
     line-height: 1.8;
   }
-  .admin-shell .site-footer {
+  .staff-shell .site-footer {
     padding-bottom: 35px;
   }
   .editor-page {
@@ -3470,7 +3470,7 @@ strong {
     width: max-content;
     max-width: calc(100vw - 26px);
   }
-  .admin-shell .toast {
+  .staff-shell .toast {
     bottom: 20px;
   }
 }

@@ -25,16 +25,16 @@ export function registerQuestions(app: FastifyInstance, store: Store) {
     if (!q) throw new HttpError(404, '未找到题目');
     return q;
   };
-  app.get('/api/admin/questions', async () =>
+  app.get('/api/teacher/questions', async () =>
     store
       .list<StoredQuestion>('questions')
       .map((q) => ({ ...q.draft, latestVersion: q.latestVersion, archived: q.archived })),
   );
   app.get<{ Params: { id: string } }>(
-    '/api/admin/questions/:id',
+    '/api/teacher/questions/:id',
     async (req) => get(req.params.id).draft,
   );
-  app.post('/api/admin/questions', async (req, reply) => {
+  app.post('/api/teacher/questions', async (req, reply) => {
     const body = z
       .object({
         bankId: z.string(),
@@ -61,7 +61,7 @@ export function registerQuestions(app: FastifyInstance, store: Store) {
     });
     return reply.code(201).send(q);
   });
-  app.put<{ Params: { id: string } }>('/api/admin/questions/:id', async (req) => {
+  app.put<{ Params: { id: string } }>('/api/teacher/questions/:id', async (req) => {
     const old = get(req.params.id);
     checkDepth(req.body);
     const q = questionSchema.parse(req.body) as Question;
@@ -81,7 +81,7 @@ export function registerQuestions(app: FastifyInstance, store: Store) {
     });
     return q;
   });
-  app.post<{ Params: { id: string } }>('/api/admin/questions/:id/publish', async (req) => {
+  app.post<{ Params: { id: string } }>('/api/teacher/questions/:id/publish', async (req) => {
     const old = get(req.params.id),
       issues = validateQuestion(old.draft);
     for (const b of walkBlocks(old.draft.content))

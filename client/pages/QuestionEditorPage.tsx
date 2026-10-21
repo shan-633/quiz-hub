@@ -25,8 +25,8 @@ import { QuestionRenderer } from '../components/QuestionRenderer';
 import { BlockEditor } from '../components/editor/BlockEditor';
 export function QuestionEditorPage() {
   const { id } = useParams(),
-    loaded = useLoad<Question>(`/admin/questions/${id}`),
-    banks = useLoad<LibraryItem[]>('/admin/banks'),
+    loaded = useLoad<Question>(`/teacher/questions/${id}`),
+    banks = useLoad<LibraryItem[]>('/teacher/banks'),
     toast = useToast();
   const [editorView, setEditorView] = useState('edit'),
     [fullPreview, setFullPreview] = useState(false),
@@ -62,12 +62,12 @@ export function QuestionEditorPage() {
     setBusy(publish ? 'publish' : 'save');
     setError('');
     try {
-      let result = await api<Question>(`/admin/questions/${q.id}`, {
+      let result = await api<Question>(`/teacher/questions/${q.id}`, {
         method: 'PUT',
         body: json(q),
       });
       if (publish)
-        result = await api<Question>(`/admin/questions/${q.id}/publish`, { method: 'POST' });
+        result = await api<Question>(`/teacher/questions/${q.id}/publish`, { method: 'POST' });
       setQ(result);
       setDirty(false);
       toast(publish ? '题目已发布，新练习将使用此版本' : '草稿已保存');
@@ -81,7 +81,7 @@ export function QuestionEditorPage() {
   const issues = validateQuestion(q);
   return (
     <div className="page editor-page">
-      <Link className="back-link" to={`/admin?tab=questions&bank=${q.bankId}`}>
+      <Link className="back-link" to={`/teacher/library?tab=questions&bank=${q.bankId}`}>
         <ArrowLeft size={16} />
         返回题目列表
       </Link>

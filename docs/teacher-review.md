@@ -1,4 +1,4 @@
-# 教师收卷与批改（3.2）
+# 教师收卷与批改（3.3）
 
 ## 使用流程
 
@@ -8,7 +8,7 @@
 
 所有题目完成判定后点击「发布批改结果」，确认总分后发布并锁定。学生刷新批改结果或打开「我的作答」即可查看成绩和反馈。自动初评的选择题可直接采用，也可逐题覆盖，填写评语后保存。发布前学生接口不会返回批改分数、题库标准答案或教师反馈。
 
-教师演示账号 `teacher / Teacher123!`，管理员 `admin / Admin123!` 也能批改。教师与管理员均可创建、维护、发布及导入题库。当前为本地单教学空间，教师可查看本系统内全部已交卷记录；没有班级、分配教师或学校隔离。教师不能查看未交卷的作答、未提交的照片或没有引用在答案中的附件。
+教师演示账号 `teacher / Teacher123!`，可创建、维护、发布及导入题库；[题库入口](http://localhost:3001/teacher/library)。当前仅有学生与教师两端，旧管理员身份及会话不再允许登录，不新增管理员系统。当前为本地单教学空间，教师可查看本系统内全部已交卷记录；没有班级、分配教师或学校隔离。教师不能查看未交卷的作答、未提交的照片或没有引用在答案中的附件。
 
 ## 自动初评规则
 
@@ -33,7 +33,7 @@
 
 ## 前后端协议
 
-新增 `User.role=teacher`。`Attempt.status` 仍为 `active/submitted`；可选 `review` 表示新流程，缺失代表历史记录。`review.state` 为 `pending/in_progress/published`，附revision、自动初评条件/数量/说明、收卷时间、发布时间和发布教师。`teacherFeedback[questionId]` 保存判定、最终分数、正确答案、评语、教师与保存时间。题目快照不变。
+`User.role` 仅包含student/teacher；旧管理员记录只保留历史归属，不允许认证。`Attempt.status` 仍为 `active/submitted`；可选 `review` 表示新流程，缺失代表历史记录。`review.state` 为 `pending/in_progress/published`，附revision、自动初评条件/数量/说明、收卷时间、发布时间和发布教师。`teacherFeedback[questionId]` 保存判定、最终分数、正确答案、评语、教师与保存时间。题目快照不变。
 
 | 接口                                        | 用途                                                                           |
 | ------------------------------------------- | ------------------------------------------------------------------------------ |
@@ -43,4 +43,4 @@
 | `PUT /api/teacher/attempts/:id/grades/:qid` | 保存本题判定，body包含expectedRevision、verdict、score、correctAnswer、comment |
 | `POST /api/teacher/attempts/:id/publish`    | 全部完成后发布，body包含expectedRevision                                       |
 
-所有接口要求teacher/admin角色；写操作校验会话、可信来源与CSRF。保存/发布均在SQLite事务中执行。`Grade.source` 区分 `auto/teacher/pending/mixed`。学生交卷接口幂等，不会清除教师已经保存或发布的批改。学生列表与详情在发布前都隐藏得分；本人仍能查看锁定的原始作答。
+所有教学管理接口要求teacher角色；写操作校验会话、可信来源与CSRF。保存/发布均在SQLite事务中执行。`Grade.source` 区分 `auto/teacher/pending/mixed`。学生交卷接口幂等，不会清除教师已经保存或发布的批改。学生列表与详情在发布前都隐藏得分；本人仍能查看锁定的原始作答。

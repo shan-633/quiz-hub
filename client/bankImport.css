@@ -1,4 +1,4 @@
-.admin-heading-actions {
+.teacher-heading-actions {
   display: flex;
   gap: 10px;
   flex-wrap: wrap;
@@ -176,10 +176,10 @@
   margin-top: 16px;
 }
 @media (max-width: 600px) {
-  .admin-heading-actions {
+  .teacher-heading-actions {
     width: 100%;
   }
-  .admin-heading-actions .button {
+  .teacher-heading-actions .button {
     flex: 1;
     min-height: 44px;
   }

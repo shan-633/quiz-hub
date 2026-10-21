@@ -22,12 +22,12 @@ import { api, json } from '../api';
 import { useToast } from '../context';
 import { Loading, ErrorState, EmptyState, Modal } from '../components/ui';
 import { BankImportDialog } from '../components/BankImportDialog';
-export function AdminPage() {
+export function TeacherLibraryPage() {
   const [params, setParams] = useSearchParams(),
     tab = params.get('tab') ?? 'banks';
-  const banks = useLoad<LibraryItem[]>('/admin/banks'),
-    papers = useLoad<LibraryItem[]>('/admin/papers'),
-    questions = useLoad<(Question & { latestVersion: number })[]>('/admin/questions'),
+  const banks = useLoad<LibraryItem[]>('/teacher/banks'),
+    papers = useLoad<LibraryItem[]>('/teacher/papers'),
+    questions = useLoad<(Question & { latestVersion: number })[]>('/teacher/questions'),
     navigate = useNavigate(),
     toast = useToast();
   const [editing, setEditing] = useState<Partial<LibraryItem> | null>(null),
@@ -50,11 +50,11 @@ export function AdminPage() {
     }
     setBusy(true);
     try {
-      const q = await api('/admin/questions', {
+      const q = await api('/teacher/questions', {
         method: 'POST',
         body: json({ bankId, type, templateId: templateId || undefined }),
       });
-      navigate(`/admin/questions/${q.id}`);
+      navigate(`/teacher/questions/${q.id}`);
     } catch (e) {
       toast((e as Error).message, true);
     } finally {
@@ -67,14 +67,14 @@ export function AdminPage() {
     `${x.title} ${x.chapter}`.includes(query),
   );
   return (
-    <div className="page admin-page">
-      <div className="admin-page-heading">
+    <div className="page teacher-library-page">
+      <div className="teacher-library-heading">
         <div>
           <div className="eyebrow">CONTENT STUDIO</div>
           <h1>好题目，从这里开始。</h1>
           <p>组织题库、编排试卷，让每道题都清楚地表达。</p>
         </div>
-        <div className="admin-heading-actions">
+        <div className="teacher-heading-actions">
           <Link className="button" to="/teacher">
             <NotebookPen size={18} />
             收卷与批改
@@ -109,7 +109,7 @@ export function AdminPage() {
           </button>
         </div>
       </div>
-      <div className="admin-tabs">
+      <div className="teacher-tabs">
         <div className="line-tabs">
           {[
             { id: 'banks', text: '题库管理', Icon: BookOpen, count: banks.data?.length },
@@ -143,7 +143,7 @@ export function AdminPage() {
         <ErrorState message={error} retry={refresh} />
       ) : tab === 'questions' ? (
         <>
-          <div className="admin-filter">
+          <div className="teacher-filter">
             <label>
               所属题库
               <select
@@ -166,8 +166,8 @@ export function AdminPage() {
             </label>
             <span className="muted small">发布题目的修改会生成新版本，历史作答保持原样。</span>
           </div>
-          <div className="admin-table-scroll">
-            <table className="admin-table">
+          <div className="teacher-table-scroll">
+            <table className="teacher-table">
               <thead>
                 <tr>
                   <th>题目</th>
@@ -205,7 +205,7 @@ export function AdminPage() {
                         </span>
                       </td>
                       <td>
-                        <Link className="text-button" to={`/admin/questions/${q.id}`}>
+                        <Link className="text-button" to={`/teacher/questions/${q.id}`}>
                           <Pencil size={15} />
                           编辑
                         </Link>
@@ -223,11 +223,11 @@ export function AdminPage() {
           )}
         </>
       ) : (
-        <div className="admin-library-grid">
+        <div className="teacher-library-grid">
           {filtered?.map((item) => (
-            <article className="admin-library-card" key={item.id}>
-              <div className="admin-card-top">
-                <span className={`admin-card-icon accent-${item.accent}`}>
+            <article className="teacher-library-card" key={item.id}>
+              <div className="teacher-card-top">
+                <span className={`teacher-card-icon accent-${item.accent}`}>
                   {item.kind === 'paper' ? <FileText /> : <BookOpen />}
                 </span>
                 <span className={`status-tag status-${item.state}`}>
@@ -241,14 +241,14 @@ export function AdminPage() {
               <span className="card-chapter">{item.chapter}</span>
               <h2>{item.title}</h2>
               <p>{item.description || '还没有添加简介'}</p>
-              <div className="admin-card-meta">
+              <div className="teacher-card-meta">
                 <span>
                   <Layers3 size={15} />
                   {item.questionCount} 道题
                 </span>
                 <span>{item.totalScore} 分</span>
               </div>
-              <div className="admin-card-actions">
+              <div className="teacher-card-actions">
                 <button className="text-button" onClick={() => setEditing(item)}>
                   <Pencil size={15} />
                   {item.kind === 'paper' ? '编排与设置' : '编辑题库'}
@@ -383,7 +383,7 @@ function LibraryEditor({
     setBusy(true);
     setError('');
     try {
-      await api(`/admin/${paper ? 'papers' : 'banks'}${value.id ? `/${value.id}` : ''}`, {
+      await api(`/teacher/${paper ? 'papers' : 'banks'}${value.id ? `/${value.id}` : ''}`, {
         method: value.id ? 'PUT' : 'POST',
         body: json(value),
       });

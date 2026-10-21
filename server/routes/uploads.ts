@@ -154,7 +154,7 @@ export async function registerUploads(app: FastifyInstance, store: Store) {
           .some((q) =>
             walkBlocks(q.content).some((b) => b.type === 'image' && b.assetId === asset.id),
           );
-      const staff = req.user?.role === 'teacher' || req.user?.role === 'admin';
+      const staff = req.user?.role === 'teacher';
       const attempt =
         asset.kind === 'answer' && asset.attemptId
           ? store.get<Attempt>('attempts', asset.attemptId)

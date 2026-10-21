@@ -131,7 +131,7 @@ export interface LibraryItem {
 export interface User {
   id: string;
   name: string;
-  role: 'student' | 'teacher' | 'admin';
+  role: 'student' | 'teacher';
   username: string;
 }
 export interface Attempt {

@@ -14,7 +14,7 @@ async function setup() {
   const r = await app.inject({
     method: 'POST',
     url: '/api/auth/login',
-    payload: { username: 'admin', password: 'Admin123!' },
+    payload: { username: 'teacher', password: 'Teacher123!' },
   });
   return {
     cookie: r.cookies.map((c: any) => `${c.name}=${c.value}`).join('; '),
@@ -25,7 +25,7 @@ it('试卷不能重复引用同一题，否则作答 ID 会冲突', async () => 
   const headers = await setup();
   const result = await app.inject({
     method: 'POST',
-    url: '/api/admin/papers',
+    url: '/api/teacher/papers',
     headers,
     payload: {
       title: '重复试卷',
@@ -43,7 +43,7 @@ it('试卷不能重复引用同一题，否则作答 ID 会冲突', async () => 
 });
 it('不能发布不存在的题干图片', async () => {
   const headers = await setup();
-  const q = (await app.inject({ url: '/api/admin/questions/q-force', headers })).json();
+  const q = (await app.inject({ url: '/api/teacher/questions/q-force', headers })).json();
   q.content.push({
     id: 'missing',
     type: 'image',
@@ -52,10 +52,10 @@ it('不能发布不存在的题干图片', async () => {
     caption: '',
     width: 100,
   });
-  await app.inject({ method: 'PUT', url: '/api/admin/questions/q-force', headers, payload: q });
+  await app.inject({ method: 'PUT', url: '/api/teacher/questions/q-force', headers, payload: q });
   const result = await app.inject({
     method: 'POST',
-    url: '/api/admin/questions/q-force/publish',
+    url: '/api/teacher/questions/q-force/publish',
     headers,
   });
   expect(result.statusCode).toBe(422);

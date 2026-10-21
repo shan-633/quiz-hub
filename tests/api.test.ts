@@ -21,7 +21,7 @@ async function login(app: any, username = 'student') {
   const res = await app.inject({
     method: 'POST',
     url: '/api/auth/login',
-    payload: { username, password: username === 'admin' ? 'Admin123!' : 'Student123!' },
+    payload: { username, password: username === 'teacher' ? 'Teacher123!' : 'Student123!' },
   });
   expect(res.statusCode).toBe(200);
   return {
@@ -29,12 +29,12 @@ async function login(app: any, username = 'student') {
     'x-csrf-token': res.json().csrfToken,
   };
 }
-it('管理员从可复用混合实验/科普阅读模板建题，拒绝跨题型套用模板', async () => {
+it('教师从可复用混合实验/科普阅读模板建题，拒绝跨题型套用模板', async () => {
   const { app } = await setup();
-  const headers = await login(app, 'admin');
+  const headers = await login(app, 'teacher');
   const mixed = await app.inject({
     method: 'POST',
-    url: '/api/admin/questions',
+    url: '/api/teacher/questions',
     headers,
     payload: { bankId: 'bank-mechanics', type: 'experiment', templateId: 'experiment-mixed' },
   });
@@ -42,7 +42,7 @@ it('管理员从可复用混合实验/科普阅读模板建题，拒绝跨题型
   expect(mixed.json().content.some((b: any) => b.responseKind === 'open')).toBe(true);
   const reading = await app.inject({
     method: 'POST',
-    url: '/api/admin/questions',
+    url: '/api/teacher/questions',
     headers,
     payload: { bankId: 'bank-mechanics', type: 'reading', templateId: 'reading-mixed' },
   });
@@ -51,7 +51,7 @@ it('管理员从可复用混合实验/科普阅读模板建题，拒绝跨题型
   expect(reading.json().content.some((b: any) => b.responseKind === 'open')).toBe(true);
   const invalid = await app.inject({
     method: 'POST',
-    url: '/api/admin/questions',
+    url: '/api/teacher/questions',
     headers,
     payload: { bankId: 'bank-mechanics', type: 'single', templateId: 'reading-mixed' },
   });
@@ -112,7 +112,7 @@ it('北京真题卷从公开目录到提交：26题无答案泄露，多选半�
   });
   expect(submitted.statusCode).toBe(200);
   expect(submitted.json().grades).toBeUndefined();
-  const teacher = await login(app, 'admin');
+  const teacher = await login(app, 'teacher');
   const review = (
     await app.inject({ url: `/api/teacher/attempts/${attempt.id}`, headers: teacher })
   ).json();
@@ -134,7 +134,7 @@ describe('真实 SQLite API 与权限边界', () => {
       ).statusCode,
     ).toBe(401);
     const headers = await login(app);
-    expect((await app.inject({ url: '/api/admin/banks', headers })).statusCode).toBe(403);
+    expect((await app.inject({ url: '/api/teacher/banks', headers })).statusCode).toBe(403);
   });
   it('写操作需要 CSRF，跨站登录被拒绝', async () => {
     const { app } = await setup();
@@ -155,7 +155,7 @@ describe('真实 SQLite API 与权限边界', () => {
           method: 'POST',
           url: '/api/auth/login',
           headers: { origin: 'https://untrusted.example' },
-          payload: { username: 'admin', password: 'Admin123!' },
+          payload: { username: 'teacher', password: 'Teacher123!' },
         })
       ).statusCode,
     ).toBe(403);
@@ -211,10 +211,10 @@ describe('真实 SQLite API 与权限边界', () => {
     expect(again.statusCode).toBe(200);
     expect(again.json().status).toBe('submitted');
   });
-  it('管理员修改发布题目不改变已开始练习的版本', async () => {
+  it('教师修改发布题目不改变已开始练习的版本', async () => {
     const { app } = await setup();
     const student = await login(app);
-    const admin = await login(app, 'admin');
+    const teacher = await login(app, 'teacher');
     const a = (
       await app.inject({
         method: 'POST',
@@ -225,19 +225,19 @@ describe('真实 SQLite API 与权限边界', () => {
     ).json();
     const before = a.questions[0];
     const q = (
-      await app.inject({ url: `/api/admin/questions/${before.id}`, headers: admin })
+      await app.inject({ url: `/api/teacher/questions/${before.id}`, headers: teacher })
     ).json();
     const updated = await app.inject({
       method: 'PUT',
-      url: `/api/admin/questions/${q.id}`,
-      headers: admin,
+      url: `/api/teacher/questions/${q.id}`,
+      headers: teacher,
       payload: { ...q, title: '新版本标题' },
     });
     expect(updated.statusCode).toBe(200);
     const publish = await app.inject({
       method: 'POST',
-      url: `/api/admin/questions/${q.id}/publish`,
-      headers: admin,
+      url: `/api/teacher/questions/${q.id}/publish`,
+      headers: teacher,
     });
     expect(publish.statusCode).toBe(200);
     const old = (await app.inject({ url: `/api/attempts/${a.id}`, headers: student })).json();
@@ -273,17 +273,17 @@ describe('真实 SQLite API 与权限边界', () => {
   });
   it('无效题目可以存草稿但不能发布', async () => {
     const { app } = await setup();
-    const headers = await login(app, 'admin');
+    const headers = await login(app, 'teacher');
     const created = await app.inject({
       method: 'POST',
-      url: '/api/admin/questions',
+      url: '/api/teacher/questions',
       headers,
       payload: { bankId: 'bank-mechanics', type: 'single' },
     });
     expect(created.statusCode).toBe(201);
     const res = await app.inject({
       method: 'POST',
-      url: `/api/admin/questions/${created.json().id}/publish`,
+      url: `/api/teacher/questions/${created.json().id}/publish`,
       headers,
     });
     expect(res.statusCode).toBe(422);

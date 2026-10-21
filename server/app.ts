@@ -71,7 +71,11 @@ export async function createApp(options: AppOptions) {
         .object({ username: z.string().min(1).max(100), password: z.string().min(1).max(128) })
         .parse(req.body);
       const user = store.list<StoredUser>('users').find((u) => u.username === body.username);
-      if (!user || !checkPassword(body.password, user.passwordHash))
+      if (
+        !user ||
+        (user.role !== 'student' && user.role !== 'teacher') ||
+        !checkPassword(body.password, user.passwordHash)
+      )
         throw new HttpError(401, '账号或密码不正确');
       const { token, csrfToken } = newSession(store, user.id),
         { passwordHash, ...safe } = user;

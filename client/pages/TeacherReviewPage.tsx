@@ -198,7 +198,7 @@ function ReviewWorkspace({ initial }: { initial: ReviewAttempt }) {
             {a.kind === 'paper' ? '考试试卷' : '题库答题卡'} · {a.questions.length} 题 / {total} 分
           </p>
         </div>
-        <Link className="button" to="/admin">
+        <Link className="button" to="/teacher/library">
           <BookOpen size={16} />
           管理题库
         </Link>

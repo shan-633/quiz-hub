@@ -36,7 +36,7 @@ async function readFile(req: FastifyRequest) {
 }
 export function registerBankImport(app: FastifyInstance, store: Store) {
   app.get<{ Params: { name: string } }>(
-    '/api/admin/bank-import/files/:name',
+    '/api/teacher/bank-import/files/:name',
     async (req, reply) => {
       requireTeacher(req);
       const name = req.params.name;
@@ -61,7 +61,7 @@ export function registerBankImport(app: FastifyInstance, store: Store) {
   );
   for (const endpoint of ['validate', 'commit'])
     app.post(
-      `/api/admin/bank-import/${endpoint}`,
+      `/api/teacher/bank-import/${endpoint}`,
       { config: { rateLimit: { max: 20, timeWindow: '1 minute' } } },
       async (req, reply) => {
         const user = requireTeacher(req);

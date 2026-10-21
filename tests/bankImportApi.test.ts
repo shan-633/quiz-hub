@@ -12,7 +12,7 @@ import { Store } from '../server/store';
 import { prepareBankImport, commitBankImport } from '../server/import/bankImport';
 
 let app: Awaited<ReturnType<typeof createApp>>, dir: string, store: Store;
-let admin: Record<string, string>, student: Record<string, string>;
+let teacher: Record<string, string>, student: Record<string, string>;
 let serial = 0;
 const input = (): any => ({
   format: 'zhixu.question-bank',
@@ -50,7 +50,7 @@ async function login(username: string) {
   const r = await app.inject({
     method: 'POST',
     url: '/api/auth/login',
-    payload: { username, password: username === 'admin' ? 'Admin123!' : 'Student123!' },
+    payload: { username, password: username === 'teacher' ? 'Teacher123!' : 'Student123!' },
   });
   expect(r.statusCode).toBe(200);
   return {
@@ -62,7 +62,7 @@ function upload(
   endpoint: string,
   text: string,
   fields: Record<string, string> = {},
-  headers = admin,
+  headers = teacher,
 ) {
   const boundary = 'zhixu-test-boundary';
   const pieces = Object.entries(fields).map(
@@ -73,7 +73,7 @@ function upload(
   );
   return app.inject({
     method: 'POST',
-    url: '/api/admin/bank-import/' + endpoint,
+    url: '/api/teacher/bank-import/' + endpoint,
     headers: { ...headers, 'content-type': `multipart/form-data; boundary=${boundary}` },
     payload: Buffer.from(pieces.join('')),
   });
@@ -82,7 +82,7 @@ beforeAll(async () => {
   dir = mkdtempSync(join(tmpdir(), 'zhixu-import-'));
   app = await createApp({ dataDir: dir });
   store = new Store(dir);
-  admin = await login('admin');
+  teacher = await login('teacher');
   student = await login('student');
 });
 afterAll(async () => {
@@ -104,18 +104,18 @@ it('校验真实图片且完整预览，不创建数据库记录、版本或附�
   expect(store.list('library')).toHaveLength(before);
   expect(readdirSync(join(dir, 'uploads'))).toEqual(files);
 });
-it('学生不能校验或导入，管理员提交仍必须通过CSRF校验', async () => {
+it('学生不能校验或导入，教师提交仍必须通过CSRF校验', async () => {
   expect((await upload('validate', JSON.stringify(input()), {}, student)).statusCode).toBe(403);
   expect((await upload('commit', JSON.stringify(input()), {}, student)).statusCode).toBe(403);
   expect(
-    (await upload('validate', JSON.stringify(input()), {}, { cookie: admin.cookie })).statusCode,
+    (await upload('validate', JSON.stringify(input()), {}, { cookie: teacher.cookie })).statusCode,
   ).toBe(403);
 });
-it('带答案的协议示例仅管理员可下载，不在公开静态目录暴露', async () => {
-  const url = '/api/admin/bank-import/files/beijing-2022.zqb.json';
+it('带答案的协议示例仅教师可下载，不在公开静态目录暴露', async () => {
+  const url = '/api/teacher/bank-import/files/beijing-2022.zqb.json';
   expect((await app.inject({ url })).statusCode).toBe(401);
   expect((await app.inject({ url, headers: student })).statusCode).toBe(403);
-  const r = await app.inject({ url, headers: admin });
+  const r = await app.inject({ url, headers: teacher });
   expect(r.statusCode).toBe(200);
   expect(r.json().questions).toHaveLength(26);
   expect(r.headers['content-disposition']).toContain('attachment');
@@ -163,7 +163,7 @@ it('默认草稿导入，ID重新分配，原图字节完整保存，重试与�
     (await app.inject({ url: '/api/library' })).json().some((b: any) => b.id === bank.id),
   ).toBe(false);
   expect(
-    (await app.inject({ url: '/api/admin/banks', headers: admin }))
+    (await app.inject({ url: '/api/teacher/banks', headers: teacher }))
       .json()
       .find((b: any) => b.id === bank.id).questionCount,
   ).toBe(1);
@@ -203,7 +203,7 @@ it('数据库写入失败时回滚所有库、题、图片元数据和本次附�
     return original(collection, ...args);
   });
   try {
-    expect(() => commitBankImport(store, prepared, 'user-admin', true)).toThrow(
+    expect(() => commitBankImport(store, prepared, 'user-teacher', true)).toThrow(
       'injected database failure',
     );
   } finally {
@@ -247,12 +247,12 @@ it('导入允许的深层图文结构仍可在原编辑器保存', async () => {
   file.questions[0].content = [content];
   const prepared = await prepareBankImport(JSON.stringify(file));
   expect(prepared.report.valid).toBe(true);
-  const result = commitBankImport(store, prepared, 'user-admin');
+  const result = commitBankImport(store, prepared, 'user-teacher');
   const q = store.list<any>('questions').find((q) => q.bankId === result.bankId).draft;
   const response = await app.inject({
     method: 'PUT',
-    url: '/api/admin/questions/' + q.id,
-    headers: admin,
+    url: '/api/teacher/questions/' + q.id,
+    headers: teacher,
     payload: q,
   });
   expect(response.statusCode).toBe(200);
@@ -310,7 +310,7 @@ it('磁盘部分写入后失败，也清理本次已创建的当前文件', asyn
   }) as typeof original;
   syncBuiltinESMExports();
   try {
-    expect(() => commitBankImport(store, prepared, 'user-admin')).toThrow('ENOSPC');
+    expect(() => commitBankImport(store, prepared, 'user-teacher')).toThrow('ENOSPC');
   } finally {
     fs.writeFileSync = original;
     syncBuiltinESMExports();

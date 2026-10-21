@@ -172,7 +172,7 @@ it('交卷进入教师箱，学生无答案/成绩；教师逐题批改、冲突
     ).json(),
   ).toEqual(published);
   expect(store.get<Attempt>('attempts', a.id)!.questions).toEqual(draft.questions);
-  expect((await app.inject({ url: '/api/admin/banks', headers: teacher })).statusCode).toBe(200);
+  expect((await app.inject({ url: '/api/teacher/banks', headers: teacher })).statusCode).toBe(200);
 });
 it('六种题型都支持手工写答案与评语；标准答案缺失时全卷不自动评卷', async () => {
   const { app, store, login } = await setup(),

@@ -2,7 +2,9 @@ import { randomBytes, scryptSync, timingSafeEqual, createHash } from 'node:crypt
 import type { FastifyInstance, FastifyRequest } from 'fastify';
 import type { User } from '../shared/model';
 import type { Store } from './store';
-export interface StoredUser extends User {
+export interface StoredUser extends Omit<User, 'role'> {
+  // Historical admin records are kept for attribution, but cannot authenticate.
+  role: User['role'] | 'admin';
   passwordHash: string;
 }
 interface Session {
@@ -41,14 +43,9 @@ export function requireUser(req: FastifyRequest): User {
   if (!req.user) throw new HttpError(401, '请先登录后继续');
   return req.user;
 }
-export function requireAdmin(req: FastifyRequest): User {
-  const user = requireUser(req);
-  if (user.role !== 'admin') throw new HttpError(403, '需要管理员权限');
-  return user;
-}
 export function requireTeacher(req: FastifyRequest): User {
   const user = requireUser(req);
-  if (user.role !== 'teacher' && user.role !== 'admin') throw new HttpError(403, '需要教师权限');
+  if (user.role !== 'teacher') throw new HttpError(403, '需要教师权限');
   return user;
 }
 export function registerAuthHooks(app: FastifyInstance, store: Store, origin: string) {
@@ -74,11 +71,13 @@ export function registerAuthHooks(app: FastifyInstance, store: Store, origin: st
         session = store.get<Session>('sessions', key);
       if (session && session.expiresAt > Date.now()) {
         const stored = store.get<StoredUser>('users', session.userId);
-        if (stored) {
+        if (stored && (stored.role === 'teacher' || stored.role === 'student')) {
           const { passwordHash, ...user } = stored;
-          req.user = user;
+          req.user = { ...user, role: stored.role };
           req.csrfToken = session.csrfToken;
           req.sessionId = key;
+        } else {
+          store.delete('sessions', key);
         }
       } else if (session) store.delete('sessions', key);
     }
@@ -89,7 +88,7 @@ export function registerAuthHooks(app: FastifyInstance, store: Store, origin: st
         req.headers['sec-fetch-site'] === 'cross-site')
     )
       throw new HttpError(403, '请求来源不受信任');
-    if (req.url.startsWith('/api/admin') || req.url.startsWith('/api/teacher')) requireTeacher(req);
+    if (req.url.startsWith('/api/teacher')) requireTeacher(req);
     if (write && req.url !== '/api/auth/login') {
       requireUser(req);
       if (req.headers['x-csrf-token'] !== req.csrfToken)

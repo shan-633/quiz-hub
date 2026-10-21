@@ -3,7 +3,7 @@ const apiBase = (import.meta.env.VITE_API_URL ?? '').replace(/\/$/, '');
 export const assetUrl = (id: string, thumbnail = false) =>
   `${apiBase}/api/uploads/${encodeURIComponent(id)}${thumbnail ? '?thumbnail=1' : ''}`;
 export const bankImportFileUrl = (name: string) =>
-  `${apiBase}/api/admin/bank-import/files/${encodeURIComponent(name)}`;
+  `${apiBase}/api/teacher/bank-import/files/${encodeURIComponent(name)}`;
 export const setCsrf = (token: string) => {
   csrfToken = token;
 };

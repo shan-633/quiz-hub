@@ -37,16 +37,16 @@ export function seed(store: Store) {
       role: 'teacher',
       passwordHash: hashPassword('Teacher123!'),
     });
-  if (store.get('users', 'user-admin')) return;
+  // Preserve installations from both the old admin seed and the teacher-only seed.
+  if (store.get('users', 'user-admin') || store.get('users', 'user-student')) return;
   const users = [
     { id: 'user-student', username: 'student', name: '同学', role: 'student' },
     { id: 'user-student2', username: 'student2', name: '另一位同学', role: 'student' },
-    { id: 'user-admin', username: 'admin', name: '林老师', role: 'admin' },
   ];
   for (const u of users)
     store.put('users', u.id, {
       ...u,
-      passwordHash: hashPassword(u.role === 'admin' ? 'Admin123!' : 'Student123!'),
+      passwordHash: hashPassword('Student123!'),
     });
   const questions: Question[] = [
     q(

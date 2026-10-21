@@ -34,7 +34,7 @@ export function enrichLibrary(store: Store, item: LibraryItem): LibraryItem {
   return { ...item, questionCount: qs.length, totalScore: qs.reduce((sum, q) => sum + q.score, 0) };
 }
 export function registerLibrary(app: FastifyInstance, store: Store) {
-  const adminItem = (item: LibraryItem): LibraryItem => {
+  const teacherItem = (item: LibraryItem): LibraryItem => {
     if (item.kind !== 'bank') return enrichLibrary(store, item);
     const questions = store
       .list<StoredQuestion>('questions')
@@ -58,11 +58,11 @@ export function registerLibrary(app: FastifyInstance, store: Store) {
   });
   for (const kind of ['bank', 'paper'] as const) {
     const path = kind === 'bank' ? 'banks' : 'papers';
-    app.get(`/api/admin/${path}`, async () =>
+    app.get(`/api/teacher/${path}`, async () =>
       store
         .list<LibraryItem>('library')
         .filter((b) => b.kind === kind)
-        .map((b) => adminItem(b)),
+        .map((b) => teacherItem(b)),
     );
     const save = (raw: unknown, id: string) => {
       const parsed = librarySchema.parse(raw);
@@ -77,13 +77,13 @@ export function registerLibrary(app: FastifyInstance, store: Store) {
       if (item.state === 'published' && !libraryQuestions(store, item).length)
         throw new HttpError(422, '请先添加并发布至少一道题目');
       store.put('library', id, item);
-      return adminItem(item);
+      return teacherItem(item);
     };
-    app.post(`/api/admin/${path}`, async (req, reply) => {
+    app.post(`/api/teacher/${path}`, async (req, reply) => {
       const result = save(req.body, crypto.randomUUID());
       return reply.code(201).send(result);
     });
-    app.put<{ Params: { id: string } }>(`/api/admin/${path}/:id`, async (req) => {
+    app.put<{ Params: { id: string } }>(`/api/teacher/${path}/:id`, async (req) => {
       const old = store.get<LibraryItem>('library', req.params.id);
       if (!old || old.kind !== kind) throw new HttpError(404, '未找到条目');
       return save(req.body, old.id);

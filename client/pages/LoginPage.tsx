@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, useSearchParams, useLocation, Link } from 'react-router-dom';
-import { ArrowRight, GraduationCap, ShieldCheck, Atom, NotebookPen } from 'lucide-react';
+import { ArrowRight, GraduationCap, Atom, NotebookPen } from 'lucide-react';
 import { useAuth, useToast } from '../context';
 import { api, json } from '../api';
 export function LoginPage() {
@@ -9,12 +9,9 @@ export function LoginPage() {
     navigate = useNavigate(),
     [params] = useSearchParams(),
     location = useLocation();
-  const admin = params.has('admin');
   const teacher = params.has('teacher');
-  const [username, setUsername] = useState(teacher ? 'teacher' : admin ? 'admin' : 'student'),
-    [password, setPassword] = useState(
-      teacher ? 'Teacher123!' : admin ? 'Admin123!' : 'Student123!',
-    ),
+  const [username, setUsername] = useState(teacher ? 'teacher' : 'student'),
+    [password, setPassword] = useState(teacher ? 'Teacher123!' : 'Student123!'),
     [busy, setBusy] = useState(false),
     [error, setError] = useState('');
   const submit = async (user = username, pass = password) => {
@@ -22,22 +19,17 @@ export function LoginPage() {
     setError('');
     try {
       const authenticated = await login(user, pass);
+      const from = (location.state as { from?: string } | null)?.from;
+      const destination =
+        from?.startsWith('/teacher') && authenticated.role !== 'teacher' ? '/' : from;
       const libraryId = params.get('library');
       if (libraryId) {
         const a = await api('/attempts', { method: 'POST', body: json({ libraryId }) });
         navigate(`/attempts/${a.id}`, { replace: true });
       } else
-        navigate(
-          (location.state as any)?.from ??
-            (authenticated.role === 'teacher'
-              ? '/teacher'
-              : authenticated.role === 'admin'
-                ? '/admin'
-                : '/'),
-          {
-            replace: true,
-          },
-        );
+        navigate(destination ?? (authenticated.role === 'teacher' ? '/teacher' : '/'), {
+          replace: true,
+        });
     } catch (e) {
       setError((e as Error).message);
     } finally {
@@ -70,7 +62,7 @@ export function LoginPage() {
         <span className="login-logo">
           <Atom size={30} />
         </span>
-        <h2>{teacher ? '进入教师工作台' : admin ? '进入管理工作台' : '进入学习空间'}</h2>
+        <h2>{teacher ? '进入教师工作台' : '进入学习空间'}</h2>
         <p>使用本地演示账号，体验完整流程。</p>
         <form
           onSubmit={(e) => {
@@ -127,21 +119,11 @@ export function LoginPage() {
             <GraduationCap size={18} />
             学生端
           </button>
-          <button
-            className="button"
-            disabled={busy}
-            onClick={() => void submit('admin', 'Admin123!')}
-          >
-            <ShieldCheck size={18} />
-            管理员端
-          </button>
         </div>
         <p className="demo-accounts">
           学生 student / Student123!
           <br />
           教师 teacher / Teacher123!
-          <br />
-          管理员 admin / Admin123!
         </p>
         <Link className="text-button" to="/">
           先浏览试卷与题库

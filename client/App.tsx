@@ -35,18 +35,26 @@ const AttemptPage = lazy(() =>
 const HistoryPage = lazy(() =>
   import('./pages/HistoryPage').then((m) => ({ default: m.HistoryPage })),
 );
-const AdminPage = lazy(() => import('./pages/AdminPage').then((m) => ({ default: m.AdminPage })));
+const TeacherLibraryPage = lazy(() =>
+  import('./pages/TeacherLibraryPage').then((m) => ({ default: m.TeacherLibraryPage })),
+);
 const QuestionEditorPage = lazy(() =>
   import('./pages/QuestionEditorPage').then((m) => ({ default: m.QuestionEditorPage })),
 );
-function Protected({ children, admin = false }: { children: React.ReactNode; admin?: boolean }) {
+function Protected({
+  children,
+  teacher = false,
+}: {
+  children: React.ReactNode;
+  teacher?: boolean;
+}) {
   const { user, loading } = useAuth(),
     location = useLocation();
   if (loading) return <Loading />;
-  if (!user || (admin && user.role !== 'admin' && user.role !== 'teacher'))
+  if (!user || (teacher && user.role !== 'teacher'))
     return (
       <Navigate
-        to={`/login${admin ? (location.pathname.startsWith('/teacher') ? '?teacher=1' : '?admin=1') : ''}`}
+        to={`/login${teacher ? '?teacher=1' : ''}`}
         state={{ from: location.pathname }}
         replace
       />
@@ -58,14 +66,14 @@ function Shell() {
     toast = useToast();
   const [help, setHelp] = useState(false);
   const location = useLocation(),
-    admin = location.pathname.startsWith('/admin') || location.pathname.startsWith('/teacher');
+    teacher = location.pathname.startsWith('/teacher');
   const links = [
     { to: '/', icon: House, label: '学习首页' },
     { to: '/library', icon: BookOpen, label: '试卷与题库' },
     { to: '/history', icon: NotebookPen, label: '我的作答' },
   ];
   return (
-    <div className={`app-shell ${admin ? 'admin-shell' : ''}`}>
+    <div className={`app-shell ${teacher ? 'staff-shell' : ''}`}>
       <a className="skip-link" href="#main">
         跳到主要内容
       </a>
@@ -78,21 +86,22 @@ function Shell() {
             <strong>
               知序<span className="brand-dot">.</span>
             </strong>
-            <small>{admin ? '管理工作台' : '物理练习'}</small>
+            <small>{teacher ? '教师工作台' : '物理练习'}</small>
           </span>
         </Link>
-        <div className="nav-section-label">{admin ? '内容管理' : '学习空间'}</div>
+        <div className="nav-section-label">{teacher ? '教学工作台' : '学习空间'}</div>
         <nav aria-label="主要导航">
-          {admin ? (
+          {teacher ? (
             <>
-              <NavLink to="/teacher">
+              <NavLink to="/teacher" end>
                 <NotebookPen size={19} />
                 收卷与批改
               </NavLink>
               <Link
-                to="/admin"
+                to="/teacher/library"
                 className={
-                  location.pathname === '/admin' && !location.search.includes('tab=questions')
+                  location.pathname === '/teacher/library' &&
+                  !location.search.includes('tab=questions')
                     ? 'active'
                     : ''
                 }
@@ -101,10 +110,10 @@ function Shell() {
                 题库与试卷
               </Link>
               <Link
-                to="/admin?tab=questions"
+                to="/teacher/library?tab=questions"
                 className={
                   location.search.includes('tab=questions') ||
-                  location.pathname.includes('/admin/questions/')
+                  location.pathname.includes('/teacher/questions/')
                     ? 'active'
                     : ''
                 }
@@ -128,9 +137,9 @@ function Shell() {
             <span>使用指南</span>
             <ArrowUpRight size={14} />
           </button>
-          <Link className="admin-entry" to={admin ? '/' : '/admin'}>
+          <Link className="workspace-entry" to={teacher ? '/' : '/teacher'}>
             <Settings2 size={17} />
-            {admin ? '返回学习空间' : '管理后台'}
+            {teacher ? '返回学习空间' : '教师工作台'}
             <ArrowUpRight size={14} />
           </Link>
           {user ? (
@@ -138,13 +147,7 @@ function Shell() {
               <span className="avatar">{user.name.slice(-1)}</span>
               <span>
                 <strong>{user.name}</strong>
-                <small>
-                  {user.role === 'admin'
-                    ? '管理员'
-                    : user.role === 'teacher'
-                      ? '教师'
-                      : '保持好奇，继续探索'}
-                </small>
+                <small>{user.role === 'teacher' ? '教师' : '保持好奇，继续探索'}</small>
               </span>
               <button
                 className="icon-button"
@@ -169,8 +172,12 @@ function Shell() {
             知序
           </Link>
           <span className="breadcrumb">
-            {admin ? '内容管理工作台' : '学习空间'} <span>/</span>{' '}
-            {admin ? '题库与题目' : '物理 · 自主练习'}
+            {teacher ? '教师工作台' : '学习空间'} <span>/</span>{' '}
+            {teacher
+              ? location.pathname === '/teacher'
+                ? '收卷与批改'
+                : '题库与题目'
+              : '物理 · 自主练习'}
           </span>
           <div className="topbar-right">
             <span className="term-label">每一步，都有收获</span>
@@ -189,7 +196,7 @@ function Shell() {
               <Route
                 path="/teacher"
                 element={
-                  <Protected admin>
+                  <Protected teacher>
                     <TeacherInboxPage />
                   </Protected>
                 }
@@ -197,7 +204,7 @@ function Shell() {
               <Route
                 path="/teacher/attempts/:id"
                 element={
-                  <Protected admin>
+                  <Protected teacher>
                     <TeacherReviewPage />
                   </Protected>
                 }
@@ -219,17 +226,17 @@ function Shell() {
                 }
               />
               <Route
-                path="/admin"
+                path="/teacher/library"
                 element={
-                  <Protected admin>
-                    <AdminPage />
+                  <Protected teacher>
+                    <TeacherLibraryPage />
                   </Protected>
                 }
               />
               <Route
-                path="/admin/questions/:id"
+                path="/teacher/questions/:id"
                 element={
-                  <Protected admin>
+                  <Protected teacher>
                     <QuestionEditorPage />
                   </Protected>
                 }
@@ -243,7 +250,7 @@ function Shell() {
           <span>文字 · 手写 · 照片</span>
         </footer>
       </div>
-      {!admin && (
+      {!teacher && (
         <nav className="mobile-nav" aria-label="手机导航">
           {links.map(({ to, icon: Icon, label }) => (
             <NavLink to={to} end key={to}>
@@ -251,9 +258,9 @@ function Shell() {
               <span>{label}</span>
             </NavLink>
           ))}
-          <NavLink to="/admin">
+          <NavLink to="/teacher">
             <Settings2 size={20} />
-            <span>管理后台</span>
+            <span>教师端</span>
           </NavLink>
         </nav>
       )}

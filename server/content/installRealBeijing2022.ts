@@ -22,7 +22,7 @@ export function installRealBeijing2022(store: Store) {
     if (!existsSync(destination)) copyFileSync(source, destination);
     prepared.push({
       id: entry.id,
-      ownerId: 'user-admin',
+      ownerId: 'user-teacher',
       kind: 'question',
       clientId: entry.id,
       fileName,

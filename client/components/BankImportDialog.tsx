@@ -63,7 +63,7 @@ export function BankImportDialog({
       }
       body.append('file', file);
       const response = await api<ImportReport | Result>(
-        `/admin/bank-import/${commit ? 'commit' : 'validate'}`,
+        `/teacher/bank-import/${commit ? 'commit' : 'validate'}`,
         { method: 'POST', body },
       );
       if (revision !== request.current) return;
@@ -112,7 +112,7 @@ export function BankImportDialog({
           </p>
           <Link
             className="button primary"
-            to={`/admin?tab=questions&bank=${result.bankId}`}
+            to={`/teacher/library?tab=questions&bank=${result.bankId}`}
             onClick={onClose}
           >
             管理导入的题目 <ArrowRight size={16} />

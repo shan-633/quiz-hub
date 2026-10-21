@@ -131,8 +131,7 @@ it('照片经真实解码后保存，重复上传幂等，其他学生无法读�
       })
     ).statusCode,
   ).toBe(422);
-  const teacher = await login('teacher'),
-    admin = await login('admin');
+  const teacher = await login('teacher');
   const uploadedUrl = `/api/uploads/${asset.id}`;
   expect((await app.inject({ url: uploadedUrl, headers: teacher })).statusCode).toBe(404);
   const orphanForm = multipart(
@@ -161,7 +160,6 @@ it('照片经真实解码后保存，重复上传幂等，其他学生无法读�
     (await app.inject({ method: 'POST', url: `/api/attempts/${a.id}/submit`, headers })).statusCode,
   ).toBe(200);
   expect((await app.inject({ url: uploadedUrl, headers: teacher })).statusCode).toBe(200);
-  expect((await app.inject({ url: uploadedUrl, headers: admin })).statusCode).toBe(200);
   expect((await app.inject({ url: uploadedUrl, headers: other })).statusCode).toBe(404);
   expect(
     (await app.inject({ url: `/api/uploads/${orphan.id}`, headers: teacher })).statusCode,
