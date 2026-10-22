@@ -44,3 +44,6 @@ export interface StudentProgress {
   emptyCount: number;
   percent: number;
 }
+
+export type ProgressChange =
+  { type: 'upsert'; row: StudentProgress } | { type: 'remove'; id: string };

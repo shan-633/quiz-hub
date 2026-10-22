@@ -48,6 +48,14 @@ export function requireTeacher(req: FastifyRequest): User {
   if (user.role !== 'teacher') throw new HttpError(403, '需要教师权限');
   return user;
 }
+export function teacherSessionActive(store: Store, sessionId: string): boolean {
+  const session = store.get<Session>('sessions', sessionId);
+  return (
+    !!session &&
+    session.expiresAt > Date.now() &&
+    store.get<StoredUser>('users', session.userId)?.role === 'teacher'
+  );
+}
 export function registerAuthHooks(app: FastifyInstance, store: Store, origin: string) {
   app.decorateRequest('user', null);
   app.decorateRequest('csrfToken', '');

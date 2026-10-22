@@ -1,5 +1,6 @@
 let csrfToken = '';
 const apiBase = (import.meta.env.VITE_API_URL ?? '').replace(/\/$/, '');
+export const progressEventsUrl = `${apiBase}/api/teacher/progress/events`;
 export const assetUrl = (id: string, thumbnail = false) =>
   `${apiBase}/api/uploads/${encodeURIComponent(id)}${thumbnail ? '?thumbnail=1' : ''}`;
 export const bankImportFileUrl = (name: string) =>

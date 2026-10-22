@@ -6,7 +6,11 @@ import { attemptProgress, type StudentProgress } from '../../shared/progress';
 import { HttpError, requireTeacher } from '../auth';
 import type { Store } from '../store';
 
-export function registerTeacher(app: FastifyInstance, store: Store) {
+export function registerTeacher(
+  app: FastifyInstance,
+  store: Store,
+  progressSnapshot?: () => StudentProgress[],
+) {
   const submitted = (id: string) => {
     const a = store.get<Attempt>('attempts', id);
     if (!a || a.status !== 'submitted') throw new HttpError(404, '未找到已交卷记录');
@@ -28,6 +32,7 @@ export function registerTeacher(app: FastifyInstance, store: Store) {
   app.get('/api/teacher/progress', async (req, reply): Promise<StudentProgress[]> => {
     requireTeacher(req);
     reply.header('Cache-Control', 'no-store');
+    if (progressSnapshot) return progressSnapshot();
     return store
       .list<Attempt>('attempts')
       .filter((a) => a.status === 'active')

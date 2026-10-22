@@ -4,6 +4,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { createApp } from '../server/app';
 import { Store } from '../server/store';
+import { ProgressStore } from '../server/progressStore';
 import { emptyAnswer } from '../shared/domain';
 import type { Attempt } from '../shared/model';
 
@@ -18,7 +19,7 @@ afterEach(async () => {
 async function setup() {
   const dir = mkdtempSync(join(tmpdir(), 'zhixu-progress-'));
   const app = await createApp({ dataDir: dir }),
-    store = new Store(dir);
+    store = new ProgressStore(dir);
   resources.push({ app, store, dir });
   const login = async (username: string) => {
     const r = await app.inject({

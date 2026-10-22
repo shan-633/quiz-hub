@@ -1,70 +1,31 @@
-import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Radio } from 'lucide-react';
-import { api } from '../api';
+import { useTeacherProgress } from '../useTeacherProgress';
 import { EmptyState, ErrorState, Loading, formatDate } from './ui';
-import type { StudentProgress } from '../../shared/progress';
 
 export function TeacherProgress({ search, refreshKey }: { search: string; refreshKey: number }) {
-  const [data, setData] = useState<StudentProgress[] | null>(null);
-  const [error, setError] = useState('');
-  const [checkedAt, setCheckedAt] = useState('');
-  const [retry, setRetry] = useState(0);
-  useEffect(() => {
-    let stopped = false,
-      running = false;
-    let timer: ReturnType<typeof setTimeout> | undefined;
-    let controller: AbortController | undefined;
-    const refresh = async () => {
-      if (stopped || running || document.hidden) return;
-      clearTimeout(timer);
-      running = true;
-      controller = new AbortController();
-      try {
-        const rows = await api<StudentProgress[]>('/teacher/progress', {
-          signal: controller.signal,
-          cache: 'no-store',
-        });
-        if (!stopped) {
-          setData(rows);
-          setError('');
-          setCheckedAt(new Date().toLocaleTimeString('zh-CN', { hour12: false }));
-        }
-      } catch (e) {
-        if (!stopped && (e as Error).name !== 'AbortError') setError((e as Error).message);
-      } finally {
-        running = false;
-        if (!stopped && !document.hidden) timer = setTimeout(() => void refresh(), 3000);
-      }
-    };
-    const visibility = () => {
-      clearTimeout(timer);
-      if (!document.hidden) void refresh();
-    };
-    const focus = () => void refresh();
-    void refresh();
-    document.addEventListener('visibilitychange', visibility);
-    window.addEventListener('focus', focus);
-    return () => {
-      stopped = true;
-      clearTimeout(timer);
-      controller?.abort();
-      document.removeEventListener('visibilitychange', visibility);
-      window.removeEventListener('focus', focus);
-    };
-  }, [refreshKey, retry]);
+  const { data, error, checkedAt, status, authError, retryNow } = useTeacherProgress(refreshKey);
   const rows = (data ?? []).filter((a) =>
     `${a.title} ${a.student.name} ${a.student.username}`
       .toLowerCase()
       .includes(search.trim().toLowerCase()),
   );
-  const retryNow = () => setRetry((n) => n + 1);
   return (
     <div className="teacher-progress" aria-label="未交卷进度">
       <div className="progress-live-note">
         <Radio size={17} aria-hidden="true" />
         <div>
           <strong>未交卷 · {data?.length ?? '—'} 份记录</strong>
-          <p>每 3 秒自动更新已同步进度；离线作答在恢复网络后可见。完成比例按填答题数统计。</p>
+          <p>
+            {status === 'live'
+              ? '实时连接已建立'
+              : status === 'paused'
+                ? '页面隐藏，已暂停连接'
+                : status === 'retrying'
+                  ? '正在重新连接'
+                  : '正在连接实时进度'}
+            ；学生保存后自动更新，离线作答同步后可见。比例按填答题数统计。
+          </p>
         </div>
         {checkedAt && <span className="muted small">最近检查 {checkedAt}</span>}
       </div>
@@ -78,7 +39,16 @@ export function TeacherProgress({ search, refreshKey }: { search: string; refres
       )}
       {data === null ? (
         error ? (
-          <ErrorState message={error} retry={retryNow} />
+          <>
+            <ErrorState message={error} retry={authError ? undefined : retryNow} />
+            {authError && (
+              <div className="progress-login">
+                <Link className="button primary" to="/login?teacher=1">
+                  重新登录教师账号
+                </Link>
+              </div>
+            )}
+          </>
         ) : (
           <Loading />
         )

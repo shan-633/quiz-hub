@@ -7,7 +7,8 @@ import fastifyStatic from '@fastify/static';
 import { existsSync } from 'node:fs';
 import { resolve, join } from 'node:path';
 import { z, ZodError } from 'zod';
-import { Store } from './store';
+import { ProgressStore } from './progressStore';
+import { registerProgressStream } from './routes/progressStream';
 import { seed as seedDatabase } from './seed';
 import { installRealBeijing2022 } from './content/installRealBeijing2022';
 import {
@@ -35,7 +36,7 @@ export interface AppOptions {
 }
 export async function createApp(options: AppOptions) {
   const app = Fastify({ logger: options.logger ?? false, bodyLimit: 8 * 1024 * 1024 });
-  const store = new Store(resolve(options.dataDir));
+  const store = new ProgressStore(resolve(options.dataDir));
   if (options.seed ?? true) {
     seedDatabase(store);
     installRealBeijing2022(store);
@@ -104,7 +105,8 @@ export async function createApp(options: AppOptions) {
   registerQuestions(app, store);
   registerAttempts(app, store);
   registerPrint(app, store, options.pdfRenderer);
-  registerTeacher(app, store);
+  registerTeacher(app, store, () => store.listProgress());
+  registerProgressStream(app, store);
   await registerUploads(app, store);
   registerBankImport(app, store);
   const publicDir = resolve('public');
