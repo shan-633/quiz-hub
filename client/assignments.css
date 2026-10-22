@@ -1,6 +1,19 @@
 .class-page {
   --class-line: #e2e9e6;
 }
+.opening-hint {
+  color: #85744f;
+  background: #faf7ef;
+  border-radius: 6px;
+  padding: 7px 9px;
+  font-size: 11px;
+  line-height: 1.7;
+}
+.card-start:disabled,
+.card-print:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
 .class-heading {
   display: flex;
   align-items: center;

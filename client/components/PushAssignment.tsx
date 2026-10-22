@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import type { LibraryItem } from '../../shared/model';
 import type { ClassGroup } from '../../shared/assignments';
+import { localDateTime } from '../../shared/availability';
 import { api, json } from '../api';
 import { useLoad } from '../useLoad';
 import { ErrorState, Loading, Modal } from './ui';
@@ -11,13 +12,14 @@ export function PushAssignment({
   onClose,
   onSent,
 }: {
-  item: Pick<LibraryItem, 'id' | 'title' | 'timeLimitMinutes' | 'enforceTimeLimit'>;
+  item: Pick<LibraryItem, 'id' | 'title' | 'timeLimitMinutes' | 'enforceTimeLimit' | 'opensAt'>;
   onClose: () => void;
   onSent: () => void;
 }) {
   const groups = useLoad<ClassGroup[]>('/teacher/groups');
   const [selected, setSelected] = useState<string[]>([]),
     [deadline, setDeadline] = useState(''),
+    [opening, setOpening] = useState(localDateTime(item.opensAt)),
     [minutes, setMinutes] = useState(item.timeLimitMinutes?.toString() ?? ''),
     [enforce, setEnforce] = useState(!!item.enforceTimeLimit),
     [busy, setBusy] = useState(false),
@@ -43,6 +45,7 @@ export function PushAssignment({
           timeLimitMinutes: minutes ? Number(minutes) : undefined,
           enforceTimeLimit: enforce,
           deadlineAt: deadline ? new Date(deadline).toISOString() : undefined,
+          opensAt: opening ? new Date(opening).toISOString() : undefined,
         }),
       });
       setSent(result.recipientCount);
@@ -112,6 +115,15 @@ export function PushAssignment({
           )}
           <div className="form-grid">
             <label className="field">
+              开放时间
+              <input
+                type="datetime-local"
+                value={opening}
+                disabled={busy}
+                onChange={(e) => setOpening(e.target.value)}
+              />
+            </label>
+            <label className="field">
               截止时间
               <input
                 type="datetime-local"
@@ -143,6 +155,7 @@ export function PushAssignment({
             到时强制交卷
           </label>
           <p className="muted small">
+            开放时间留空则继承题库设置；任务不能早于题库开放。开放前无法开始作答。
             时限从首次开始作答计算。两种期限同时设置时，以先到者为准。
             {enforce
               ? '到时提交已同步的答案；未开始的学生无法再进入。'

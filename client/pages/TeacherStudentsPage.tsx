@@ -186,6 +186,7 @@ export function TeacherStudentsPage() {
                       </p>
                       <p className="muted small">
                         <Clock3 size={14} />
+                        {t.opensAt ? `开放 ${formatDate(t.opensAt)} · ` : ''}
                         {t.deadlineAt ? `截止 ${formatDate(t.deadlineAt)}` : '无统一截止'}
                         {t.timeLimitMinutes ? ` · 开始后${t.timeLimitMinutes}分钟` : ''} ·{' '}
                         {t.enforceTimeLimit ? '到时强制交卷' : '超时可继续'}

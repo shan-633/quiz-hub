@@ -17,8 +17,10 @@ export interface ClassAssignment {
   timeLimitMinutes?: number;
   enforceTimeLimit: boolean;
   deadlineAt?: string;
+  opensAt?: string;
 }
-export type TaskStatus = 'not_started' | 'active' | 'pending' | 'published' | 'expired';
+export type TaskStatus =
+  'scheduled' | 'not_started' | 'active' | 'pending' | 'published' | 'expired';
 export interface StudentTask {
   id: string;
   title: string;
@@ -29,6 +31,7 @@ export interface StudentTask {
   questionCount: number;
   totalScore: number;
   deadlineAt?: string;
+  opensAt?: string;
   timeLimitMinutes?: number;
   enforceTimeLimit: boolean;
   status: TaskStatus;
@@ -52,6 +55,7 @@ export interface AssignmentStudent {
   available: boolean;
 }
 export const taskStatusLabels: Record<TaskStatus, string> = {
+  scheduled: '未开放',
   not_started: '未开始',
   active: '进行中',
   pending: '待批改',

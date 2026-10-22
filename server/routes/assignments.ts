@@ -43,10 +43,12 @@ export function registerAssignments(
         timeLimitMinutes: z.number().int().min(1).max(600).optional(),
         enforceTimeLimit: z.boolean().default(false),
         deadlineAt: z.string().datetime({ offset: true }).optional(),
+        opensAt: z.string().datetime({ offset: true }).optional(),
       })
       .strict()
       .parse(req.body);
     if (body.deadlineAt) body.deadlineAt = new Date(body.deadlineAt).toISOString();
+    if (body.opensAt) body.opensAt = new Date(body.opensAt).toISOString();
     return reply.code(201).send(service.push(requireTeacher(req).id, body));
   });
   app.get('/api/tasks', (req) => service.studentTasks(requireUser(req)));

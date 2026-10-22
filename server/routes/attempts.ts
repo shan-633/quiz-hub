@@ -11,6 +11,7 @@ import { libraryQuestions } from './library';
 import { validateAnswerAssets } from './uploads';
 import type { AssignmentService } from '../assignments';
 import { expireAttempt, timingSnapshot, trackDeadline, submitAttempt } from '../attemptTiming';
+import { isBeforeOpening } from '../../shared/availability';
 export function registerAttempts(
   app: FastifyInstance,
   store: Store,
@@ -92,6 +93,8 @@ export function registerAttempts(
       if (current.status === 'active' && (!body.fresh || current.dueAt)) return view(current);
       if (!body.fresh && current.submissionReason === 'timeout') return view(current);
     }
+    if (isBeforeOpening(item.opensAt))
+      throw new HttpError(403, '尚未到开放时间，请开放后再开始作答');
     const questions = libraryQuestions(store, item);
     if (!questions.length) throw new HttpError(422, '这里还没有已发布的题目');
     const now = new Date().toISOString(),

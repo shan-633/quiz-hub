@@ -11,6 +11,7 @@ import type { Store } from '../store';
 import { canReadLibrary, canReview, canContinue } from '../permissions';
 import { libraryQuestions } from './library';
 import { expireAttempt } from '../attemptTiming';
+import { isBeforeOpening } from '../../shared/availability';
 export interface Asset {
   id: string;
   ownerId: string;
@@ -166,7 +167,12 @@ export async function registerUploads(app: FastifyInstance, store: Store) {
         ((user.role === 'teacher' && asset.ownerId === user.id) ||
           store
             .list<LibraryItem>('library')
-            .filter((item) => canReadLibrary(store, user, item) && item.state === 'published')
+            .filter(
+              (item) =>
+                canReadLibrary(store, user, item) &&
+                item.state === 'published' &&
+                (user.role === 'teacher' || !isBeforeOpening(item.opensAt)),
+            )
             .some((item) => libraryQuestions(store, item).some(hasImage)) ||
           (user.role === 'student' &&
             store

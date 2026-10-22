@@ -126,6 +126,7 @@ export interface LibraryItem {
   state: State;
   questionCount: number;
   minutes: number;
+  opensAt?: string;
   timeLimitMinutes?: number;
   enforceTimeLimit?: boolean;
   totalScore: number;

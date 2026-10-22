@@ -59,12 +59,14 @@ it('推送表单包含班级、截止、时限和强制规则', async () => {
   fireEvent.click(await screen.findByRole('checkbox', { name: /一班/ }));
   fireEvent.click(screen.getByRole('checkbox', { name: /到时强制交卷/ }));
   fireEvent.change(screen.getByLabelText('截止时间'), { target: { value: '2026-12-30T18:00' } });
+  fireEvent.change(screen.getByLabelText('开放时间'), { target: { value: '2026-12-30T09:00' } });
   fireEvent.click(screen.getByRole('button', { name: '确认推送' }));
   await screen.findByText('已推送给1位学生');
   expect(sent.groupIds).toEqual(['g']);
   expect(sent.timeLimitMinutes).toBe(30);
   expect(sent.enforceTimeLimit).toBe(true);
   expect(sent.deadlineAt).toBeTruthy();
+  expect(sent.opensAt).toBe(new Date('2026-12-30T09:00').toISOString());
 });
 
 it('倒计时使用服务器时间校准，到时先锁定，再确认服务端交卷并退出', async () => {

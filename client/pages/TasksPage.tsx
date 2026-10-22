@@ -6,6 +6,8 @@ import { taskStatusLabels } from '../../shared/assignments';
 import { useLoad } from '../useLoad';
 import { api, json } from '../api';
 import { Loading, ErrorState, EmptyState, formatDate } from '../components/ui';
+import { isBeforeOpening } from '../../shared/availability';
+import { useOpeningClock } from '../useOpeningClock';
 
 export function TasksPage() {
   const tasks = useLoad<StudentTask[]>('/tasks'),
@@ -14,6 +16,7 @@ export function TasksPage() {
   const [filter, setFilter] = useState<TaskStatus | 'all'>('all'),
     [busy, setBusy] = useState(''),
     [error, setError] = useState('');
+  const now = useOpeningClock((tasks.data ?? []).map((t) => t.opensAt));
   useEffect(() => {
     const refresh = () => {
       if (!document.hidden) tasks.reload();
@@ -43,7 +46,11 @@ export function TasksPage() {
       setBusy('');
     }
   };
-  const all = tasks.data ?? [],
+  const all = (tasks.data ?? []).map((t) =>
+      t.status === 'scheduled' && !isBeforeOpening(t.opensAt, now)
+        ? { ...t, status: 'not_started' as const }
+        : t,
+    ),
     rows = all.filter((t) => filter === 'all' || t.status === filter);
   return (
     <div className="page class-page">
@@ -69,14 +76,14 @@ export function TasksPage() {
         </p>
       )}
       <div className="class-tabs task-tabs" role="tablist" aria-label="任务状态">
-        {(['all', 'not_started', 'active', 'pending', 'published', 'expired'] as const).map(
-          (id) => (
-            <button key={id} role="tab" aria-selected={filter === id} onClick={() => setFilter(id)}>
-              {id === 'all' ? '全部' : taskStatusLabels[id]}
-              <small>{id === 'all' ? all.length : all.filter((t) => t.status === id).length}</small>
-            </button>
-          ),
-        )}
+        {(
+          ['all', 'scheduled', 'not_started', 'active', 'pending', 'published', 'expired'] as const
+        ).map((id) => (
+          <button key={id} role="tab" aria-selected={filter === id} onClick={() => setFilter(id)}>
+            {id === 'all' ? '全部' : taskStatusLabels[id]}
+            <small>{id === 'all' ? all.length : all.filter((t) => t.status === id).length}</small>
+          </button>
+        ))}
       </div>
       {tasks.loading && !tasks.data ? (
         <Loading />
@@ -122,6 +129,7 @@ export function TasksPage() {
                   {t.timeLimitMinutes ? ` · 开始后${t.timeLimitMinutes}分钟` : ' · 无答题时长限制'}
                 </p>
                 <p className="muted small">
+                  {t.opensAt && <span>开放 {formatDate(t.opensAt)} · </span>}
                   <Clock3 size={14} />
                   {t.dueAt
                     ? `本次交卷时间 ${formatDate(t.dueAt)}`
@@ -131,7 +139,11 @@ export function TasksPage() {
                 </p>
               </div>
               <div className="task-action">
-                {t.status === 'expired' ? (
+                {t.status === 'scheduled' ? (
+                  <button className="button" disabled>
+                    尚未开放
+                  </button>
+                ) : t.status === 'expired' ? (
                   <span className="muted small">任务已截止</span>
                 ) : t.attemptId ? (
                   <Link

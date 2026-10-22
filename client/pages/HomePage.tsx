@@ -17,7 +17,9 @@ import { useLoad } from '../useLoad';
 import { api, json } from '../api';
 import { useAuth, useToast } from '../context';
 import { useChat } from '../chatContext';
-import { Loading, ErrorState, EmptyState } from '../components/ui';
+import { Loading, ErrorState, EmptyState, formatDate } from '../components/ui';
+import { isBeforeOpening } from '../../shared/availability';
+import { useOpeningClock } from '../useOpeningClock';
 import { PrintPdfDialog } from '../components/PrintPdfDialog';
 const diagram: Record<string, string> = {
   mechanics: 'cart',
@@ -44,6 +46,9 @@ export function HomePage() {
     [recent, setRecent] = useState<any>(null),
     [printing, setPrinting] = useState<LibraryItem | null>(null);
   const [params, setParams] = useSearchParams();
+  const now = useOpeningClock((data ?? []).map((item) => item.opensAt));
+  const locked = (item: LibraryItem) =>
+    user?.role === 'student' && isBeforeOpening(item.opensAt, now);
   useEffect(() => {
     if (user?.role === 'student') reload();
   }, [teacherKey]);
@@ -51,7 +56,7 @@ export function HomePage() {
     const id = params.get('print'),
       item = data?.find((x) => x.id === id);
     if (item) {
-      setPrinting(item);
+      if (!locked(item)) setPrinting(item);
       const next = new URLSearchParams(params);
       next.delete('print');
       setParams(next, { replace: true });
@@ -117,7 +122,11 @@ export function HomePage() {
           <span>保持好奇，探索物理的秩序</span>
         </div>
       </section>
-      {user?.role === 'student' && <Link to="/tasks" className="assignment-home-link">查看班级任务 <span>老师推送的练习与截止安排 →</span></Link>}
+      {user?.role === 'student' && (
+        <Link to="/tasks" className="assignment-home-link">
+          查看班级任务 <span>老师推送的练习与截止安排 →</span>
+        </Link>
+      )}
       {recent && data?.some((item) => item.id === recent.libraryId) ? (
         <Link to={`/attempts/${recent.id}`} className="continue-card">
           <span className="continue-icon">
@@ -260,18 +269,26 @@ export function HomePage() {
                     </span>
                     <span>{item.totalScore} 分</span>
                   </div>
+                  {item.opensAt && (
+                    <p className="opening-hint">
+                      {isBeforeOpening(item.opensAt, now) ? '开放时间' : '已开放'} ·{' '}
+                      {formatDate(item.opensAt)}
+                    </p>
+                  )}
                   <div className="card-actions">
                     <button
                       className="card-start"
                       onClick={() => void start(item)}
-                      disabled={!!busy}
+                      disabled={!!busy || locked(item)}
                     >
-                      <span>{busy === item.id ? '正在准备…' : '开始练习'}</span>
+                      <span>
+                        {locked(item) ? '尚未开放' : busy === item.id ? '正在准备…' : '开始练习'}
+                      </span>
                       <ArrowUpRight size={20} />
                     </button>
                     <button
                       className="card-print"
-                      disabled={!item.questionCount}
+                      disabled={!item.questionCount || locked(item)}
                       onClick={() => setPrinting(item)}
                     >
                       <Printer size={16} />

@@ -11,6 +11,7 @@ import { linked, activeUser, canManageLibrary } from './permissions';
 import { libraryQuestions } from './routes/library';
 import { expireAttempt, timingSnapshot, trackDeadline } from './attemptTiming';
 import type { Store } from './store';
+import { isBeforeOpening, latestOpening } from '../shared/availability';
 
 export class AssignmentService {
   constructor(private store: Store) {
@@ -91,6 +92,7 @@ export class AssignmentService {
       timeLimitMinutes?: number;
       enforceTimeLimit: boolean;
       deadlineAt?: string;
+      opensAt?: string;
     },
   ): TeacherAssignment {
     return this.store.transaction(() => {
@@ -105,6 +107,9 @@ export class AssignmentService {
       if (!recipients.length) throw new HttpError(422, '所选班级组没有可接收任务的学生');
       if (input.deadlineAt && Date.parse(input.deadlineAt) <= Date.now())
         throw new HttpError(422, '截止时间必须晚于现在');
+      const opensAt = latestOpening(item!.opensAt, input.opensAt);
+      if (opensAt && input.deadlineAt && Date.parse(opensAt) >= Date.parse(input.deadlineAt))
+        throw new HttpError(422, '开放时间必须早于截止时间');
       if (input.enforceTimeLimit && !input.timeLimitMinutes && !input.deadlineAt)
         throw new HttpError(422, '强制交卷需要设置答题时限或截止时间');
       const questions = libraryQuestions(this.store, item!);
@@ -120,6 +125,7 @@ export class AssignmentService {
         timeLimitMinutes: input.timeLimitMinutes,
         enforceTimeLimit: input.enforceTimeLimit,
         deadlineAt: input.deadlineAt,
+        opensAt,
       };
       this.store.put('assignments', assignment.id, assignment, teacherId);
       for (const student of recipients)
@@ -140,9 +146,9 @@ export class AssignmentService {
         : attempt.review?.state === 'published'
           ? 'published'
           : 'pending';
-    return a.enforceTimeLimit && a.deadlineAt && Date.parse(a.deadlineAt) <= Date.now()
-      ? 'expired'
-      : 'not_started';
+    if (a.enforceTimeLimit && a.deadlineAt && Date.parse(a.deadlineAt) <= Date.now())
+      return 'expired';
+    return isBeforeOpening(a.opensAt) ? 'scheduled' : 'not_started';
   }
   private metadata(a: ClassAssignment) {
     return {
@@ -154,6 +160,7 @@ export class AssignmentService {
       questionCount: a.questions.length,
       totalScore: a.questions.reduce((s, q) => s + q.score, 0),
       deadlineAt: a.deadlineAt,
+      opensAt: a.opensAt,
       timeLimitMinutes: a.timeLimitMinutes,
       enforceTimeLimit: a.enforceTimeLimit,
     };
@@ -201,6 +208,8 @@ export class AssignmentService {
         throw new HttpError(404, '未找到你的班级任务');
       const existing = this.attempt(recipient.attempt_id as string | null);
       if (existing) return existing;
+      if (isBeforeOpening(a.opensAt))
+        throw new HttpError(403, '任务尚未到开放时间，请稍后开始作答');
       if (this.status(a) === 'expired') throw new HttpError(409, '任务已截止，无法开始作答');
       const now = new Date().toISOString();
       const attempt: Attempt = {

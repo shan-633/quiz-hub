@@ -23,6 +23,7 @@ import { useToast } from '../context';
 import { Loading, ErrorState, EmptyState, Modal } from '../components/ui';
 import { BankImportDialog } from '../components/BankImportDialog';
 import { PushAssignment } from '../components/PushAssignment';
+import { localDateTime } from '../../shared/availability';
 export function TeacherLibraryPage() {
   const [params, setParams] = useSearchParams(),
     tab = params.get('tab') ?? 'banks';
@@ -440,6 +441,18 @@ function LibraryEditor({
             max="600"
             value={value.minutes}
             onChange={(e) => patch({ minutes: Number(e.target.value) })}
+          />
+        </label>
+        <label className="field">
+          开放时间
+          <input
+            type="datetime-local"
+            value={localDateTime(value.opensAt)}
+            onChange={(e) =>
+              patch({
+                opensAt: e.target.value ? new Date(e.target.value).toISOString() : undefined,
+              })
+            }
           />
         </label>
         <label className="field">
