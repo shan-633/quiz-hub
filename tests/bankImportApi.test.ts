@@ -232,7 +232,10 @@ it('原始PNG/JPEG以正确Content-Type返回，EXIF旋转图预留显示后的�
     expect(valid.valid).toBe(true);
     const result = (await upload('commit', text, { digest: valid.digest, publish: 'true' })).json();
     const q = store.list<any>('questions').find((q) => q.bankId === result.bankId).draft;
-    const response = await app.inject({ url: '/api/uploads/' + q.content[1].assetId });
+    const response = await app.inject({
+      url: '/api/uploads/' + q.content[1].assetId,
+      headers: teacher,
+    });
     expect(response.headers['content-type']).toBe('image/' + format);
     expect(response.rawPayload).toEqual(bytes);
     expect(q.content[1].intrinsicWidth).toBe(format === 'jpeg' ? 8 : 12);

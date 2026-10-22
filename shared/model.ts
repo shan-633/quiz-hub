@@ -117,6 +117,7 @@ export interface Grade {
 }
 export interface LibraryItem {
   id: string;
+  teacherId?: string;
   kind: 'bank' | 'paper';
   title: string;
   description: string;
@@ -131,11 +132,15 @@ export interface LibraryItem {
 export interface User {
   id: string;
   name: string;
-  role: 'student' | 'teacher';
+  role: 'student' | 'teacher' | 'admin';
   username: string;
+  disabled?: boolean;
+  mustChangePassword?: boolean;
+  revision?: number;
 }
 export interface Attempt {
   id: string;
+  teacherId?: string;
   userId: string;
   libraryId: string;
   title: string;

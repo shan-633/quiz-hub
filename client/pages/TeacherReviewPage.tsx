@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { ArrowLeft, Check, X, CircleDashed, Save, Send, BookOpen, Sparkles } from 'lucide-react';
 import type { Attempt, Question, TeacherFeedback } from '../../shared/model';
 import { typeLabels } from '../../shared/model';
@@ -53,9 +53,14 @@ export function TeacherReviewPage() {
   ) : null;
 }
 function ReviewWorkspace({ initial }: { initial: ReviewAttempt }) {
+  const [params] = useSearchParams(),
+    initialIndex = Math.max(
+      0,
+      initial.questions.findIndex((q) => q.id === params.get('question')),
+    );
   const [a, setAttempt] = useState(initial),
-    [index, setIndex] = useState(0),
-    [form, setForm] = useState(() => formFor(initial, initial.questions[0])),
+    [index, setIndex] = useState(initialIndex),
+    [form, setForm] = useState(() => formFor(initial, initial.questions[initialIndex])),
     [dirty, setDirty] = useState(false),
     [busy, setBusy] = useState(false),
     [error, setError] = useState(''),

@@ -43,8 +43,11 @@ export interface BankImportResult {
   reused: boolean;
 }
 
-export function previousBankImport(store: Store, digest: string) {
-  const record = store.get<ImportRecord>('imports', digest);
+export function previousBankImport(store: Store, digest: string, ownerId?: string) {
+  const record = ownerId
+    ? (store.get<ImportRecord>('imports', `${ownerId}:${digest}`) ??
+      store.list<ImportRecord>('imports', ownerId).find((r) => r.digest === digest))
+    : store.get<ImportRecord>('imports', digest);
   const bank = record && store.get<LibraryItem>('library', record.bankId);
   return bank ? { bankId: bank.id, title: bank.title, state: bank.state } : undefined;
 }
@@ -141,7 +144,7 @@ export function commitBankImport(
   const { report, document } = prepared;
   if (!report.valid || !document || !report.digest)
     throw new HttpError(422, '题库文件未通过校验', { report });
-  const prior = previousBankImport(store, report.digest);
+  const prior = previousBankImport(store, report.digest, ownerId);
   if (prior) {
     const count = store
       .list<{ bankId: string }>('questions')
@@ -182,6 +185,7 @@ export function commitBankImport(
   const bank: LibraryItem = {
     ...document.bank,
     id: bankId,
+    teacherId: ownerId,
     kind: 'bank',
     state: publish ? 'published' : 'draft',
     questionCount: questions.length,
@@ -201,7 +205,7 @@ export function commitBankImport(
     }
     store.transaction(() => {
       for (const { asset } of assets) store.put('assets', asset.id, asset, ownerId);
-      store.put('library', bankId, bank);
+      store.put('library', bankId, bank, ownerId);
       for (const q of questions) {
         if (publish) store.publish(q);
         store.put('questions', q.id, {
@@ -214,7 +218,7 @@ export function commitBankImport(
       }
       store.put(
         'imports',
-        report.digest!,
+        `${ownerId}:${report.digest!}`,
         {
           bankId,
           title: bank.title,

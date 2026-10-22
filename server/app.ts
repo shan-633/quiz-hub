@@ -26,6 +26,9 @@ import { registerTeacher } from './routes/teacher';
 import { registerUploads } from './routes/uploads';
 import { registerBankImport } from './routes/bankImport';
 import { registerPrint } from './routes/print';
+import { migrateIdentity, publicUser } from './identity';
+import { registerAdmin } from './routes/admin';
+import { registerChat } from './routes/chat';
 import type { PdfRenderer } from './print/pdf';
 export interface AppOptions {
   dataDir: string;
@@ -41,6 +44,7 @@ export async function createApp(options: AppOptions) {
     seedDatabase(store);
     installRealBeijing2022(store);
   }
+  migrateIdentity(store);
   await app.register(cookie);
   await app.register(cors, {
     origin: options.origin ?? process.env.APP_ORIGIN ?? 'http://localhost:5173',
@@ -78,12 +82,13 @@ export async function createApp(options: AppOptions) {
       const user = store.list<StoredUser>('users').find((u) => u.username === body.username);
       if (
         !user ||
-        (user.role !== 'student' && user.role !== 'teacher') ||
+        user.disabled ||
+        !['student', 'teacher', 'admin'].includes(user.role) ||
         !checkPassword(body.password, user.passwordHash)
       )
         throw new HttpError(401, '账号或密码不正确');
       const { token, csrfToken } = newSession(store, user.id),
-        { passwordHash, ...safe } = user;
+        safe = publicUser(user);
       reply.setCookie('zhixu_session', token, {
         httpOnly: true,
         sameSite: 'lax',
@@ -102,10 +107,12 @@ export async function createApp(options: AppOptions) {
     return { ok: true };
   });
   registerLibrary(app, store);
+  registerAdmin(app, store);
+  registerChat(app, store);
   registerQuestions(app, store);
   registerAttempts(app, store);
   registerPrint(app, store, options.pdfRenderer);
-  registerTeacher(app, store, () => store.listProgress());
+  registerTeacher(app, store, (teacherId) => store.listProgress(teacherId));
   registerProgressStream(app, store);
   await registerUploads(app, store);
   registerBankImport(app, store);

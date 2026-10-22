@@ -1,11 +1,12 @@
 import type { FastifyInstance } from 'fastify';
 import { requireTeacher, teacherSessionActive } from '../auth';
 import type { ProgressStore } from '../progressStore';
+import { linked, subscribeAccess } from '../permissions';
 
 export function registerProgressStream(app: FastifyInstance, store: ProgressStore) {
   const connections = new Set<() => void>();
   app.get('/api/teacher/progress/events', (req, reply) => {
-    requireTeacher(req);
+    const teacher = requireTeacher(req);
     reply.header('Content-Type', 'text/event-stream; charset=utf-8');
     reply.header('Cache-Control', 'no-store, no-transform');
     reply.header('X-Accel-Buffering', 'no');
@@ -19,11 +20,14 @@ export function registerProgressStream(app: FastifyInstance, store: ProgressStor
     response.on('error', () => close());
     let closed = false;
     let unsubscribe = () => {};
+    let unsubscribeAccess = () => {};
+    const visible = new Set<string>();
     let heartbeat: ReturnType<typeof setInterval> | undefined;
     const close = () => {
       if (closed) return;
       closed = true;
       unsubscribe();
+      unsubscribeAccess();
       clearInterval(heartbeat);
       connections.delete(close);
       response.destroy();
@@ -45,6 +49,7 @@ export function registerProgressStream(app: FastifyInstance, store: ProgressStor
       if (teacherSessionActive(store, req.sessionId)) return true;
       write('session-expired', {});
       unsubscribe();
+      unsubscribeAccess();
       clearInterval(heartbeat);
       connections.delete(close);
       closed = true;
@@ -56,11 +61,31 @@ export function registerProgressStream(app: FastifyInstance, store: ProgressStor
     // Store writes are synchronous; subscribing and reading the snapshot in this
     // turn leaves no interval in which a committed change could be missed.
     unsubscribe = store.subscribeProgress((change) => {
-      if (authorized()) write('progress', change);
+      if (!authorized()) return;
+      const row = change.type === 'upsert' ? change.row : undefined;
+      const teacherId = row
+        ? store.db.prepare('SELECT teacher_id FROM attempt_progress WHERE id=?').get(row.id)
+            ?.teacher_id
+        : undefined;
+      if (row && teacherId === teacher.id && linked(store, teacher.id, row.student.id)) {
+        visible.add(row.id);
+        write('progress', change);
+      } else {
+        const id = change.type === 'remove' ? change.id : change.row.id;
+        if (visible.delete(id)) write('progress', { type: 'remove', id });
+      }
     });
+    const snapshot = () => {
+      if (!authorized()) return;
+      const rows = store.listProgress(teacher.id);
+      visible.clear();
+      rows.forEach((r) => visible.add(r.id));
+      write('snapshot', rows);
+    };
+    unsubscribeAccess = subscribeAccess(store, snapshot);
     if (!authorized()) return;
     try {
-      write('snapshot', store.listProgress());
+      snapshot();
     } catch (error) {
       req.log.error(error);
       close();

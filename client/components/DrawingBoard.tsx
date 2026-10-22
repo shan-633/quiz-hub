@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { randomId } from '../../shared/browserIds';
 import {
   PenLine,
   Eraser,
@@ -15,7 +16,7 @@ import type { DrawingPage, Stroke, Point } from '../../shared/model';
 import { drawPage } from '../drawing';
 import { Modal } from './ui';
 const freshPage = (): DrawingPage => ({
-  id: crypto.randomUUID(),
+  id: randomId(),
   width: 1000,
   height: 700,
   strokes: [],
@@ -112,7 +113,7 @@ export function DrawingBoard({
       erasing.current = true;
       erase(point(event));
     } else {
-      current.current = { id: crypto.randomUUID(), color, width, points: [point(event)] };
+      current.current = { id: randomId(), color, width, points: [point(event)] };
       live.current = { ...page, strokes: [...page.strokes, current.current] };
       redraw();
     }

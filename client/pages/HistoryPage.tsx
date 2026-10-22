@@ -16,6 +16,8 @@ interface HistoryItem {
   reviewState?: 'pending' | 'in_progress' | 'published';
   earned?: number;
   pending?: boolean;
+  available?: boolean;
+  repeatAvailable?: boolean;
 }
 const historyTabs = [
   { id: 'all', label: '全部' },
@@ -175,19 +177,23 @@ export function HistoryPage() {
                   </p>
                 </div>
                 <div className="history-actions">
-                  {a.status === 'submitted' && (
+                  {a.status === 'submitted' && a.repeatAvailable !== false && (
                     <button className="text-button" onClick={() => void again(a.libraryId)}>
                       <RotateCcw size={16} />
                       再练一次
                     </button>
                   )}
-                  <Link
-                    className={`button ${a.status === 'active' ? 'primary' : ''}`}
-                    to={`/attempts/${a.id}`}
-                  >
-                    {a.status === 'active' ? '继续练习' : '查看作答'}
-                    <ArrowUpRight size={17} />
-                  </Link>
+                  {a.available === false ? (
+                    <span className="muted small">教学关系已解除，作答记录保留</span>
+                  ) : (
+                    <Link
+                      className={`button ${a.status === 'active' ? 'primary' : ''}`}
+                      to={`/attempts/${a.id}`}
+                    >
+                      {a.status === 'active' ? '继续练习' : '查看作答'}
+                      <ArrowUpRight size={17} />
+                    </Link>
+                  )}
                 </div>
               </article>
             ))}

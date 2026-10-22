@@ -1,4 +1,5 @@
 import { useRef, useState, useEffect } from 'react';
+import { randomId, drawingFingerprint } from '../shared/browserIds';
 import type { AnswerData, Attempt, DrawingPage, SavedAnswer } from '../shared/model';
 import { emptyAnswer, emptyResponse } from '../shared/domain';
 import { api, json } from './api';
@@ -153,7 +154,7 @@ export function useAnswerSync(attempt: Attempt) {
           throw new Error('最多保留 10 张照片');
         for (const [fileIndex, file] of files.entries())
           await enqueueUpload({
-            key: crypto.randomUUID(),
+            key: randomId(),
             userId: attempt.userId,
             attemptId: attempt.id,
             questionId: context.questionId,
@@ -243,14 +244,7 @@ export function useAnswerSync(attempt: Attempt) {
             result.push(page);
             continue;
           }
-          const digest = await crypto.subtle.digest(
-            'SHA-256',
-            new TextEncoder().encode(JSON.stringify(page.strokes)),
-          );
-          const hash = Array.from(new Uint8Array(digest))
-            .slice(0, 10)
-            .map((x) => x.toString(16).padStart(2, '0'))
-            .join('');
+          const hash = await drawingFingerprint(JSON.stringify(page.strokes));
           const blob = await drawingBlob(page),
             asset = await upload(
               blob,

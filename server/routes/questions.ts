@@ -7,7 +7,8 @@ import { existsSync } from 'node:fs';
 import { resolve } from 'node:path';
 import type { Asset } from './uploads';
 import type { LibraryItem, Question } from '../../shared/model';
-import { HttpError } from '../auth';
+import { HttpError, requireTeacher } from '../auth';
+import { canManageLibrary } from '../permissions';
 import type { Store, StoredQuestion } from '../store';
 function checkDepth(value: unknown) {
   const queue = [{ v: value, d: 0 }];
@@ -20,19 +21,23 @@ function checkDepth(value: unknown) {
   }
 }
 export function registerQuestions(app: FastifyInstance, store: Store) {
-  const get = (id: string) => {
+  const get = (id: string, teacherId: string) => {
     const q = store.get<StoredQuestion>('questions', id);
-    if (!q) throw new HttpError(404, '未找到题目');
+    if (!q || store.get<LibraryItem>('library', q.bankId)?.teacherId !== teacherId)
+      throw new HttpError(404, '未找到题目');
     return q;
   };
-  app.get('/api/teacher/questions', async () =>
+  app.get('/api/teacher/questions', async (req) =>
     store
       .list<StoredQuestion>('questions')
+      .filter((q) =>
+        canManageLibrary(requireTeacher(req), store.get<LibraryItem>('library', q.bankId)),
+      )
       .map((q) => ({ ...q.draft, latestVersion: q.latestVersion, archived: q.archived })),
   );
   app.get<{ Params: { id: string } }>(
     '/api/teacher/questions/:id',
-    async (req) => get(req.params.id).draft,
+    async (req) => get(req.params.id, requireTeacher(req).id).draft,
   );
   app.post('/api/teacher/questions', async (req, reply) => {
     const body = z
@@ -43,7 +48,12 @@ export function registerQuestions(app: FastifyInstance, store: Store) {
       })
       .parse(req.body);
     const bank = store.get<LibraryItem>('library', body.bankId);
-    if (!bank || bank.kind !== 'bank' || bank.state === 'archived')
+    if (
+      !bank ||
+      bank.kind !== 'bank' ||
+      bank.state === 'archived' ||
+      !canManageLibrary(requireTeacher(req), bank)
+    )
       throw new HttpError(422, '请选择有效题库');
     const initial = newQuestion(body.type, body.bankId);
     let q: Question;
@@ -62,12 +72,13 @@ export function registerQuestions(app: FastifyInstance, store: Store) {
     return reply.code(201).send(q);
   });
   app.put<{ Params: { id: string } }>('/api/teacher/questions/:id', async (req) => {
-    const old = get(req.params.id);
+    const old = get(req.params.id, requireTeacher(req).id);
     checkDepth(req.body);
     const q = questionSchema.parse(req.body) as Question;
     if (
       !store.get<LibraryItem>('library', q.bankId) ||
-      store.get<LibraryItem>('library', q.bankId)?.kind !== 'bank'
+      store.get<LibraryItem>('library', q.bankId)?.kind !== 'bank' ||
+      !canManageLibrary(requireTeacher(req), store.get<LibraryItem>('library', q.bankId))
     )
       throw new HttpError(422, '请选择有效题库');
     q.id = old.id;
@@ -82,13 +93,14 @@ export function registerQuestions(app: FastifyInstance, store: Store) {
     return q;
   });
   app.post<{ Params: { id: string } }>('/api/teacher/questions/:id/publish', async (req) => {
-    const old = get(req.params.id),
+    const old = get(req.params.id, requireTeacher(req).id),
       issues = validateQuestion(old.draft);
     for (const b of walkBlocks(old.draft.content))
       if (b.type === 'image') {
         const asset = b.assetId ? store.get<Asset>('assets', b.assetId) : null;
         if (
-          (b.assetId && (!asset || asset.kind !== 'question')) ||
+          (b.assetId &&
+            (!asset || asset.kind !== 'question' || asset.ownerId !== requireTeacher(req).id)) ||
           (b.src && !existsSync(resolve('public', b.src.slice(1))))
         )
           issues.push('题干图片不存在或不是题目资源');

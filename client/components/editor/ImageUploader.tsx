@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react';
+import { randomId } from '../../../shared/browserIds';
 import { Upload } from 'lucide-react';
 import { api } from '../../api';
 import { useToast } from '../../context';
@@ -26,7 +27,7 @@ export function ImageUploader({ onUploaded }: { onUploaded: (id: string) => void
             if (file.size > 10 * 1024 * 1024) throw new Error('图片不能超过 10MB');
             const body = new FormData();
             body.append('kind', 'question');
-            body.append('clientId', crypto.randomUUID());
+            body.append('clientId', randomId());
             body.append('file', file);
             const result = await api('/uploads', { method: 'POST', body });
             onUploaded(result.id);

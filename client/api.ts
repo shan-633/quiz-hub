@@ -34,7 +34,11 @@ async function request(path: string, init: RequestInit = {}) {
 export async function api<T = any>(path: string, init: RequestInit = {}): Promise<T> {
   const response = await request(path, init);
   const body = await response.json().catch(() => ({ message: '服务器响应格式不正确' }));
-  if (!response.ok) throw new ApiError(body.message ?? '请求失败', response.status, body);
+  if (!response.ok) {
+    if (response.status === 401 && path !== '/auth/login' && typeof window !== 'undefined')
+      window.dispatchEvent(new Event('auth-expired'));
+    throw new ApiError(body.message ?? '请求失败', response.status, body);
+  }
   return body;
 }
 export interface DownloadFile {

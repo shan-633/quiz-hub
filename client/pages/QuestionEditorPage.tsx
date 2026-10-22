@@ -1,4 +1,5 @@
 import { ResponsivePreview } from '../components/editor/ResponsivePreview';
+import { randomId } from '../../shared/browserIds';
 import { removeBlank, syncScores } from '../../shared/editor';
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
@@ -303,7 +304,7 @@ export function QuestionEditorPage() {
                       onClick={() =>
                         patch({
                           ...q,
-                          options: [...q.options, { id: crypto.randomUUID(), text: '' }],
+                          options: [...q.options, { id: randomId(), text: '' }],
                         })
                       }
                     >

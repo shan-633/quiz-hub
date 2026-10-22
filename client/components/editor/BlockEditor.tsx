@@ -1,4 +1,5 @@
 import { assetUrl } from '../../api';
+import { randomId } from '../../../shared/browserIds';
 import { useRef } from 'react';
 import { duplicateBlock, removeBlock, insertBlankAt, reorderBlock } from '../../../shared/editor';
 import { TableEditor } from './TableEditor';
@@ -38,7 +39,7 @@ export function BlockEditor({
     onChange(list);
   };
   const add = (type: Block['type']) => {
-    const id = crypto.randomUUID();
+    const id = randomId();
     const b: Block =
       type === 'paragraph'
         ? { id, type, text: '' }
@@ -68,7 +69,7 @@ export function BlockEditor({
                     id,
                     type,
                     layout: 'mediaAside',
-                    children: [{ id: crypto.randomUUID(), type: 'paragraph', text: '' }],
+                    children: [{ id: randomId(), type: 'paragraph', text: '' }],
                   }
                 : {
                     id,
@@ -76,7 +77,7 @@ export function BlockEditor({
                     label: `（${blocks.filter((b) => b.type === 'subquestion').length + 1}）`,
                     score: 2,
                     responseKind: 'blanks',
-                    children: [{ id: crypto.randomUUID(), type: 'paragraph', text: '' }],
+                    children: [{ id: randomId(), type: 'paragraph', text: '' }],
                   };
     onChange([...blocks, b]);
   };

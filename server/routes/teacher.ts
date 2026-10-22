@@ -5,15 +5,17 @@ import { initialReview } from '../../shared/teacherReview';
 import { attemptProgress, type StudentProgress } from '../../shared/progress';
 import { HttpError, requireTeacher } from '../auth';
 import type { Store } from '../store';
+import { canReview } from '../permissions';
 
 export function registerTeacher(
   app: FastifyInstance,
   store: Store,
-  progressSnapshot?: () => StudentProgress[],
+  progressSnapshot?: (teacherId: string) => StudentProgress[],
 ) {
-  const submitted = (id: string) => {
+  const submitted = (id: string, user: User) => {
     const a = store.get<Attempt>('attempts', id);
-    if (!a || a.status !== 'submitted') throw new HttpError(404, '未找到已交卷记录');
+    if (!a || a.status !== 'submitted' || !canReview(store, user, a))
+      throw new HttpError(404, '未找到已交卷记录');
     return a;
   };
   const detail = (a: Attempt) => ({
@@ -30,12 +32,12 @@ export function registerTeacher(
   };
   const revisionSchema = z.object({ expectedRevision: z.number().int().min(0) });
   app.get('/api/teacher/progress', async (req, reply): Promise<StudentProgress[]> => {
-    requireTeacher(req);
+    const teacher = requireTeacher(req);
     reply.header('Cache-Control', 'no-store');
-    if (progressSnapshot) return progressSnapshot();
+    if (progressSnapshot) return progressSnapshot(teacher.id);
     return store
       .list<Attempt>('attempts')
-      .filter((a) => a.status === 'active')
+      .filter((a) => a.status === 'active' && canReview(store, teacher, a))
       .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))
       .map((a) => {
         const { student, kind } = detail(a);
@@ -52,10 +54,10 @@ export function registerTeacher(
       });
   });
   app.get('/api/teacher/attempts', async (req) => {
-    requireTeacher(req);
+    const teacher = requireTeacher(req);
     return store
       .list<Attempt>('attempts')
-      .filter((a) => a.status === 'submitted')
+      .filter((a) => a.status === 'submitted' && canReview(store, teacher, a))
       .sort((a, b) => (b.submittedAt ?? b.updatedAt).localeCompare(a.submittedAt ?? a.updatedAt))
       .map((a) => {
         const { student, kind } = detail(a),
@@ -79,13 +81,13 @@ export function registerTeacher(
   });
   app.get<{ Params: { id: string } }>('/api/teacher/attempts/:id', async (req) => {
     requireTeacher(req);
-    return detail(submitted(req.params.id));
+    return detail(submitted(req.params.id, requireTeacher(req)));
   });
   app.post<{ Params: { id: string } }>('/api/teacher/attempts/:id/start', async (req) => {
     requireTeacher(req);
     const body = revisionSchema.parse(req.body);
     return store.transaction(() => {
-      const a = submitted(req.params.id);
+      const a = submitted(req.params.id, requireTeacher(req));
       checkRevision(a, body.expectedRevision);
       if (a.review) throw new HttpError(409, '该答卷已进入批改流程');
       Object.assign(a, initialReview(a.questions, a.answers));
@@ -108,7 +110,7 @@ export function registerTeacher(
         })
         .parse(req.body);
       return store.transaction(() => {
-        const a = submitted(req.params.id);
+        const a = submitted(req.params.id, user);
         checkRevision(a, body.expectedRevision);
         if (!a.review || a.review.state === 'published')
           throw new HttpError(409, '请先发起复核，已发布的批改不能修改');
@@ -153,7 +155,7 @@ export function registerTeacher(
     const user = requireTeacher(req),
       body = revisionSchema.parse(req.body);
     return store.transaction(() => {
-      const a = submitted(req.params.id);
+      const a = submitted(req.params.id, user);
       checkRevision(a, body.expectedRevision);
       if (a.review?.state === 'published') return detail(a);
       if (!a.review || a.questions.some((q) => !a.grades?.[q.id] || a.grades[q.id].pending))

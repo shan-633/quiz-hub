@@ -121,7 +121,8 @@ it('按完整题目计数，多空题部分填写另计；空白画板和仅标�
   };
   const a: Attempt = {
     id: 'mixed',
-    userId: 'student',
+    teacherId: 'user-teacher',
+    userId: 'user-student',
     libraryId: 'b',
     title: '混合题',
     status: 'active',

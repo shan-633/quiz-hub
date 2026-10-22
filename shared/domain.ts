@@ -1,4 +1,5 @@
 import katex from 'katex';
+import { randomId } from './browserIds';
 import type { AnswerData, Block, Grade, Question, QuestionType, ResponseValue } from './model';
 export const emptyResponse = (): ResponseValue => ({
   choiceIds: [],
@@ -254,8 +255,8 @@ export function validateQuestion(q: Question): string[] {
   return [...new Set(issues)];
 }
 export function newQuestion(type: QuestionType, bankId: string): Question {
-  const id = crypto.randomUUID(),
-    blockId = crypto.randomUUID();
+  const id = randomId(),
+    blockId = randomId();
   return {
     id,
     version: 0,

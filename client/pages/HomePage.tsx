@@ -16,6 +16,7 @@ import type { LibraryItem } from '../../shared/model';
 import { useLoad } from '../useLoad';
 import { api, json } from '../api';
 import { useAuth, useToast } from '../context';
+import { useChat } from '../chatContext';
 import { Loading, ErrorState, EmptyState } from '../components/ui';
 import { PrintPdfDialog } from '../components/PrintPdfDialog';
 const diagram: Record<string, string> = {
@@ -25,6 +26,12 @@ const diagram: Record<string, string> = {
   exam: 'friction',
 };
 export function HomePage() {
+  const { contacts, status } = useChat();
+  const teacherKey = contacts
+    .filter((p) => p.role === 'teacher')
+    .map((p) => p.id)
+    .sort()
+    .join(',');
   const { data, loading, error, reload } = useLoad<LibraryItem[]>('/library'),
     { user } = useAuth(),
     toast = useToast(),
@@ -38,6 +45,9 @@ export function HomePage() {
     [printing, setPrinting] = useState<LibraryItem | null>(null);
   const [params, setParams] = useSearchParams();
   useEffect(() => {
+    if (user?.role === 'student') reload();
+  }, [teacherKey]);
+  useEffect(() => {
     const id = params.get('print'),
       item = data?.find((x) => x.id === id);
     if (item) {
@@ -48,12 +58,19 @@ export function HomePage() {
     }
   }, [data, params, setParams]);
   useEffect(() => {
+    let alive = true;
     if (user)
       api<any[]>('/attempts')
-        .then((items) => setRecent(items.find((a) => a.status === 'active') ?? null))
+        .then((items) => {
+          if (alive)
+            setRecent(items.find((a) => a.status === 'active' && a.available !== false) ?? null);
+        })
         .catch(() => {});
     else setRecent(null);
-  }, [user]);
+    return () => {
+      alive = false;
+    };
+  }, [user, teacherKey]);
   const start = async (item: LibraryItem) => {
     if (!user) {
       navigate(`/login?library=${item.id}`);
@@ -100,7 +117,7 @@ export function HomePage() {
           <span>保持好奇，探索物理的秩序</span>
         </div>
       </section>
-      {recent ? (
+      {recent && data?.some((item) => item.id === recent.libraryId) ? (
         <Link to={`/attempts/${recent.id}`} className="continue-card">
           <span className="continue-icon">
             <BookOpen size={27} />
@@ -194,7 +211,16 @@ export function HomePage() {
         ) : error ? (
           <ErrorState message={error} retry={reload} />
         ) : !items.length ? (
-          <EmptyState title="还没有匹配的练习" description="换一个关键词，或清除筛选条件。">
+          <EmptyState
+            title={!data?.length ? '暂时没有可用练习' : '还没有匹配的练习'}
+            description={
+              !data?.length
+                ? user?.role === 'student' && status === 'live' && !contacts.length
+                  ? '请等待管理员分配教师；分配后会显示所属教师已发布的试卷与题库。'
+                  : '所属教师暂未发布内容，请稍后再来。'
+                : '换一个关键词，或清除筛选条件。'
+            }
+          >
             <button
               className="button"
               onClick={() => {

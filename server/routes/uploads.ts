@@ -4,10 +4,12 @@ import { readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import sharp, { type Metadata } from 'sharp';
 import { z } from 'zod';
-import type { Attempt } from '../../shared/model';
+import type { Attempt, LibraryItem } from '../../shared/model';
 import { walkBlocks } from '../../shared/domain';
-import { HttpError, requireUser, requireTeacher } from '../auth';
+import { HttpError, requireUser, requireTeacher, requireActiveSession } from '../auth';
 import type { Store } from '../store';
+import { canReadLibrary, canReview, canContinue } from '../permissions';
+import { libraryQuestions } from './library';
 export interface Asset {
   id: string;
   ownerId: string;
@@ -78,7 +80,7 @@ export async function registerUploads(app: FastifyInstance, store: Store) {
       else {
         const a = store.get<Attempt>('attempts', body.attemptId ?? '');
         const q = a?.questions.find((q) => q.id === body.questionId);
-        if (!a || a.userId !== user.id || !q) throw new HttpError(404, '练习或题目不存在');
+        if (!a || !canContinue(store, user, a) || !q) throw new HttpError(404, '练习或题目不存在');
         if (a.status !== 'active') throw new HttpError(409, '作答已提交，不能继续上传');
         if (body.partId) {
           const part = walkBlocks(q.content).find(
@@ -125,6 +127,12 @@ export async function registerUploads(app: FastifyInstance, store: Store) {
       const id = crypto.randomUUID(),
         fileName = `${id}.webp`,
         thumb = `${id}-thumb.webp`;
+      requireActiveSession(store, req, body.kind === 'question' ? 'teacher' : 'student');
+      if (body.kind === 'answer') {
+        const current = store.get<Attempt>('attempts', body.attemptId ?? '');
+        if (!current || current.status !== 'active' || !canContinue(store, user, current))
+          throw new HttpError(409, '作答状态或教学关系已改变，请重新加载');
+      }
       writeFileSync(join(store.dataDir, 'uploads', fileName), output);
       writeFileSync(join(store.dataDir, 'uploads', thumb), thumbnail);
       const dimensions = await sharp(output).metadata();
@@ -147,13 +155,33 @@ export async function registerUploads(app: FastifyInstance, store: Store) {
     async (req, reply) => {
       const asset = store.get<Asset>('assets', req.params.id);
       if (!asset) throw new HttpError(404, '图片不存在');
+      const user = requireUser(req);
+      const hasImage = (q: Attempt['questions'][number]) =>
+        walkBlocks(q.content).some((b) => b.type === 'image' && b.assetId === asset.id);
       const published =
         asset.kind === 'question' &&
-        store
-          .versions()
-          .some((q) =>
-            walkBlocks(q.content).some((b) => b.type === 'image' && b.assetId === asset.id),
-          );
+        ((user.role === 'teacher' && asset.ownerId === user.id) ||
+          store
+            .list<LibraryItem>('library')
+            .filter((item) => canReadLibrary(store, user, item) && item.state === 'published')
+            .some((item) => libraryQuestions(store, item).some(hasImage)) ||
+          (user.role === 'student' &&
+            store
+              .list<Attempt>('attempts', user.id)
+              .some(
+                (a) =>
+                  (a.status === 'submitted' || canContinue(store, user, a)) &&
+                  a.questions.some(hasImage),
+              )) ||
+          (user.role === 'teacher' &&
+            store
+              .list<Attempt>('attempts')
+              .some(
+                (a) =>
+                  a.status === 'submitted' &&
+                  canReview(store, user, a) &&
+                  a.questions.some(hasImage),
+              )));
       const staff = req.user?.role === 'teacher';
       const attempt =
         asset.kind === 'answer' && asset.attemptId
@@ -164,6 +192,7 @@ export async function registerUploads(app: FastifyInstance, store: Store) {
       const submittedAttachment =
         staff &&
         attempt?.status === 'submitted' &&
+        canReview(store, user, attempt) &&
         attempt.userId === asset.ownerId &&
         attempt.questions.some((q) => q.id === asset.questionId) &&
         !!value &&
@@ -172,7 +201,12 @@ export async function registerUploads(app: FastifyInstance, store: Store) {
       if (
         !published &&
         !submittedAttachment &&
-        (!req.user || (req.user.id !== asset.ownerId && !(asset.kind === 'question' && staff)))
+        !(
+          asset.kind === 'answer' &&
+          attempt &&
+          user.id === asset.ownerId &&
+          (attempt.status === 'submitted' || canContinue(store, user, attempt))
+        )
       )
         throw new HttpError(404, '图片不存在');
       const fileName = req.query.thumbnail === '1' ? asset.thumbnail : asset.fileName;
@@ -184,7 +218,7 @@ export async function registerUploads(app: FastifyInstance, store: Store) {
       };
       return reply
         .type(contentType[fileName.split('.').pop() ?? ''] ?? 'application/octet-stream')
-        .header('Cache-Control', 'private, max-age=86400')
+        .header('Cache-Control', 'private, no-store')
         .header('X-Content-Type-Options', 'nosniff')
         .send(readFileSync(join(store.dataDir, 'uploads', fileName)));
     },

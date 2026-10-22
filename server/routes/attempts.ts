@@ -6,6 +6,7 @@ import { publicQuestion, walkBlocks } from '../../shared/domain';
 import { initialReview } from '../../shared/teacherReview';
 import { attemptProgress } from '../../shared/progress';
 import { HttpError, requireUser } from '../auth';
+import { canReadLibrary, canContinue } from '../permissions';
 import type { Store } from '../store';
 import { libraryQuestions } from './library';
 import { validateAnswerAssets } from './uploads';
@@ -13,7 +14,13 @@ export function registerAttempts(app: FastifyInstance, store: Store) {
   const owned = (req: FastifyRequest, id: string) => {
     const user = requireUser(req),
       a = store.get<Attempt>('attempts', id);
-    if (!a || a.userId !== user.id) throw new HttpError(404, '未找到你的作答记录');
+    if (
+      !a ||
+      user.role !== 'student' ||
+      a.userId !== user.id ||
+      (a.status === 'active' && !canContinue(store, user, a))
+    )
+      throw new HttpError(404, '未找到你的作答记录');
     return a;
   };
   const view = (a: Attempt) => {
@@ -33,6 +40,13 @@ export function registerAttempts(app: FastifyInstance, store: Store) {
         title: a.title,
         status: a.status,
         libraryId: a.libraryId,
+        teacherId: a.teacherId,
+        available: a.status === 'submitted' || canContinue(store, requireUser(req), a),
+        repeatAvailable: canReadLibrary(
+          store,
+          requireUser(req),
+          store.get<LibraryItem>('library', a.libraryId),
+        ),
         createdAt: a.createdAt,
         updatedAt: a.updatedAt,
         questionCount: a.questions.length,
@@ -44,11 +58,13 @@ export function registerAttempts(app: FastifyInstance, store: Store) {
   );
   app.post('/api/attempts', async (req, reply) => {
     const user = requireUser(req);
+    if (user.role !== 'student') throw new HttpError(403, '只有学生可以开始作答');
     const body = z
       .object({ libraryId: z.string().max(128), fresh: z.boolean().optional() })
       .parse(req.body);
     const item = store.get<LibraryItem>('library', body.libraryId);
-    if (!item || item.state !== 'published') throw new HttpError(404, '未找到已发布的试卷或题库');
+    if (!item || item.state !== 'published' || !canReadLibrary(store, user, item))
+      throw new HttpError(404, '未找到已发布的试卷或题库');
     const active = store
       .list<Attempt>('attempts', user.id)
       .reverse()
@@ -59,6 +75,7 @@ export function registerAttempts(app: FastifyInstance, store: Store) {
     const now = new Date().toISOString(),
       a: Attempt = {
         id: crypto.randomUUID(),
+        teacherId: item.teacherId,
         userId: user.id,
         libraryId: item.id,
         title: item.title,

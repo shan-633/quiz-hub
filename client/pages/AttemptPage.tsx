@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Link, useParams, useSearchParams } from 'react-router-dom';
 import {
   ArrowLeft,
   ArrowRight,
@@ -51,12 +51,23 @@ export function AttemptPage() {
   ) : null;
 }
 function AttemptWorkspace({ initial, reload }: { initial: Attempt; reload: () => void }) {
+  const [params] = useSearchParams();
   const [attempt, setAttempt] = useState(initial),
-    [active, setActive] = useState(0),
+    [active, setActive] = useState(() =>
+      Math.max(
+        0,
+        initial.questions.findIndex((q) => q.id === params.get('question')),
+      ),
+    ),
     [confirm, setConfirm] = useState(false),
     [submitting, setSubmitting] = useState(false);
   const sync = useAnswerSync(attempt),
     toast = useToast();
+  useEffect(() => {
+    const q = params.get('question');
+    if (q && sync.ready)
+      document.getElementById(`question-${q}`)?.scrollIntoView?.({ block: 'start' });
+  }, [sync.ready, attempt.id]);
   const submitted = attempt.status === 'submitted';
   const waiting = submitted && !!attempt.review && attempt.review.state !== 'published';
   const count = attempt.questions.filter((q) => isAnswered(q, sync.get(q.id))).length;

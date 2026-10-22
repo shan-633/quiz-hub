@@ -24,6 +24,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       })
       .finally(() => setLoading(false));
   }, []);
+  useEffect(() => {
+    const expired = () => {
+      setUser(null);
+      setCsrf('');
+    };
+    window.addEventListener('auth-expired', expired);
+    return () => window.removeEventListener('auth-expired', expired);
+  }, []);
   const login = async (username: string, password: string) => {
     const result = await api('/auth/login', { method: 'POST', body: json({ username, password }) });
     setUser(result.user);
@@ -31,9 +39,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return result.user as User;
   };
   const logout = async () => {
-    await api('/auth/logout', { method: 'POST' });
-    setUser(null);
-    setCsrf('');
+    try {
+      await api('/auth/logout', { method: 'POST' });
+    } finally {
+      setUser(null);
+      setCsrf('');
+    }
   };
   return (
     <AuthContext.Provider value={{ user, loading, login, logout }}>{children}</AuthContext.Provider>

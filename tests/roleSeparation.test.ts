@@ -24,10 +24,20 @@ it('没有管理员初始化标记时重启仍保留教师已修改的题库', a
   store.close();
   await resource.app.close();
   resource.app = await createApp({ dataDir: dir });
-  const list = (await resource.app.inject({ url: '/api/library' })).json();
+  const login = await resource.app.inject({
+    method: 'POST',
+    url: '/api/auth/login',
+    payload: { username: 'student', password: 'Student123!' },
+  });
+  const list = (
+    await resource.app.inject({
+      url: '/api/library',
+      headers: { cookie: login.cookies.map((c) => `${c.name}=${c.value}`).join('; ') },
+    })
+  ).json();
   expect(list.find((b: LibraryItem) => b.id === bank.id).title).toBe('教师保存的标题');
 });
-it('教学管理统一到教师接口，只保留学生和教师身份', async () => {
+it('教学管理只在教师接口，停用的遗留管理员不能登录或使用旧会话', async () => {
   const dir = mkdtempSync(join(tmpdir(), 'zhixu-roles-')),
     app = await createApp({ dataDir: dir });
   resources.push({ app, dir });
@@ -53,6 +63,7 @@ it('教学管理统一到教师接口，只保留学生和教师身份', async (
       username: 'admin',
       name: '原管理员',
       role: 'admin',
+      disabled: true,
       passwordHash: hashPassword('Admin123!'),
     });
     const { token } = newSession(store, 'legacy-admin');
@@ -83,7 +94,7 @@ it('教学管理统一到教师接口，只保留学生和教师身份', async (
     expect((await app.inject({ url: path, headers: student })).statusCode).toBe(403);
     expect((await app.inject({ url: path })).statusCode).toBe(401);
   }
-  expect((await app.inject({ url: '/api/admin/banks', headers: teacher })).statusCode).toBe(404);
+  expect((await app.inject({ url: '/api/admin/banks', headers: teacher })).statusCode).toBe(403);
   const files = '/api/teacher/bank-import/files/minimal.zqb.json';
   expect((await app.inject({ url: files, headers: teacher })).statusCode).toBe(200);
   expect((await app.inject({ url: files, headers: student })).statusCode).toBe(403);

@@ -9,9 +9,10 @@ export function LoginPage() {
     navigate = useNavigate(),
     [params] = useSearchParams(),
     location = useLocation();
-  const teacher = params.has('teacher');
-  const [username, setUsername] = useState(teacher ? 'teacher' : 'student'),
-    [password, setPassword] = useState(teacher ? 'Teacher123!' : 'Student123!'),
+  const teacher = params.has('teacher'),
+    admin = params.has('admin');
+  const [username, setUsername] = useState(admin ? '' : teacher ? 'teacher' : 'student'),
+    [password, setPassword] = useState(admin ? '' : teacher ? 'Teacher123!' : 'Student123!'),
     [busy, setBusy] = useState(false),
     [error, setError] = useState('');
   const submit = async (user = username, pass = password) => {
@@ -19,6 +20,14 @@ export function LoginPage() {
     setError('');
     try {
       const authenticated = await login(user, pass);
+      if (authenticated.mustChangePassword) {
+        navigate('/account/password', { replace: true });
+        return;
+      }
+      if (authenticated.role === 'admin') {
+        navigate('/admin', { replace: true });
+        return;
+      }
       const from = (location.state as { from?: string } | null)?.from;
       const destination =
         from?.startsWith('/teacher') && authenticated.role !== 'teacher' ? '/' : from;
@@ -64,8 +73,12 @@ export function LoginPage() {
         <span className="login-logo">
           <Atom size={30} />
         </span>
-        <h2>{teacher ? '进入教师工作台' : '进入学习空间'}</h2>
-        <p>使用本地演示账号，体验完整流程。</p>
+        <h2>{admin ? '进入管理员工作台' : teacher ? '进入教师工作台' : '进入学习空间'}</h2>
+        <p>
+          {admin
+            ? '使用本机初始化或管理员创建的账号登录。'
+            : '使用已分配的账号登录，也可体验本地演示。'}
+        </p>
         <form
           onSubmit={(e) => {
             e.preventDefault();
@@ -127,6 +140,9 @@ export function LoginPage() {
           <br />
           教师 teacher / Teacher123!
         </p>
+        <Link className="text-button" to="/login?admin=1">
+          管理员登录
+        </Link>
         <Link className="text-button" to="/">
           先浏览试卷与题库
         </Link>

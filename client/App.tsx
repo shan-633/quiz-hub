@@ -17,11 +17,20 @@ import {
   ArrowUpRight,
   HelpCircle,
   Atom,
+  MessageCircle,
+  ShieldCheck,
 } from 'lucide-react';
 import { AuthProvider, ToastProvider, useAuth, useToast } from './context';
 import { Loading, Modal } from './components/ui';
 import { HomePage } from './pages/HomePage';
 import './teacher.css';
+import './community.css';
+import { ChatProvider, useChat } from './chatContext';
+const AdminPage = lazy(() => import('./pages/AdminPage').then((m) => ({ default: m.AdminPage })));
+const ChatPage = lazy(() => import('./pages/ChatPage').then((m) => ({ default: m.ChatPage })));
+const PasswordPage = lazy(() =>
+  import('./pages/PasswordPage').then((m) => ({ default: m.PasswordPage })),
+);
 const TeacherInboxPage = lazy(() =>
   import('./pages/TeacherInboxPage').then((m) => ({ default: m.TeacherInboxPage })),
 );
@@ -44,18 +53,30 @@ const QuestionEditorPage = lazy(() =>
 function Protected({
   children,
   teacher = false,
+  admin = false,
+  allowPassword = false,
 }: {
   children: React.ReactNode;
   teacher?: boolean;
+  admin?: boolean;
+  allowPassword?: boolean;
 }) {
   const { user, loading } = useAuth(),
     location = useLocation();
   if (loading) return <Loading />;
-  if (!user || (teacher && user.role !== 'teacher'))
+  if (!user)
     return (
       <Navigate
         to={`/login${teacher ? '?teacher=1' : ''}`}
         state={{ from: location.pathname }}
+        replace
+      />
+    );
+  if (user.mustChangePassword && !allowPassword) return <Navigate to="/account/password" replace />;
+  if ((teacher && user.role !== 'teacher') || (admin && user.role !== 'admin'))
+    return (
+      <Navigate
+        to={user.role === 'admin' ? '/admin' : user.role === 'teacher' ? '/teacher' : '/'}
         replace
       />
     );
@@ -66,14 +87,19 @@ function Shell() {
     toast = useToast();
   const [help, setHelp] = useState(false);
   const location = useLocation(),
-    teacher = location.pathname.startsWith('/teacher');
+    teacher =
+      location.pathname.startsWith('/teacher') ||
+      (location.pathname === '/chat' && user?.role === 'teacher'),
+    admin = user?.role === 'admin',
+    chat = useChat(),
+    unread = chat.conversations.reduce((n, c) => n + c.unread, 0);
   const links = [
     { to: '/', icon: House, label: '学习首页' },
     { to: '/library', icon: BookOpen, label: '试卷与题库' },
     { to: '/history', icon: NotebookPen, label: '我的作答' },
   ];
   return (
-    <div className={`app-shell ${teacher ? 'staff-shell' : ''}`}>
+    <div className={`app-shell ${teacher || admin ? 'staff-shell' : ''}`}>
       <a className="skip-link" href="#main">
         跳到主要内容
       </a>
@@ -86,12 +112,19 @@ function Shell() {
             <strong>
               知序<span className="brand-dot">.</span>
             </strong>
-            <small>{teacher ? '教师工作台' : '物理练习'}</small>
+            <small>{admin ? '账号管理' : teacher ? '教师工作台' : '物理练习'}</small>
           </span>
         </Link>
-        <div className="nav-section-label">{teacher ? '教学工作台' : '学习空间'}</div>
+        <div className="nav-section-label">
+          {admin ? '系统管理' : teacher ? '教学工作台' : '学习空间'}
+        </div>
         <nav aria-label="主要导航">
-          {teacher ? (
+          {admin ? (
+            <NavLink to="/admin">
+              <ShieldCheck size={19} />
+              账号与师生关系
+            </NavLink>
+          ) : teacher ? (
             <>
               <NavLink to="/teacher" end>
                 <NotebookPen size={19} />
@@ -130,6 +163,13 @@ function Shell() {
               </NavLink>
             ))
           )}
+          {user && !admin && (
+            <NavLink to="/chat">
+              <MessageCircle size={19} />
+              站内消息
+              {unread > 0 && <span className="unread-badge">{unread > 99 ? '99+' : unread}</span>}
+            </NavLink>
+          )}
         </nav>
         <div className="sidebar-bottom">
           <button className="sidebar-help" onClick={() => setHelp(true)}>
@@ -137,9 +177,9 @@ function Shell() {
             <span>使用指南</span>
             <ArrowUpRight size={14} />
           </button>
-          <Link className="workspace-entry" to={teacher ? '/' : '/teacher'}>
+          <Link className="workspace-entry" to={admin ? '/admin' : teacher ? '/' : '/teacher'}>
             <Settings2 size={17} />
-            {teacher ? '返回学习空间' : '教师工作台'}
+            {admin ? '管理员工作台' : teacher ? '返回学习空间' : '教师工作台'}
             <ArrowUpRight size={14} />
           </Link>
           {user ? (
@@ -147,7 +187,9 @@ function Shell() {
               <span className="avatar">{user.name.slice(-1)}</span>
               <span>
                 <strong>{user.name}</strong>
-                <small>{user.role === 'teacher' ? '教师' : '保持好奇，继续探索'}</small>
+                <small>
+                  {user.role === 'admin' ? '管理员' : user.role === 'teacher' ? '教师' : '学生'}
+                </small>
               </span>
               <button
                 className="icon-button"
@@ -172,14 +214,31 @@ function Shell() {
             知序
           </Link>
           <span className="breadcrumb">
-            {teacher ? '教师工作台' : '学习空间'} <span>/</span>{' '}
-            {teacher
-              ? location.pathname === '/teacher'
-                ? '收卷与批改'
-                : '题库与题目'
-              : '物理 · 自主练习'}
+            {admin ? '管理员工作台' : teacher ? '教师工作台' : '学习空间'} <span>/</span>{' '}
+            {admin
+              ? '账号与师生关系'
+              : location.pathname === '/chat'
+                ? '站内消息'
+                : teacher
+                  ? location.pathname === '/teacher'
+                    ? '收卷与批改'
+                    : '题库与题目'
+                  : '物理 · 自主练习'}
           </span>
           <div className="topbar-right">
+            {user && (
+              <div className="community-nav">
+                <Link className="text-button" to="/account/password">
+                  修改密码
+                </Link>
+                {!admin && (
+                  <Link className="text-button" to="/chat">
+                    <MessageCircle size={15} />
+                    消息{unread > 0 && <span className="unread-badge">{unread}</span>}
+                  </Link>
+                )}
+              </div>
+            )}
             <span className="term-label">每一步，都有收获</span>
             <span className="subject-badge">
               <span />
@@ -188,11 +247,55 @@ function Shell() {
           </div>
         </header>
         <main id="main">
+          {user && (
+            <div className="community-mobile-links">
+              <Link to={admin ? '/admin' : user.role === 'teacher' ? '/teacher' : '/'}>
+                {admin ? '管理员工作台' : user.role === 'teacher' ? '教师工作台' : '学习首页'}
+              </Link>
+              {!admin && <Link to="/chat">站内消息{unread > 0 ? `（${unread}）` : ''}</Link>}
+              <Link to="/account/password">修改密码</Link>
+              <button onClick={() => void logout().catch((e) => toast(e.message, true))}>
+                退出登录
+              </button>
+            </div>
+          )}
           <Suspense fallback={<Loading />}>
             <Routes>
-              <Route path="/" element={<HomePage />} />
-              <Route path="/library" element={<HomePage />} />
+              <Route
+                path="/"
+                element={
+                  <Protected>{admin ? <Navigate to="/admin" replace /> : <HomePage />}</Protected>
+                }
+              />
+              <Route
+                path="/library"
+                element={
+                  <Protected>{admin ? <Navigate to="/admin" replace /> : <HomePage />}</Protected>
+                }
+              />
               <Route path="/login" element={<LoginPage />} />
+              <Route
+                path="/admin"
+                element={
+                  <Protected admin>
+                    <AdminPage />
+                  </Protected>
+                }
+              />
+              <Route
+                path="/chat"
+                element={
+                  <Protected>{admin ? <Navigate to="/admin" replace /> : <ChatPage />}</Protected>
+                }
+              />
+              <Route
+                path="/account/password"
+                element={
+                  <Protected allowPassword>
+                    <PasswordPage />
+                  </Protected>
+                }
+              />
               <Route
                 path="/teacher"
                 element={
@@ -250,7 +353,7 @@ function Shell() {
           <span>文字 · 手写 · 照片</span>
         </footer>
       </div>
-      {!teacher && (
+      {!teacher && !admin && (
         <nav className="mobile-nav" aria-label="手机导航">
           {links.map(({ to, icon: Icon, label }) => (
             <NavLink to={to} end key={to}>
@@ -262,6 +365,12 @@ function Shell() {
             <Settings2 size={20} />
             <span>教师端</span>
           </NavLink>
+          {user && !admin && (
+            <NavLink to="/chat">
+              <MessageCircle size={20} />
+              <span>消息{unread > 0 ? `(${unread})` : ''}</span>
+            </NavLink>
+          )}
         </nav>
       )}
       {help && (
@@ -289,7 +398,9 @@ export default function App() {
     <BrowserRouter>
       <AuthProvider>
         <ToastProvider>
-          <Shell />
+          <ChatProvider>
+            <Shell />
+          </ChatProvider>
         </ToastProvider>
       </AuthProvider>
     </BrowserRouter>

@@ -1,6 +1,7 @@
 import type { Block, Question } from './model';
 import { blankRefs, walkBlocks } from './domain';
-const uid = () => crypto.randomUUID();
+import { randomId } from './browserIds';
+const uid = randomId;
 export const syncScores = (q: Question) => recount(structuredClone(q));
 export function insertTableBlank(
   original: Question,

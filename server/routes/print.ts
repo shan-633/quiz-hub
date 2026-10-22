@@ -2,7 +2,8 @@ import type { FastifyInstance } from 'fastify';
 import type { LibraryItem } from '../../shared/model';
 import { publicQuestion } from '../../shared/domain';
 import { z } from 'zod';
-import { HttpError, requireUser } from '../auth';
+import { HttpError, requireUser, requireActiveSession } from '../auth';
+import { canReadLibrary } from '../permissions';
 import type { Store } from '../store';
 import { libraryQuestions } from './library';
 import { loadPrintStyles, resolvePrintImages } from '../print/resources';
@@ -14,12 +15,13 @@ export function registerPrint(app: FastifyInstance, store: Store, provided?: Pdf
     '/api/library/:id/pdf',
     { config: { rateLimit: { max: 8, timeWindow: '1 minute' } } },
     async (req, reply) => {
-      requireUser(req);
+      const user = requireUser(req);
       z.object({})
         .strict()
         .parse(req.body ?? {});
       const item = store.get<LibraryItem>('library', req.params.id);
-      if (!item || item.state !== 'published') throw new HttpError(404, '未找到已发布的试卷或题库');
+      if (!item || item.state !== 'published' || !canReadLibrary(store, user, item))
+        throw new HttpError(404, '未找到已发布的试卷或题库');
       const questions = libraryQuestions(store, item).map(publicQuestion);
       if (!questions.length) throw new HttpError(422, '这里还没有可打印的已发布题目');
       if (questions.length > 1000)
@@ -42,6 +44,9 @@ export function registerPrint(app: FastifyInstance, store: Store, provided?: Pdf
           .slice(0, 90)
           .join('')
           .replace(/[. ]+$/g, '') || '物理练习';
+      const currentUser = requireActiveSession(store, req);
+      if (!canReadLibrary(store, currentUser, store.get<LibraryItem>('library', req.params.id)))
+        throw new HttpError(404, '未找到可访问的试卷或题库');
       const name = `${safeName}_阅读版_A4.pdf`,
         encoded = encodeURIComponent(name).replace(
           /[!'()*]/g,

@@ -1,8 +1,8 @@
 # 知序 · 物理练习
 
-中文响应式答题 WebApp，学生端与教师端均已实现。React + TypeScript + Vite 前端通过 HTTP API 访问 Fastify 后端，SQLite 保存数据。无需外部 AI 服务或 API Key。
+中文响应式答题 WebApp，含学生端、教师端、管理员端与师生站内私聊。React + TypeScript + Vite 前端通过 HTTP API 访问 Fastify 后端，SQLite 保存数据。无需外部 AI 服务或 API Key。
 
-当前版本3.6.0已接入独立进度摘要＋SSE实时推送。[此前轮询与摘要＋SSE的三轮压测报告](docs/performance/report.md)保留原始数据、正确性验证和重现脚本；实验倍率仅对应当时的隔离原型及数据集，不能直接当作正式版整站性能。
+当前版本4.0.0支持一个学生关联多位教师；教师只能访问自己题库的题目和对应答卷，学生登录后只见所属教师已发布的内容。进度和聊天使用独立SSE推送。[此前轮询与摘要＋SSE的三轮压测报告](docs/performance/report.md)保留历史原始数据；实验倍率仅对应当时的隔离原型及数据集，不能直接当作当前整站性能。
 
 ## 启动
 
@@ -26,9 +26,11 @@ npm start
 | 第二学生 | student2 | Student123! |
 | 教师     | teacher  | Teacher123! |
 
-当前仅提供学生与教师两类账号。原管理员记录仅保留历史归属，不能继续登录；不新增管理员系统。教师工作台：[收卷与批改](http://localhost:3001/teacher)、[题库与试卷](http://localhost:3001/teacher/library)。
+管理员通过[管理员登录](http://localhost:3001/login?admin=1)进入[账号与师生关系](http://localhost:3001/admin)，可创建账号、分配角色、停用/启用、重置临时密码及管理多对多师生关系。新建和重置后的账号首次登录必须改密。旧管理员记录保持停用，不会自动恢复登录；新管理员不自动获得教师题库编辑或私聊阅读权限。教师工作台：[收卷与批改](http://localhost:3001/teacher)、[题库与试卷](http://localhost:3001/teacher/library)，[站内消息](http://localhost:3001/chat)供关联师生私聊。
 
-这些是本地演示账号。全新初始化包含 4 个题库、2 份试卷，共 8 道基础演示题及一套 26 道真实北京中考题。本次已从工作目录内既有真题PDF录入2022北京卷，其他资料没有自动导入。
+首次初始化管理员，在项目目录执行 `node --import tsx scripts/bootstrap-admin.ts administrator --output data/admin-initial-credentials.txt`，凭据仅写入本机文件，已有启用管理员时拒绝重复初始化。当前这台电脑已完成初始化，直接查看该文件并登录改密即可。详细流程与权限规则见[账号与聊天说明](docs/roles-and-chat.md)。
+
+这些是本地演示账号。全新初始化包含 4 个题库、2 份试卷，共 8 道基础演示题及一套 26 道真实北京中考题，并将演示学生关联到演示教师。实际账号由管理员创建与分配；未登录不开放真实题库目录。本次已从工作目录内既有真题PDF录入2022北京卷，其他资料没有自动导入。
 
 ## 2022北京中考物理真题
 
@@ -44,7 +46,7 @@ npm start
 
 ## 从格式化文件导入题库
 
-教师点击「导入题库」→ 下载模板 → 选择 `.zqb.json` 或 `.json` → 校验 → 逐题预览 → 保存为草稿或导入并发布。协议 `zhixu.question-bank` v1.0 支持现有六类题型及可复用内容块，PNG/JPEG/WebP图片以Base64内嵌，导入保留原字节。最多200题、100图、20 MiB；错误会指出题目/字段路径，任何错误阻止整份导入。同文件重试不重复创建；既有题库和作答不会被覆盖。
+教师点击「导入题库」→ 下载模板 → 选择 `.zqb.json` 或 `.json` → 校验 → 逐题预览 → 保存为草稿或导入并发布。协议 `zhixu.question-bank` v1.0 支持现有六类题型及可复用内容块，PNG/JPEG/WebP图片以Base64内嵌，导入保留原字节。最多200题、100图、20 MiB；错误会指出题目/字段路径，任何错误阻止整份导入。同一教师同文件重试不重复创建，不同教师分别建立自己的题库；既有题库和作答不会被覆盖。
 
 - [协议介绍与完整字段规范](docs/import-protocol-v1.md)
 - [JSON Schema](content-assets/import/question-bank-v1.schema.json)
@@ -74,7 +76,7 @@ npm start
 
 默认数据在 `data/zhixu.sqlite`，附件在 `data/uploads/`；重启保留，源码压缩包不包含运行数据。备份时先停止服务，再复制整个 `data` 目录；恢复时放回同一位置。
 
-复制 `.env.example` 为 `.env` 可设置 `PORT`、`HOST`、`DATA_DIR`、`APP_ORIGIN`、`SECURE_COOKIE`、`DEMO_MODE`。默认仅监听本机 `127.0.0.1`。`DEMO_MODE=false` 仅停止初始化演示数据，不会删除已有账号；正式账号开通流程尚未提供。
+复制 `.env.example` 为 `.env` 可设置 `PORT`、`HOST`、`DATA_DIR`、`APP_ORIGIN`、`SECURE_COOKIE`、`DEMO_MODE`。默认仅监听本机 `127.0.0.1`。`DEMO_MODE=false` 仅停止初始化演示数据，不会删除已有账号；管理员负责创建正式账号并分配师生关系。
 
 前后端分别部署时，前端构建环境设置 `VITE_API_URL`（例如同站点的 API 子域名），后端 `APP_ORIGIN` 设置前端准确来源。请求携带 Cookie，图片也跟随 API 地址。推荐同站点 HTTPS 反向代理：跨站点第三方 Cookie 不属于当前支持范围。正式上线需提供 HTTPS、关闭演示初始化并替换演示账号、配置可信来源和安全 Cookie；本次没有公网部署。
 
@@ -82,10 +84,10 @@ npm start
 
 ## 源码与验证
 
-- `client/`：学生端、教师端、共享渲染器、草稿及附件队列。
-- `server/`：认证、管理、作答、上传 API 与真实 SQLite 存储。
+- `client/`：学生端、教师端、管理员端、站内消息、共享渲染器、草稿及附件队列。
+- `server/`：认证、教学授权、账号与关系管理、聊天、作答、上传 API 与真实 SQLite 存储。
 - `shared/`：结构化题目、答案、发布校验、判分与编辑操作。
-- `tests/`：模型、API、组件、持久化、竞态、原图、结果反馈、打印、历史分区及实时进度回归测试。
+- `tests/`：模型、API、组件、角色与教学隔离、聊天、持久化、竞态、原图、结果反馈、打印、历史分区及实时进度回归测试。
 - `content-assets/beijing-2022/`：真实试卷原图截图、无损WebP和来源清单。
 - `public/diagrams/`：自编物理示意图。
 - `docs/design/`：竞品调研、设计方案与 ImageGen 原型。

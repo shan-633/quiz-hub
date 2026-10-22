@@ -12,12 +12,18 @@ import { emptyAnswer, gradeQuestion, validateQuestion, walkBlocks } from '../sha
 import manifest from '../content-assets/beijing-2022/manifest.json';
 import { createApp } from '../server/app';
 
-it('24张原图经真实API公开读取时字节与来源无损WebP一致', async () => {
+it('24张原图经有权限学生的真实API读取时字节与来源无损WebP一致', async () => {
   const dir = mkdtempSync(join(tmpdir(), 'bj-real-api-'));
   const app = await createApp({ dataDir: dir, seed: true });
   try {
+    const login = await app.inject({
+      method: 'POST',
+      url: '/api/auth/login',
+      payload: { username: 'student', password: 'Student123!' },
+    });
+    const headers = { cookie: login.cookies.map((c) => `${c.name}=${c.value}`).join('; ') };
     for (const asset of manifest.assets) {
-      const response = await app.inject({ url: `/api/uploads/${asset.id}` });
+      const response = await app.inject({ url: `/api/uploads/${asset.id}`, headers });
       expect(response.statusCode, asset.name).toBe(200);
       expect(response.headers['content-type']).toContain('image/webp');
       expect(createHash('sha256').update(response.rawPayload).digest('hex'), asset.name).toBe(

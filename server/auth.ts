@@ -2,6 +2,7 @@ import { randomBytes, scryptSync, timingSafeEqual, createHash } from 'node:crypt
 import type { FastifyInstance, FastifyRequest } from 'fastify';
 import type { User } from '../shared/model';
 import type { Store } from './store';
+import { publicUser } from './identity';
 export interface StoredUser extends Omit<User, 'role'> {
   // Historical admin records are kept for attribution, but cannot authenticate.
   role: User['role'] | 'admin';
@@ -48,13 +49,30 @@ export function requireTeacher(req: FastifyRequest): User {
   if (user.role !== 'teacher') throw new HttpError(403, '需要教师权限');
   return user;
 }
+export function requireAdmin(req: FastifyRequest): User {
+  const user = requireUser(req);
+  if (user.role !== 'admin') throw new HttpError(403, '需要管理员权限');
+  return user;
+}
+export function requireActiveSession(store: Store, req: FastifyRequest, role?: User['role']): User {
+  const user = sessionUser(store, req.sessionId);
+  if (!user) throw new HttpError(401, '登录状态已失效，请重新登录');
+  if (role && user.role !== role) throw new HttpError(403, '当前角色无权执行此操作');
+  return user;
+}
+export function sessionUser(store: Store, sessionId: string): User | undefined {
+  const s = store.get<Session>('sessions', sessionId);
+  if (!s || s.expiresAt <= Date.now()) return undefined;
+  const u = store.get<StoredUser>('users', s.userId);
+  return u &&
+    !u.disabled &&
+    !u.mustChangePassword &&
+    ['student', 'teacher', 'admin'].includes(u.role)
+    ? publicUser(u)
+    : undefined;
+}
 export function teacherSessionActive(store: Store, sessionId: string): boolean {
-  const session = store.get<Session>('sessions', sessionId);
-  return (
-    !!session &&
-    session.expiresAt > Date.now() &&
-    store.get<StoredUser>('users', session.userId)?.role === 'teacher'
-  );
+  return sessionUser(store, sessionId)?.role === 'teacher';
 }
 export function registerAuthHooks(app: FastifyInstance, store: Store, origin: string) {
   app.decorateRequest('user', null);
@@ -71,17 +89,17 @@ export function registerAuthHooks(app: FastifyInstance, store: Store, origin: st
         ]
       : []),
   ]);
-  app.addHook('onRequest', async (req) => {
+  app.addHook('onRequest', async (req, reply) => {
     if (!req.url.startsWith('/api')) return;
+    reply.header('Cache-Control', 'private, no-store');
     const raw = req.cookies.zhixu_session;
     if (raw) {
       const key = hashToken(raw),
         session = store.get<Session>('sessions', key);
       if (session && session.expiresAt > Date.now()) {
         const stored = store.get<StoredUser>('users', session.userId);
-        if (stored && (stored.role === 'teacher' || stored.role === 'student')) {
-          const { passwordHash, ...user } = stored;
-          req.user = { ...user, role: stored.role };
+        if (stored && !stored.disabled && ['teacher', 'student', 'admin'].includes(stored.role)) {
+          req.user = publicUser(stored);
           req.csrfToken = session.csrfToken;
           req.sessionId = key;
         } else {
@@ -96,7 +114,13 @@ export function registerAuthHooks(app: FastifyInstance, store: Store, origin: st
         req.headers['sec-fetch-site'] === 'cross-site')
     )
       throw new HttpError(403, '请求来源不受信任');
+    if (
+      req.user?.mustChangePassword &&
+      !['/api/auth/me', '/api/auth/password', '/api/auth/logout'].includes(req.url.split('?')[0])
+    )
+      throw new HttpError(403, '请先修改临时密码', { code: 'PASSWORD_CHANGE_REQUIRED' });
     if (req.url.startsWith('/api/teacher')) requireTeacher(req);
+    if (req.url.startsWith('/api/admin')) requireAdmin(req);
     if (write && req.url !== '/api/auth/login') {
       requireUser(req);
       if (req.headers['x-csrf-token'] !== req.csrfToken)

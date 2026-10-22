@@ -71,6 +71,7 @@ it('试卷保持发布版本、顺序和自定义分值；当前草稿及教师�
   store.publish(next);
   const paper: LibraryItem = {
     id: 'print-paper',
+    teacherId: 'user-teacher',
     kind: 'paper',
     title: '顺序/版本测试',
     description: '',

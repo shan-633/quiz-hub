@@ -186,6 +186,7 @@ it('六种题型都支持手工写答案与评语；标准答案缺失时全卷�
   questions[0].solution = undefined;
   const a: Attempt = {
     id: 'all-types',
+    teacherId: 'user-teacher',
     userId: 'user-student',
     libraryId: 'paper',
     title: '六题型测试',

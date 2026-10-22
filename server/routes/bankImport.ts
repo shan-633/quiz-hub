@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { MAX_IMPORT_BYTES } from '../../shared/bankImport';
-import { HttpError, requireTeacher } from '../auth';
+import { HttpError, requireTeacher, requireActiveSession } from '../auth';
 import type { Store } from '../store';
 import { prepareBankImport, commitBankImport, previousBankImport } from '../import/bankImport';
 
@@ -77,9 +77,10 @@ export function registerBankImport(app: FastifyInstance, store: Store) {
           .strict()
           .parse(fields);
         const prepared = await prepareBankImport(text);
+        requireActiveSession(store, req, 'teacher');
         if (endpoint === 'validate') {
           if (prepared.report.digest)
-            prepared.report.existing = previousBankImport(store, prepared.report.digest);
+            prepared.report.existing = previousBankImport(store, prepared.report.digest, user.id);
           return prepared.report;
         }
         if (!prepared.report.valid)

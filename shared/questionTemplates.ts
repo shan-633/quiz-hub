@@ -1,5 +1,6 @@
 import type { Block, Question, QuestionType } from './model';
 import { applyStarter } from './editor';
+import { randomId } from './browserIds';
 
 export const questionTemplates: {
   id: string;
@@ -33,7 +34,7 @@ export function applyQuestionTemplate(original: Question, templateId?: string): 
   const template = questionTemplates.find((t) => t.id === templateId);
   if (!template || template.type !== original.type) throw new Error('模板不存在或与题型不匹配');
   const q = structuredClone(original);
-  const uid = () => crypto.randomUUID();
+  const uid = randomId;
   const p = (text: string): Block => ({ id: uid(), type: 'paragraph', text });
   const blankId = `blank-${uid()}`;
   q.content = [

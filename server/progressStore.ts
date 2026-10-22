@@ -18,6 +18,20 @@ export class ProgressStore extends Store {
       CREATE INDEX IF NOT EXISTS attempt_progress_user ON attempt_progress(user_id);
       CREATE INDEX IF NOT EXISTS attempt_progress_library ON attempt_progress(library_id);
       CREATE TABLE IF NOT EXISTS progress_schema(version INTEGER PRIMARY KEY);`);
+    if (
+      !this.db
+        .prepare('PRAGMA table_info(attempt_progress)')
+        .all()
+        .some((c) => c.name === 'teacher_id')
+    ) {
+      this.db.exec("ALTER TABLE attempt_progress ADD COLUMN teacher_id TEXT NOT NULL DEFAULT ''");
+      this.db.exec(
+        "UPDATE attempt_progress SET teacher_id=COALESCE((SELECT json_extract(data,'$.teacherId') FROM documents WHERE collection='library' AND id=attempt_progress.library_id),'')",
+      );
+    }
+    this.db.exec(
+      'CREATE INDEX IF NOT EXISTS attempt_progress_teacher ON attempt_progress(teacher_id,updated_at DESC,id)',
+    );
     if (!this.db.prepare('SELECT version FROM progress_schema WHERE version=1').get()) {
       this.db.exec('BEGIN IMMEDIATE');
       try {
@@ -54,9 +68,9 @@ export class ProgressStore extends Store {
     };
     this.db
       .prepare(
-        'INSERT INTO attempt_progress(id,user_id,library_id,updated_at,data) VALUES(?,?,?,?,?) ON CONFLICT(id) DO UPDATE SET user_id=excluded.user_id,library_id=excluded.library_id,updated_at=excluded.updated_at,data=excluded.data',
+        'INSERT INTO attempt_progress(id,user_id,library_id,updated_at,data,teacher_id) VALUES(?,?,?,?,?,?) ON CONFLICT(id) DO UPDATE SET user_id=excluded.user_id,library_id=excluded.library_id,updated_at=excluded.updated_at,data=excluded.data,teacher_id=excluded.teacher_id',
       )
-      .run(a.id, a.userId, a.libraryId, a.updatedAt, JSON.stringify(data));
+      .run(a.id, a.userId, a.libraryId, a.updatedAt, JSON.stringify(data), a.teacherId ?? '');
   }
   private rows(id?: string): StudentProgress[] {
     const statement = this.db.prepare(
@@ -73,8 +87,24 @@ export class ProgressStore extends Store {
       kind: row.kind === 'paper' ? 'paper' : 'bank',
     }));
   }
-  listProgress(): StudentProgress[] {
-    return this.rows();
+  listProgress(teacherId?: string): StudentProgress[] {
+    if (!teacherId) return this.rows();
+    return this.db
+      .prepare(
+        snapshotSql +
+          ` WHERE p.teacher_id=? AND json_extract(u.data,'$.role')='student' AND COALESCE(json_extract(u.data,'$.disabled'),0)=0
+      AND EXISTS(SELECT 1 FROM teaching_links t WHERE t.teacher_id=p.teacher_id AND t.student_id=p.user_id) ORDER BY p.updated_at DESC,p.id`,
+      )
+      .all(teacherId)
+      .map((row) => ({
+        ...JSON.parse(row.data as string),
+        student: {
+          id: row.user_id as string,
+          name: (row.name as string) ?? '学生',
+          username: (row.username as string) ?? '',
+        },
+        kind: row.kind === 'paper' ? 'paper' : 'bank',
+      }));
   }
   subscribeProgress(listener: (event: ProgressChange) => void) {
     this.listeners.add(listener);

@@ -57,13 +57,13 @@ it('教师从可复用混合实验/科普阅读模板建题，拒绝跨题型套
   });
   expect(invalid.statusCode).toBe(422);
 });
-it('北京真题卷从公开目录到提交：26题无答案泄露，多选半分与阅读待评阅由服务器计算', async () => {
+it('北京真题卷从学生目录到提交：26题无答案泄露，多选半分与阅读待评阅由服务器计算', async () => {
   const { app } = await setup();
-  const library = (await app.inject({ url: '/api/library' })).json();
+  const headers = await login(app);
+  const library = (await app.inject({ url: '/api/library', headers })).json();
   const paper = library.find((x: any) => x.id === 'paper-beijing-2022-real');
   expect(paper.questionCount).toBe(26);
   expect(paper.totalScore).toBe(70);
-  const headers = await login(app);
   const start = await app.inject({
     method: 'POST',
     url: '/api/attempts',
