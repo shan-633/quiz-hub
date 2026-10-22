@@ -25,7 +25,9 @@ async function upload(file: Blob, name: string, context: AnswerContext, clientId
   body.append('file', file, name);
   return api<{ id: string }>('/uploads', { method: 'POST', body });
 }
-export function useAnswerSync(attempt: Attempt) {
+export function useAnswerSync(attempt: Attempt, blocked = false) {
+  const blockedRef = useRef(blocked);
+  blockedRef.current = blocked;
   const [, render] = useState(0),
     [ready, setReady] = useState(attempt.status === 'submitted'),
     [pending, setPending] = useState<PendingUpload[]>([]),
@@ -63,6 +65,7 @@ export function useAnswerSync(attempt: Attempt) {
     return entries;
   };
   const processUploads = async (): Promise<void> => {
+    if (blockedRef.current) throw new Error('作答时间已结束，不能继续上传');
     if (uploadRunning.current) return uploadRunning.current;
     const work = (async () => {
       setUploadBusy(true);
@@ -70,6 +73,7 @@ export function useAnswerSync(attempt: Attempt) {
       try {
         let entries = await refreshUploads();
         while (entries.length) {
+          if (blockedRef.current) throw new Error('作答时间已结束，不能继续上传');
           const entry = entries[0],
             asset = await upload(
               entry.file,
@@ -122,7 +126,7 @@ export function useAnswerSync(attempt: Attempt) {
     if (timer.current) clearTimeout(timer.current);
     if (maxTimer.current) clearTimeout(maxTimer.current);
     timer.current = maxTimer.current = null;
-    return engine.flush();
+    return blockedRef.current ? Promise.resolve() : engine.flush();
   };
   const schedule = () => {
     if (timer.current) clearTimeout(timer.current);
@@ -131,6 +135,7 @@ export function useAnswerSync(attempt: Attempt) {
     maxTimer.current ??= setTimeout(save, 2000);
   };
   const update = (id: string, value: AnswerData) => {
+    if (blockedRef.current) return;
     void engine.update(id, value).catch((e) => setLocalError((e as Error).message));
     schedule();
   };
@@ -231,6 +236,7 @@ export function useAnswerSync(attempt: Attempt) {
     };
   }, [attempt.id, attempt.status]);
   const prepareSubmission = async () => {
+    if (blockedRef.current) throw new Error('作答时间已结束，正在确认交卷状态');
     while (pendingAdds.current.size) await Promise.all([...pendingAdds.current]);
     await processUploads();
     if ((await readUploads(attempt.userId, attempt.id)).length)

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { ArrowUpRight, RotateCcw, Clock3, CheckCircle2 } from 'lucide-react';
 import { useLoad } from '../useLoad';
 import { useToast } from '../context';
@@ -18,6 +18,8 @@ interface HistoryItem {
   pending?: boolean;
   available?: boolean;
   repeatAvailable?: boolean;
+  submissionReason?: 'student' | 'timeout';
+  late?: boolean;
 }
 const historyTabs = [
   { id: 'all', label: '全部' },
@@ -44,6 +46,7 @@ const emptyMessages: Record<HistoryFilter, { title: string; description: string 
   },
 };
 export function HistoryPage() {
+  const location = useLocation();
   const { data, loading, error, reload } = useLoad<HistoryItem[]>('/attempts'),
     navigate = useNavigate(),
     toast = useToast();
@@ -70,6 +73,11 @@ export function HistoryPage() {
   };
   return (
     <div className="page">
+      {location.state?.timeout && (
+        <p className="assignment-notice" role="status">
+          时间到，试卷已自动交卷。你可以查看作答，等待教师批改。
+        </p>
+      )}
       <div className="page-heading">
         <div className="eyebrow">YOUR LEARNING JOURNEY</div>
         <h1>每一步思考，都有迹可循。</h1>
@@ -164,6 +172,10 @@ export function HistoryPage() {
                           : '待批改'}
                   </span>
                   <h2>{a.title}</h2>
+                  {a.submissionReason === 'timeout' && (
+                    <small className="task-rule">到时自动交卷</small>
+                  )}
+                  {a.late && <small className="task-late">迟交</small>}
                   <p>
                     {a.questionCount} 道题 ·{' '}
                     {a.status === 'active'

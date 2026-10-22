@@ -3,7 +3,14 @@ import { mkdirSync } from 'node:fs';
 import { join } from 'node:path';
 import type { Question } from '../shared/model';
 export type Collection =
-  'users' | 'sessions' | 'library' | 'questions' | 'attempts' | 'assets' | 'imports';
+  | 'users'
+  | 'sessions'
+  | 'library'
+  | 'questions'
+  | 'attempts'
+  | 'assets'
+  | 'imports'
+  | 'assignments';
 export class Store {
   readonly db: DatabaseSync;
   constructor(readonly dataDir: string) {

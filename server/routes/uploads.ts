@@ -10,6 +10,7 @@ import { HttpError, requireUser, requireTeacher, requireActiveSession } from '..
 import type { Store } from '../store';
 import { canReadLibrary, canReview, canContinue } from '../permissions';
 import { libraryQuestions } from './library';
+import { expireAttempt } from '../attemptTiming';
 export interface Asset {
   id: string;
   ownerId: string;
@@ -78,7 +79,8 @@ export async function registerUploads(app: FastifyInstance, store: Store) {
         .parse(fields);
       if (body.kind === 'question') requireTeacher(req);
       else {
-        const a = store.get<Attempt>('attempts', body.attemptId ?? '');
+        const stored = store.get<Attempt>('attempts', body.attemptId ?? '');
+        const a = stored ? expireAttempt(store, stored) : undefined;
         const q = a?.questions.find((q) => q.id === body.questionId);
         if (!a || !canContinue(store, user, a) || !q) throw new HttpError(404, '练习或题目不存在');
         if (a.status !== 'active') throw new HttpError(409, '作答已提交，不能继续上传');
@@ -127,15 +129,16 @@ export async function registerUploads(app: FastifyInstance, store: Store) {
       const id = crypto.randomUUID(),
         fileName = `${id}.webp`,
         thumb = `${id}-thumb.webp`;
+      const dimensions = await sharp(output).metadata();
       requireActiveSession(store, req, body.kind === 'question' ? 'teacher' : 'student');
       if (body.kind === 'answer') {
-        const current = store.get<Attempt>('attempts', body.attemptId ?? '');
+        const stored = store.get<Attempt>('attempts', body.attemptId ?? '');
+        const current = stored ? expireAttempt(store, stored) : undefined;
         if (!current || current.status !== 'active' || !canContinue(store, user, current))
           throw new HttpError(409, '作答状态或教学关系已改变，请重新加载');
       }
       writeFileSync(join(store.dataDir, 'uploads', fileName), output);
       writeFileSync(join(store.dataDir, 'uploads', thumb), thumbnail);
-      const dimensions = await sharp(output).metadata();
       const asset: Asset = {
         id,
         ownerId: user.id,

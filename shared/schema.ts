@@ -145,6 +145,8 @@ export const librarySchema = z.object({
   accent: z.enum(['mechanics', 'electric', 'buoyancy', 'exam']).default('mechanics'),
   state: z.enum(['draft', 'published', 'archived']).default('draft'),
   minutes: z.number().int().min(1).max(600).default(30),
+  timeLimitMinutes: z.number().int().min(1).max(600).optional(),
+  enforceTimeLimit: z.boolean().optional(),
   items: z
     .array(
       z.object({

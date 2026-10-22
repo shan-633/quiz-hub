@@ -117,6 +117,7 @@ export function HomePage() {
           <span>保持好奇，探索物理的秩序</span>
         </div>
       </section>
+      {user?.role === 'student' && <Link to="/tasks" className="assignment-home-link">查看班级任务 <span>老师推送的练习与截止安排 →</span></Link>}
       {recent && data?.some((item) => item.id === recent.libraryId) ? (
         <Link to={`/attempts/${recent.id}`} className="continue-card">
           <span className="continue-icon">

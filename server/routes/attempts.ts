@@ -3,14 +3,19 @@ import { z } from 'zod';
 import type { AnswerData, Attempt, LibraryItem } from '../../shared/model';
 import { answerSchema } from '../../shared/schema';
 import { publicQuestion, walkBlocks } from '../../shared/domain';
-import { initialReview } from '../../shared/teacherReview';
 import { attemptProgress } from '../../shared/progress';
 import { HttpError, requireUser } from '../auth';
 import { canReadLibrary, canContinue } from '../permissions';
 import type { Store } from '../store';
 import { libraryQuestions } from './library';
 import { validateAnswerAssets } from './uploads';
-export function registerAttempts(app: FastifyInstance, store: Store) {
+import type { AssignmentService } from '../assignments';
+import { expireAttempt, timingSnapshot, trackDeadline, submitAttempt } from '../attemptTiming';
+export function registerAttempts(
+  app: FastifyInstance,
+  store: Store,
+  assignments?: AssignmentService,
+) {
   const owned = (req: FastifyRequest, id: string) => {
     const user = requireUser(req),
       a = store.get<Attempt>('attempts', id);
@@ -21,12 +26,16 @@ export function registerAttempts(app: FastifyInstance, store: Store) {
       (a.status === 'active' && !canContinue(store, user, a))
     )
       throw new HttpError(404, '未找到你的作答记录');
-    return a;
+    return expireAttempt(store, a);
   };
   const view = (a: Attempt) => {
     if (a.status === 'active' || (a.review && a.review.state !== 'published')) {
       const { grades, teacherFeedback, ...safe } = a;
-      return { ...safe, questions: a.questions.map(publicQuestion) };
+      return {
+        ...safe,
+        questions: a.questions.map(publicQuestion),
+        ...(a.status === 'active' && a.dueAt ? { serverNow: new Date().toISOString() } : {}),
+      };
     }
     return a;
   };
@@ -34,6 +43,7 @@ export function registerAttempts(app: FastifyInstance, store: Store) {
     store
       .list<Attempt>('attempts', requireUser(req).id)
       .reverse()
+      .map((a) => expireAttempt(store, a))
       .map(view)
       .map((a) => ({
         id: a.id,
@@ -42,11 +52,9 @@ export function registerAttempts(app: FastifyInstance, store: Store) {
         libraryId: a.libraryId,
         teacherId: a.teacherId,
         available: a.status === 'submitted' || canContinue(store, requireUser(req), a),
-        repeatAvailable: canReadLibrary(
-          store,
-          requireUser(req),
-          store.get<LibraryItem>('library', a.libraryId),
-        ),
+        repeatAvailable:
+          !a.assignmentId &&
+          canReadLibrary(store, requireUser(req), store.get<LibraryItem>('library', a.libraryId)),
         createdAt: a.createdAt,
         updatedAt: a.updatedAt,
         questionCount: a.questions.length,
@@ -54,22 +62,36 @@ export function registerAttempts(app: FastifyInstance, store: Store) {
         earned: a.grades ? Object.values(a.grades).reduce((s, g) => s + g.earned, 0) : undefined,
         pending: a.grades ? Object.values(a.grades).some((g) => g.pending) : undefined,
         reviewState: a.review?.state,
+        assignmentId: a.assignmentId,
+        dueAt: a.dueAt,
+        submissionReason: a.submissionReason,
+        late: a.late,
       })),
   );
   app.post('/api/attempts', async (req, reply) => {
     const user = requireUser(req);
     if (user.role !== 'student') throw new HttpError(403, '只有学生可以开始作答');
     const body = z
-      .object({ libraryId: z.string().max(128), fresh: z.boolean().optional() })
+      .object({
+        libraryId: z.string().max(128),
+        assignmentId: z.string().max(128).optional(),
+        fresh: z.boolean().optional(),
+      })
       .parse(req.body);
+    if (body.assignmentId && assignments)
+      return view(assignments.start(user, body.assignmentId, body.libraryId));
     const item = store.get<LibraryItem>('library', body.libraryId);
     if (!item || item.state !== 'published' || !canReadLibrary(store, user, item))
       throw new HttpError(404, '未找到已发布的试卷或题库');
     const active = store
       .list<Attempt>('attempts', user.id)
       .reverse()
-      .find((a) => a.libraryId === item.id && a.status === 'active');
-    if (active && !body.fresh) return view(active);
+      .find((a) => a.libraryId === item.id && !a.assignmentId && a.status === 'active');
+    if (active) {
+      const current = expireAttempt(store, active);
+      if (current.status === 'active' && (!body.fresh || current.dueAt)) return view(current);
+      if (!body.fresh && current.submissionReason === 'timeout') return view(current);
+    }
     const questions = libraryQuestions(store, item);
     if (!questions.length) throw new HttpError(422, '这里还没有已发布的题目');
     const now = new Date().toISOString(),
@@ -84,8 +106,12 @@ export function registerAttempts(app: FastifyInstance, store: Store) {
         updatedAt: now,
         questions,
         answers: {},
+        ...timingSnapshot(item, now),
       };
-    store.put('attempts', a.id, a, user.id);
+    store.transaction(() => {
+      store.put('attempts', a.id, a, user.id);
+      trackDeadline(store, a);
+    });
     return reply.code(201).send(view(a));
   });
   app.get<{ Params: { id: string } }>('/api/attempts/:id', async (req) =>
@@ -119,6 +145,8 @@ export function registerAttempts(app: FastifyInstance, store: Store) {
       if (Object.keys(body.data.parts).some((id) => !partIds.has(id)))
         throw new HttpError(422, '答案中包含无效子题');
       validateAnswerAssets(store, a.userId, a.id, q.id, body.data);
+      if (expireAttempt(store, a).status !== 'active')
+        throw new HttpError(409, '作答时间已结束，已自动交卷');
       a.answers[q.id] = {
         data: body.data as AnswerData,
         revision: (current?.revision ?? 0) + 1,
@@ -133,11 +161,7 @@ export function registerAttempts(app: FastifyInstance, store: Store) {
     return store.transaction(() => {
       const a = owned(req, req.params.id);
       if (a.status === 'submitted') return view(a);
-      a.status = 'submitted';
-      a.submittedAt = a.updatedAt = new Date().toISOString();
-      Object.assign(a, initialReview(a.questions, a.answers));
-      store.put('attempts', a.id, a, a.userId);
-      return view(a);
+      return view(submitAttempt(store, a, 'student'));
     });
   });
 }

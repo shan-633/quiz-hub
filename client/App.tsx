@@ -19,14 +19,21 @@ import {
   Atom,
   MessageCircle,
   ShieldCheck,
+  Users,
+  ClipboardList,
 } from 'lucide-react';
 import { AuthProvider, ToastProvider, useAuth, useToast } from './context';
 import { Loading, Modal } from './components/ui';
 import { HomePage } from './pages/HomePage';
 import './teacher.css';
 import './community.css';
+import './assignments.css';
 import { ChatProvider, useChat } from './chatContext';
 const AdminPage = lazy(() => import('./pages/AdminPage').then((m) => ({ default: m.AdminPage })));
+const TeacherStudentsPage = lazy(() =>
+  import('./pages/TeacherStudentsPage').then((m) => ({ default: m.TeacherStudentsPage })),
+);
+const TasksPage = lazy(() => import('./pages/TasksPage').then((m) => ({ default: m.TasksPage })));
 const ChatPage = lazy(() => import('./pages/ChatPage').then((m) => ({ default: m.ChatPage })));
 const PasswordPage = lazy(() =>
   import('./pages/PasswordPage').then((m) => ({ default: m.PasswordPage })),
@@ -96,6 +103,7 @@ function Shell() {
   const links = [
     { to: '/', icon: House, label: '学习首页' },
     { to: '/library', icon: BookOpen, label: '试卷与题库' },
+    { to: '/tasks', icon: ClipboardList, label: '班级任务' },
     { to: '/history', icon: NotebookPen, label: '我的作答' },
   ];
   return (
@@ -129,6 +137,10 @@ function Shell() {
               <NavLink to="/teacher" end>
                 <NotebookPen size={19} />
                 收卷与批改
+              </NavLink>
+              <NavLink to="/teacher/students">
+                <Users size={19} />
+                管理学生
               </NavLink>
               <Link
                 to="/teacher/library"
@@ -222,7 +234,9 @@ function Shell() {
                 : teacher
                   ? location.pathname === '/teacher'
                     ? '收卷与批改'
-                    : '题库与题目'
+                    : location.pathname === '/teacher/students'
+                      ? '管理学生'
+                      : '题库与题目'
                   : '物理 · 自主练习'}
           </span>
           <div className="topbar-right">
@@ -253,6 +267,11 @@ function Shell() {
                 {admin ? '管理员工作台' : user.role === 'teacher' ? '教师工作台' : '学习首页'}
               </Link>
               {!admin && <Link to="/chat">站内消息{unread > 0 ? `（${unread}）` : ''}</Link>}
+              {!admin && (
+                <Link to={user.role === 'teacher' ? '/teacher/students' : '/tasks'}>
+                  {user.role === 'teacher' ? '管理学生' : '班级任务'}
+                </Link>
+              )}
               <Link to="/account/password">修改密码</Link>
               <button onClick={() => void logout().catch((e) => toast(e.message, true))}>
                 退出登录
@@ -301,6 +320,26 @@ function Shell() {
                 element={
                   <Protected teacher>
                     <TeacherInboxPage />
+                  </Protected>
+                }
+              />
+              <Route
+                path="/teacher/students"
+                element={
+                  <Protected teacher>
+                    <TeacherStudentsPage />
+                  </Protected>
+                }
+              />
+              <Route
+                path="/tasks"
+                element={
+                  <Protected>
+                    {user?.role === 'student' ? (
+                      <TasksPage />
+                    ) : (
+                      <Navigate to={admin ? '/admin' : '/teacher/students'} replace />
+                    )}
                   </Protected>
                 }
               />

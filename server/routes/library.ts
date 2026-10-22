@@ -68,6 +68,8 @@ export function registerLibrary(app: FastifyInstance, store: Store) {
     );
     const save = (raw: unknown, id: string, teacherId: string) => {
       const parsed = librarySchema.parse(raw);
+      if (parsed.enforceTimeLimit && !parsed.timeLimitMinutes)
+        throw new HttpError(422, '开启强制交卷前请设置答题时限');
       if (
         new Set((parsed.items ?? []).map((i) => i.questionId)).size !== (parsed.items ?? []).length
       )

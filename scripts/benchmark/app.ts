@@ -8,12 +8,14 @@ import { registerAttempts } from '../../server/routes/attempts';
 import { registerTeacher } from '../../server/routes/teacher';
 import { SummaryStore } from './summary-store';
 import { migrateIdentity } from '../../server/identity';
+import { initAttemptTiming } from '../../server/attemptTiming';
 import type { Attempt } from '../../shared/model';
 
 // Harness-only composition: both modes share production auth and save handlers.
 export async function createBenchmarkApp(dir: string, mode: 'baseline' | 'optimized') {
   const store = mode === 'optimized' ? new SummaryStore(dir) : new Store(dir);
   migrateIdentity(store);
+  initAttemptTiming(store);
   const app = Fastify({ logger: false, bodyLimit: 8 * 1024 * 1024 });
   // Both modes expose the committed attempt timestamp for measurement only.
   // Production saves set answer.updatedAt and attempt.updatedAt separately.

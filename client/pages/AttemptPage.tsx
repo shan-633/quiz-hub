@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link, useParams, useSearchParams } from 'react-router-dom';
+import { Link, useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import {
   ArrowLeft,
   ArrowRight,
@@ -28,6 +28,7 @@ import { UploadContext } from '../uploadContext';
 import { QuestionRenderer } from '../components/QuestionRenderer';
 import { Markdown } from '../components/Markdown';
 import { Loading, ErrorState, Modal } from '../components/ui';
+import { AttemptTimer } from '../components/AttemptTimer';
 import {
   getScoreFeedback,
   summarizeScore,
@@ -52,6 +53,7 @@ export function AttemptPage() {
 }
 function AttemptWorkspace({ initial, reload }: { initial: Attempt; reload: () => void }) {
   const [params] = useSearchParams();
+  const navigate = useNavigate();
   const [attempt, setAttempt] = useState(initial),
     [active, setActive] = useState(() =>
       Math.max(
@@ -60,8 +62,14 @@ function AttemptWorkspace({ initial, reload }: { initial: Attempt; reload: () =>
       ),
     ),
     [confirm, setConfirm] = useState(false),
-    [submitting, setSubmitting] = useState(false);
-  const sync = useAnswerSync(attempt),
+    [submitting, setSubmitting] = useState(false),
+    [timeLocked, setTimeLocked] = useState(
+      () =>
+        !!initial.enforceTimeLimit &&
+        !!initial.dueAt &&
+        Date.parse(initial.dueAt) <= Date.parse(initial.serverNow ?? new Date().toISOString()),
+    );
+  const sync = useAnswerSync(attempt, timeLocked),
     toast = useToast();
   useEffect(() => {
     const q = params.get('question');
@@ -163,11 +171,27 @@ function AttemptWorkspace({ initial, reload }: { initial: Attempt; reload: () =>
             )}
           </div>
         </div>
+        <AttemptTimer
+          attempt={attempt}
+          onLock={setTimeLocked}
+          onSubmitted={(a) => {
+            setAttempt(a);
+            setConfirm(false);
+            toast(a.submissionReason === 'timeout' ? '时间到，已自动交卷' : '作答已提交');
+            navigate(a.assignmentId ? '/tasks' : '/history', {
+              replace: true,
+              state: { timeout: a.submissionReason === 'timeout' },
+            });
+          }}
+        />
         {waiting && (
           <section className="waiting-banner" aria-live="polite">
             <Clock3 size={30} />
             <div>
               <h2>已交卷，教师已收到</h2>
+              {attempt.submissionReason === 'timeout' && (
+                <p>本次为到时自动交卷，已同步的答案已保存。</p>
+              )}
               <p>原始作答已保存。教师正在核对和批改，发布后即可查看分数、正确答案与评语。</p>
             </div>
             <button className="button" onClick={reload}>
@@ -335,6 +359,7 @@ function AttemptWorkspace({ initial, reload }: { initial: Attempt; reload: () =>
             {!submitted && (
               <button
                 className="button primary full submit-sidebar"
+                disabled={timeLocked || submitting}
                 onClick={() => setConfirm(true)}
               >
                 <Send size={16} />
@@ -371,7 +396,7 @@ function AttemptWorkspace({ initial, reload }: { initial: Attempt; reload: () =>
                     <button
                       className={`flag-button ${answer.flagged ? 'marked' : ''}`}
                       aria-label={answer.flagged ? '取消待检查标记' : '标记稍后检查'}
-                      disabled={submitted || submitting}
+                      disabled={submitted || submitting || timeLocked}
                       onClick={() => sync.update(q.id, { ...answer, flagged: !answer.flagged })}
                     >
                       <Flag size={16} />
@@ -382,7 +407,7 @@ function AttemptWorkspace({ initial, reload }: { initial: Attempt; reload: () =>
                     question={q}
                     answer={answer}
                     onChange={(a) => sync.update(q.id, a)}
-                    disabled={submitted || submitting}
+                    disabled={submitted || submitting || timeLocked}
                     context={{ attemptId: attempt.id, questionId: q.id }}
                   />
                   {grade && (
@@ -433,7 +458,11 @@ function AttemptWorkspace({ initial, reload }: { initial: Attempt; reload: () =>
                 {submitted ? '已提交并保存' : `已完成 ${count} / ${attempt.questions.length} 题`}
               </span>
               {!submitted && (
-                <button className="button primary" onClick={() => setConfirm(true)}>
+                <button
+                  className="button primary"
+                  disabled={timeLocked || submitting}
+                  onClick={() => setConfirm(true)}
+                >
                   完成并提交
                   <ArrowRight size={17} />
                 </button>
@@ -457,7 +486,7 @@ function AttemptWorkspace({ initial, reload }: { initial: Attempt; reload: () =>
           ) : (
             <button
               className="button primary"
-              disabled={submitted || submitting}
+              disabled={submitted || submitting || timeLocked}
               onClick={() => setConfirm(true)}
             >
               {submitted ? '已提交' : '提交练习'}
@@ -505,7 +534,7 @@ function AttemptWorkspace({ initial, reload }: { initial: Attempt; reload: () =>
               </button>
               <button
                 className="button primary"
-                disabled={submitting}
+                disabled={submitting || timeLocked}
                 onClick={() => void submit()}
               >
                 {submitting ? '正在保存并提交…' : '确认提交'}

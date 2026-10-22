@@ -29,6 +29,9 @@ import { registerPrint } from './routes/print';
 import { migrateIdentity, publicUser } from './identity';
 import { registerAdmin } from './routes/admin';
 import { registerChat } from './routes/chat';
+import { AssignmentService } from './assignments';
+import { registerAssignments } from './routes/assignments';
+import { initAttemptTiming, startDeadlineWorker } from './attemptTiming';
 import type { PdfRenderer } from './print/pdf';
 export interface AppOptions {
   dataDir: string;
@@ -45,6 +48,8 @@ export async function createApp(options: AppOptions) {
     installRealBeijing2022(store);
   }
   migrateIdentity(store);
+  initAttemptTiming(store);
+  const assignments = new AssignmentService(store);
   await app.register(cookie);
   await app.register(cors, {
     origin: options.origin ?? process.env.APP_ORIGIN ?? 'http://localhost:5173',
@@ -109,8 +114,9 @@ export async function createApp(options: AppOptions) {
   registerLibrary(app, store);
   registerAdmin(app, store);
   registerChat(app, store);
+  registerAssignments(app, store, assignments);
   registerQuestions(app, store);
-  registerAttempts(app, store);
+  registerAttempts(app, store, assignments);
   registerPrint(app, store, options.pdfRenderer);
   registerTeacher(app, store, (teacherId) => store.listProgress(teacherId));
   registerProgressStream(app, store);
@@ -133,6 +139,10 @@ export async function createApp(options: AppOptions) {
         : reply.sendFile('index.html', dist),
     );
   }
-  app.addHook('onClose', async () => store.close());
+  const stopDeadlines = startDeadlineWorker(store, (error) => app.log.error(error));
+  app.addHook('onClose', async () => {
+    stopDeadlines();
+    store.close();
+  });
   return app;
 }

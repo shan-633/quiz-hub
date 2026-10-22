@@ -126,6 +126,8 @@ export interface LibraryItem {
   state: State;
   questionCount: number;
   minutes: number;
+  timeLimitMinutes?: number;
+  enforceTimeLimit?: boolean;
   totalScore: number;
   items?: { questionId: string; version: number; score: number }[];
 }
@@ -153,6 +155,13 @@ export interface Attempt {
   submittedAt?: string;
   review?: Review;
   teacherFeedback?: Record<string, TeacherFeedback>;
+  assignmentId?: string;
+  timeLimitMinutes?: number;
+  enforceTimeLimit?: boolean;
+  dueAt?: string;
+  submissionReason?: 'student' | 'timeout';
+  late?: boolean;
+  serverNow?: string;
 }
 export interface Review {
   state: 'pending' | 'in_progress' | 'published';

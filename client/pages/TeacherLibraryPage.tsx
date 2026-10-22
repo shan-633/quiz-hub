@@ -22,6 +22,7 @@ import { api, json } from '../api';
 import { useToast } from '../context';
 import { Loading, ErrorState, EmptyState, Modal } from '../components/ui';
 import { BankImportDialog } from '../components/BankImportDialog';
+import { PushAssignment } from '../components/PushAssignment';
 export function TeacherLibraryPage() {
   const [params, setParams] = useSearchParams(),
     tab = params.get('tab') ?? 'banks';
@@ -31,6 +32,7 @@ export function TeacherLibraryPage() {
     navigate = useNavigate(),
     toast = useToast();
   const [editing, setEditing] = useState<Partial<LibraryItem> | null>(null),
+    [pushing, setPushing] = useState<LibraryItem | null>(null),
     [importing, setImporting] = useState(false),
     [adding, setAdding] = useState(false),
     [bankId, setBankId] = useState(''),
@@ -249,6 +251,11 @@ export function TeacherLibraryPage() {
                 <span>{item.totalScore} 分</span>
               </div>
               <div className="teacher-card-actions">
+                {item.state === 'published' && (
+                  <button className="text-button" onClick={() => setPushing(item)}>
+                    推送班级
+                  </button>
+                )}
                 <button className="text-button" onClick={() => setEditing(item)}>
                   <Pencil size={15} />
                   {item.kind === 'paper' ? '编排与设置' : '编辑题库'}
@@ -272,6 +279,9 @@ export function TeacherLibraryPage() {
       )}
       {importing && (
         <BankImportDialog onClose={() => setImporting(false)} onImported={() => refresh()} />
+      )}
+      {pushing && (
+        <PushAssignment item={pushing} onClose={() => setPushing(null)} onSent={() => {}} />
       )}
       {adding && (
         <Modal title="录入一道新题" onClose={() => setAdding(false)}>
@@ -432,6 +442,34 @@ function LibraryEditor({
             onChange={(e) => patch({ minutes: Number(e.target.value) })}
           />
         </label>
+        <label className="field">
+          答题时限（分钟，可留空）
+          <input
+            type="number"
+            min="1"
+            max="600"
+            placeholder="不限时"
+            value={value.timeLimitMinutes ?? ''}
+            onChange={(e) =>
+              patch({
+                timeLimitMinutes: e.target.value ? Number(e.target.value) : undefined,
+                ...(e.target.value ? {} : { enforceTimeLimit: false }),
+              })
+            }
+          />
+        </label>
+        <label className="assignment-toggle span-2">
+          <input
+            type="checkbox"
+            disabled={!value.timeLimitMinutes}
+            checked={!!value.enforceTimeLimit}
+            onChange={(e) => patch({ enforceTimeLimit: e.target.checked })}
+          />
+          到时强制交卷
+        </label>
+        <p className="muted small span-2">
+          答题时限从首次开始计算。预计时长只作建议；推送班级时可以另设截止时间和本次时限。
+        </p>
         <label className="field">
           状态
           <select
