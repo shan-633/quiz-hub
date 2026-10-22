@@ -8,7 +8,8 @@ import type { Attempt, LibraryItem } from '../../shared/model';
 import { walkBlocks } from '../../shared/domain';
 import { HttpError, requireUser, requireTeacher, requireActiveSession } from '../auth';
 import type { Store } from '../store';
-import { canReadLibrary, canReview, canContinue } from '../permissions';
+import { canReadLibrary, canReview, canContinue, linked } from '../permissions';
+import type { AssignmentService } from '../assignments';
 import { libraryQuestions } from './library';
 import { expireAttempt } from '../attemptTiming';
 import { isBeforeOpening } from '../../shared/availability';
@@ -53,7 +54,11 @@ export function validateAnswerAssets(
   check(data);
   for (const [id, part] of Object.entries(data.parts ?? {})) check(part, id);
 }
-export async function registerUploads(app: FastifyInstance, store: Store) {
+export async function registerUploads(
+  app: FastifyInstance,
+  store: Store,
+  assignments?: AssignmentService,
+) {
   await app.register(multipart, {
     limits: { fileSize: 10 * 1024 * 1024, files: 1, fields: 8, fieldSize: 1000 },
   });
@@ -171,9 +176,17 @@ export async function registerUploads(app: FastifyInstance, store: Store) {
               (item) =>
                 canReadLibrary(store, user, item) &&
                 item.state === 'published' &&
+                (user.role === 'teacher' || item.deliveryMode === 'showcase') &&
                 (user.role === 'teacher' || !isBeforeOpening(item.opensAt)),
             )
             .some((item) => libraryQuestions(store, item).some(hasImage)) ||
+          (user.role === 'student' &&
+            (assignments?.received(user.id) ?? []).some(
+              (task) =>
+                linked(store, task.teacherId, user.id) &&
+                !isBeforeOpening(task.opensAt) &&
+                task.questions.some(hasImage),
+            )) ||
           (user.role === 'student' &&
             store
               .list<Attempt>('attempts', user.id)

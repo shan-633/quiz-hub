@@ -531,7 +531,7 @@ function ReferencePicker({
             rows.filter((a) =>
               user?.role === 'teacher'
                 ? a.student?.id === peerId
-                : a.status === 'submitted' && a.teacherId === peerId,
+                : a.status === 'submitted' && a.gradingMode !== 'self' && a.teacherId === peerId,
             ),
           );
       })

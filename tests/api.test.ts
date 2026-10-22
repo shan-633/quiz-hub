@@ -2,7 +2,7 @@ import { afterEach, describe, it, expect } from 'vitest';
 import { mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { createApp } from '../server/app';
+import { createAssignedApp as createApp, pushFixture } from './fixtures/assignedApp';
 
 const apps: any[] = [];
 const dirs: string[] = [];
@@ -212,7 +212,7 @@ describe('真实 SQLite API 与权限边界', () => {
     expect(again.json().status).toBe('submitted');
   });
   it('教师修改发布题目不改变已开始练习的版本', async () => {
-    const { app } = await setup();
+    const { app, dir } = await setup();
     const student = await login(app);
     const teacher = await login(app, 'teacher');
     const a = (
@@ -242,6 +242,7 @@ describe('真实 SQLite API 与权限边界', () => {
     expect(publish.statusCode).toBe(200);
     const old = (await app.inject({ url: `/api/attempts/${a.id}`, headers: student })).json();
     expect(old.questions[0].title).toBe(before.title);
+    pushFixture(dir, 'bank-mechanics', true);
     const fresh = (
       await app.inject({
         method: 'POST',

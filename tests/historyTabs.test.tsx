@@ -109,10 +109,10 @@ it('标签支持方向键与Home/End，继续、查看和再练一次仍然可�
     }),
   );
 });
-it('没有作答时仍显示四个零数量标签及开始练习入口', () => {
+it('没有作答时仍显示五个零数量标签及开始练习入口', () => {
   load([]);
   mount();
-  expect(screen.getAllByRole('tab')).toHaveLength(4);
+  expect(screen.getAllByRole('tab')).toHaveLength(5);
   expect(screen.getByText('第一份练习，等你开始')).toBeTruthy();
   expect(screen.getByRole('link', { name: /浏览试卷与题库/ }).getAttribute('href')).toBe(
     '/library',

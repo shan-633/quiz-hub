@@ -2,7 +2,7 @@ import { it, expect, afterEach } from 'vitest';
 import { mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { createApp } from '../server/app';
+import { createAssignedApp as createApp } from './fixtures/assignedApp';
 let app: any, dir: string;
 afterEach(async () => {
   await app?.close();

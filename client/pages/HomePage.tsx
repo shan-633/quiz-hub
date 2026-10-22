@@ -93,6 +93,7 @@ export function HomePage() {
   };
   const items = (data ?? []).filter(
     (item) =>
+      item.deliveryMode !== 'assigned' &&
       (filter === 'all' || item.kind === filter) &&
       (chapter === 'all' || item.chapter.includes(chapter)) &&
       `${item.title} ${item.description} ${item.chapter}`.includes(query),
@@ -226,9 +227,11 @@ export function HomePage() {
             description={
               !data?.length
                 ? user?.role === 'student' && status === 'live' && !contacts.length
-                  ? '请等待管理员分配教师；分配后会显示所属教师已发布的试卷与题库。'
-                  : '所属教师暂未发布内容，请稍后再来。'
-                : '换一个关键词，或清除筛选条件。'
+                  ? '请等待管理员分配教师；关联后可查看展示练习，并接收老师推送的班级任务。'
+                  : '所属教师暂未发布展示练习；收到的分配内容请到班级任务查看。'
+                : !data?.some((item) => item.deliveryMode !== 'assigned')
+                  ? '这里只显示展示练习，分配内容请到班级任务查看。'
+                  : '换一个关键词，或清除筛选条件。'
             }
           >
             <button
@@ -256,6 +259,7 @@ export function HomePage() {
                 </div>
                 <div className="card-body">
                   <div className="card-chapter">{item.chapter}</div>
+                  <span className="mode-badge mode-showcase">展示练习 · 答后自评</span>
                   <h3>{item.title}</h3>
                   <p className="card-description">{item.description}</p>
                   <div className="card-metadata">

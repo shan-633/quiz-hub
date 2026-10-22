@@ -12,6 +12,7 @@ import { validateAnswerAssets } from './uploads';
 import type { AssignmentService } from '../assignments';
 import { expireAttempt, timingSnapshot, trackDeadline, submitAttempt } from '../attemptTiming';
 import { isBeforeOpening } from '../../shared/availability';
+import { hasCompleteStandardAnswer } from '../../shared/teacherReview';
 export function registerAttempts(
   app: FastifyInstance,
   store: Store,
@@ -55,6 +56,7 @@ export function registerAttempts(
         available: a.status === 'submitted' || canContinue(store, requireUser(req), a),
         repeatAvailable:
           !a.assignmentId &&
+          store.get<LibraryItem>('library', a.libraryId)?.deliveryMode === 'showcase' &&
           canReadLibrary(store, requireUser(req), store.get<LibraryItem>('library', a.libraryId)),
         createdAt: a.createdAt,
         updatedAt: a.updatedAt,
@@ -67,6 +69,8 @@ export function registerAttempts(
         dueAt: a.dueAt,
         submissionReason: a.submissionReason,
         late: a.late,
+        gradingMode: a.gradingMode,
+        selfReviewState: a.selfReview?.state,
       })),
   );
   app.post('/api/attempts', async (req, reply) => {
@@ -79,11 +83,33 @@ export function registerAttempts(
         fresh: z.boolean().optional(),
       })
       .parse(req.body);
-    if (body.assignmentId && assignments)
-      return view(assignments.start(user, body.assignmentId, body.libraryId));
+    if (body.assignmentId && assignments) {
+      const result = assignments.start(user, body.assignmentId, body.libraryId);
+      return reply.code(result.created ? 201 : 200).send(view(result.attempt));
+    }
     const item = store.get<LibraryItem>('library', body.libraryId);
+    // Existing frozen attempts keep their original workflow after a category change.
+    const prior =
+      !body.fresh &&
+      store
+        .list<Attempt>('attempts', user.id)
+        .reverse()
+        .find(
+          (a) =>
+            !a.assignmentId &&
+            a.libraryId === body.libraryId &&
+            a.status === 'active' &&
+            canContinue(store, user, a),
+        );
+    if (prior) return view(expireAttempt(store, prior));
     if (!item || item.state !== 'published' || !canReadLibrary(store, user, item))
       throw new HttpError(404, '未找到已发布的试卷或题库');
+    if (item.deliveryMode !== 'showcase') {
+      const task = assignments?.latestForLibrary(user.id, item.id);
+      if (!task) throw new HttpError(404, '请等待教师推送任务');
+      const result = assignments!.start(user, task.id, item.id);
+      return reply.code(result.created ? 201 : 200).send(view(result.attempt));
+    }
     const active = store
       .list<Attempt>('attempts', user.id)
       .reverse()
@@ -97,6 +123,8 @@ export function registerAttempts(
       throw new HttpError(403, '尚未到开放时间，请开放后再开始作答');
     const questions = libraryQuestions(store, item);
     if (!questions.length) throw new HttpError(422, '这里还没有已发布的题目');
+    if (!questions.every(hasCompleteStandardAnswer))
+      throw new HttpError(422, '展示练习标准答案尚未补全，请联系教师');
     const now = new Date().toISOString(),
       a: Attempt = {
         id: crypto.randomUUID(),
@@ -105,6 +133,7 @@ export function registerAttempts(
         libraryId: item.id,
         title: item.title,
         status: 'active',
+        gradingMode: 'self',
         createdAt: now,
         updatedAt: now,
         questions,

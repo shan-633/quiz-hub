@@ -2,7 +2,7 @@ import { afterEach, expect, it } from 'vitest';
 import { mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { createApp } from '../server/app';
+import { createAssignedApp as createApp } from './fixtures/assignedApp';
 import { Store } from '../server/store';
 import type { Attempt, Question } from '../shared/model';
 import { emptyAnswer } from '../shared/domain';

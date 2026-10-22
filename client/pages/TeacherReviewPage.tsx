@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
-import { ArrowLeft, Check, X, CircleDashed, Save, Send, BookOpen, Sparkles } from 'lucide-react';
+import { ArrowLeft, Check, Save, Send, BookOpen, Sparkles } from 'lucide-react';
 import type { Attempt, Question, TeacherFeedback } from '../../shared/model';
 import { typeLabels } from '../../shared/model';
 import { emptyAnswer } from '../../shared/domain';
@@ -12,6 +12,7 @@ import { QuestionRenderer } from '../components/QuestionRenderer';
 import { Markdown } from '../components/Markdown';
 import { Loading, ErrorState, Modal, formatDate } from '../components/ui';
 import { navigatorState, navigatorLabels } from '../practiceFeedback';
+import { GradeControls } from '../components/GradeControls';
 import '../teacher.css';
 type ReviewAttempt = Attempt & {
   student?: { name: string; username: string };
@@ -351,55 +352,7 @@ function ReviewWorkspace({ initial }: { initial: ReviewAttempt }) {
           )}
           {!readOnly ? (
             <>
-              <div className="verdict-buttons" role="group" aria-label="判定结果">
-                {(
-                  [
-                    ['correct', '正确', Check],
-                    ['incorrect', '错误', X],
-                    ['partial', '部分正确', CircleDashed],
-                  ] as const
-                ).map(([v, label, Icon]) => (
-                  <button
-                    key={v}
-                    className={`verdict-${v} ${form.verdict === v ? 'selected' : ''}`}
-                    aria-pressed={form.verdict === v}
-                    disabled={busy}
-                    onClick={() =>
-                      change({
-                        verdict: v,
-                        score: String(
-                          v === 'correct'
-                            ? q.score
-                            : v === 'incorrect'
-                              ? 0
-                              : Number(form.score) > 0 && Number(form.score) < q.score
-                                ? Number(form.score)
-                                : q.score / 2,
-                        ),
-                      })
-                    }
-                  >
-                    <Icon size={17} />
-                    {label}
-                  </button>
-                ))}
-              </div>
-              <label className="field">
-                本题得分
-                <div className="grading-score-input">
-                  <input
-                    type="number"
-                    step="any"
-                    min={0}
-                    max={q.score}
-                    aria-label="本题得分"
-                    value={form.score}
-                    disabled={busy || form.verdict !== 'partial'}
-                    onChange={(e) => change({ score: e.target.value })}
-                  />
-                  <span>/ {q.score} 分</span>
-                </div>
-              </label>
+              <GradeControls value={form} maximum={q.score} disabled={busy} onChange={change} />
               <label className="field">
                 正确答案
                 <textarea

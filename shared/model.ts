@@ -108,7 +108,7 @@ export interface SavedAnswer {
   updatedAt: string;
 }
 export interface Grade {
-  source?: 'auto' | 'teacher' | 'pending' | 'mixed';
+  source?: 'auto' | 'teacher' | 'self' | 'pending' | 'mixed';
   earned: number;
   max: number;
   pending: boolean;
@@ -118,6 +118,7 @@ export interface Grade {
 export interface LibraryItem {
   id: string;
   teacherId?: string;
+  deliveryMode?: 'showcase' | 'assigned';
   kind: 'bank' | 'paper';
   title: string;
   description: string;
@@ -163,6 +164,20 @@ export interface Attempt {
   submissionReason?: 'student' | 'timeout';
   late?: boolean;
   serverNow?: string;
+  gradingMode?: 'self' | 'teacher';
+  selfReview?: {
+    state: 'in_progress' | 'completed';
+    revision: number;
+    completedAt?: string;
+    feedback: Record<string, SelfFeedback>;
+  };
+}
+export interface SelfFeedback {
+  verdict: TeacherFeedback['verdict'];
+  score: number;
+  comment: string;
+  studentName: string;
+  updatedAt: string;
 }
 export interface Review {
   state: 'pending' | 'in_progress' | 'published';

@@ -9,7 +9,13 @@ import type { Store } from '../store';
 import { libraryQuestions } from './library';
 import { loadPrintStyles, resolvePrintImages } from '../print/resources';
 import { createPdfRenderer, type PdfRenderer } from '../print/pdf';
-export function registerPrint(app: FastifyInstance, store: Store, provided?: PdfRenderer) {
+import type { AssignmentService } from '../assignments';
+export function registerPrint(
+  app: FastifyInstance,
+  store: Store,
+  provided?: PdfRenderer,
+  assignments?: AssignmentService,
+) {
   const renderer = provided ?? createPdfRenderer();
   app.addHook('onClose', async () => renderer.close());
   app.post<{ Params: { id: string } }>(
@@ -17,15 +23,28 @@ export function registerPrint(app: FastifyInstance, store: Store, provided?: Pdf
     { config: { rateLimit: { max: 8, timeWindow: '1 minute' } } },
     async (req, reply) => {
       const user = requireUser(req);
-      z.object({})
+      const body = z
+        .object({ assignmentId: z.string().max(128).optional() })
         .strict()
         .parse(req.body ?? {});
       const item = store.get<LibraryItem>('library', req.params.id);
       if (!item || item.state !== 'published' || !canReadLibrary(store, user, item))
         throw new HttpError(404, '未找到已发布的试卷或题库');
-      if (user.role === 'student' && isBeforeOpening(item.opensAt))
+      const task =
+        user.role === 'student' && body.assignmentId
+          ? assignments
+              ?.received(user.id)
+              .find((a) => a.id === body.assignmentId && a.libraryId === item.id)
+          : user.role === 'student' && item.deliveryMode !== 'showcase'
+            ? assignments?.latestForLibrary(user.id, item.id)
+            : undefined;
+      if (body.assignmentId && (user.role !== 'student' || !task))
+        throw new HttpError(404, '未找到收到的班级任务');
+      if (user.role === 'student' && item.deliveryMode !== 'showcase' && !task)
+        throw new HttpError(404, '请等待教师推送');
+      if (user.role === 'student' && isBeforeOpening(task ? task.opensAt : item.opensAt))
         throw new HttpError(403, '尚未到开放时间，暂不能打印试题');
-      const questions = libraryQuestions(store, item).map(publicQuestion);
+      const questions = (task ? task.questions : libraryQuestions(store, item)).map(publicQuestion);
       if (!questions.length) throw new HttpError(422, '这里还没有可打印的已发布题目');
       if (questions.length > 1000)
         throw new HttpError(413, '单次最多导出1000题，请将题库拆分后导出');
@@ -34,7 +53,12 @@ export function registerPrint(app: FastifyInstance, store: Store, provided?: Pdf
         loadPrintStyles(),
       ]);
       const { renderPrintDocument } = await import('../print/PrintDocument');
-      const html = renderPrintDocument({ item, questions, images, ...styles });
+      const html = renderPrintDocument({
+        item: task ? { ...item, title: task.title } : item,
+        questions,
+        images,
+        ...styles,
+      });
       let result;
       try {
         result = await renderer.render(html);
@@ -43,7 +67,7 @@ export function registerPrint(app: FastifyInstance, store: Store, provided?: Pdf
         throw error;
       }
       const safeName =
-        [...item.title.replace(/[\\/:*?"<>|\u0000-\u001f]/g, '_')]
+        [...(task?.title ?? item.title).replace(/[\\/:*?"<>|\u0000-\u001f]/g, '_')]
           .slice(0, 90)
           .join('')
           .replace(/[. ]+$/g, '') || '物理练习';
@@ -51,7 +75,9 @@ export function registerPrint(app: FastifyInstance, store: Store, provided?: Pdf
       const current = store.get<LibraryItem>('library', req.params.id);
       if (!canReadLibrary(store, currentUser, current))
         throw new HttpError(404, '未找到可访问的试卷或题库');
-      if (currentUser.role === 'student' && isBeforeOpening(current?.opensAt))
+      if (currentUser.role === 'student' && current?.deliveryMode !== item.deliveryMode)
+        throw new HttpError(409, '内容类别已改变，请重试');
+      if (currentUser.role === 'student' && isBeforeOpening(task ? task.opensAt : current?.opensAt))
         throw new HttpError(403, '尚未到开放时间，暂不能打印试题');
       const name = `${safeName}_阅读版_A4.pdf`,
         encoded = encodeURIComponent(name).replace(

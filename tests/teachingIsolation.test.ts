@@ -1,5 +1,6 @@
 import { afterEach, expect, it } from 'vitest';
 import { community } from './fixtures/community';
+import { assignLibrary } from './fixtures/assignedApp';
 const fixtures: Awaited<ReturnType<typeof community>>[] = [];
 afterEach(async () => {
   for (const f of fixtures.splice(0)) await f.close();
@@ -98,6 +99,7 @@ it('共同学生的答卷只进入试卷所属教师；关系撤销停止继续�
   expect((await app.inject({ url: `/api/teacher/attempts/${a.id}`, headers: t2 })).statusCode).toBe(
     404,
   );
+  assignLibrary(store, 'bank-mechanics', true);
   const b = (
     await app.inject({
       method: 'POST',

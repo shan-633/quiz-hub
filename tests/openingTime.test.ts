@@ -2,12 +2,18 @@ import { afterEach, expect, it } from 'vitest';
 import { community } from './fixtures/community';
 import { createApp } from '../server/app';
 const fixtures: Awaited<ReturnType<typeof community>>[] = [];
+async function showcaseCommunity() {
+  const f = await community({ assigned: false });
+  for (const item of f.store.list<any>('library'))
+    f.store.put('library', item.id, { ...item, deliveryMode: 'showcase' }, item.teacherId);
+  return f;
+}
 afterEach(async () => {
   for (const f of fixtures.splice(0)) await f.close();
 });
 
 it('题库和试卷保存开放时间，开放前拒绝开始与打印，到时可开始', async () => {
-  const f = await community();
+  const f = await showcaseCommunity();
   fixtures.push(f);
   const t = await f.login('teacher'),
     s = await f.login('student');
@@ -65,13 +71,13 @@ it('题库和试卷保存开放时间，开放前拒绝开始与打印，到时�
 });
 
 it('班级任务继承较晚开放时间，未开放显示状态并阻止直接开始，开放与截止区间须有效', async () => {
-  const f = await community();
+  const f = await showcaseCommunity();
   fixtures.push(f);
   const t = await f.login('teacher'),
     s = await f.login('student');
   const item = f.store.get<any>('library', 'bank-mechanics');
   const opensAt = new Date(Date.now() + 3600000).toISOString();
-  f.store.put('library', item.id, { ...item, opensAt }, item.teacherId);
+  f.store.put('library', item.id, { ...item, opensAt, deliveryMode: 'assigned' }, item.teacherId);
   const g = (
     await f.app.inject({
       method: 'POST',
@@ -133,11 +139,11 @@ it('班级任务继承较晚开放时间，未开放显示状态并阻止直接�
         payload: { libraryId: item.id, assignmentId: id },
       })
     ).statusCode,
-  ).toBe(200);
+  ).toBe(201);
 });
 
 it('设置未来开放时间不修改既有答卷，旧记录仍可继续和查看', async () => {
-  const f = await community();
+  const f = await showcaseCommunity();
   fixtures.push(f);
   const s = await f.login('student'),
     t = await f.login('teacher');
@@ -182,7 +188,7 @@ it('设置未来开放时间不修改既有答卷，旧记录仍可继续和查�
 });
 
 it('PDF生成期间教师推迟开放时也拒绝下载结果', async () => {
-  const f = await community();
+  const f = await showcaseCommunity();
   fixtures.push(f);
   const student = await f.login('student');
   const app = await createApp({
@@ -215,7 +221,7 @@ it('PDF生成期间教师推迟开放时也拒绝下载结果', async () => {
 });
 
 it('未开放题干图片不能提前读取，教师与既有作答仍有权访问', async () => {
-  const f = await community();
+  const f = await showcaseCommunity();
   fixtures.push(f);
   const student = await f.login('student'),
     teacher = await f.login('teacher');

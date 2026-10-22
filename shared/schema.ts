@@ -139,6 +139,7 @@ export const answerSchema = z.object({
   flagged: z.boolean(),
 });
 export const librarySchema = z.object({
+  deliveryMode: z.enum(['showcase', 'assigned']).default('assigned'),
   title: z.string().trim().min(1).max(200),
   description: z.string().max(3000),
   chapter: z.string().max(100),

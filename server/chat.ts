@@ -121,6 +121,7 @@ export class ChatService {
       !linked(this.store, c.teacher_id, c.student_id) ||
       !a ||
       a.status !== 'submitted' ||
+      a.gradingMode === 'self' ||
       a.userId !== c.student_id ||
       attemptTeacher(this.store, a) !== c.teacher_id
     )

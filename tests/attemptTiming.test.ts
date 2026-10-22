@@ -3,6 +3,7 @@ import { community } from './fixtures/community';
 import { emptyAnswer } from '../shared/domain';
 import { createApp } from '../server/app';
 import { Store } from '../server/store';
+import { assignLibrary } from './fixtures/assignedApp';
 const fixtures: Awaited<ReturnType<typeof community>>[] = [];
 afterEach(async () => {
   vi.restoreAllMocks();
@@ -63,6 +64,7 @@ async function timed(enforceTimeLimit: boolean) {
     payload: { ...original, timeLimitMinutes: 10, enforceTimeLimit },
   });
   expect(save.statusCode).toBe(200);
+  assignLibrary(f.store, original.id, true);
   const response = await f.app.inject({
     method: 'POST',
     url: '/api/attempts',

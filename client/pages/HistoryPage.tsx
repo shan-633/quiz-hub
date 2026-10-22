@@ -20,16 +20,20 @@ interface HistoryItem {
   repeatAvailable?: boolean;
   submissionReason?: 'student' | 'timeout';
   late?: boolean;
+  gradingMode?: 'self' | 'teacher';
+  selfReviewState?: 'in_progress' | 'completed';
 }
 const historyTabs = [
   { id: 'all', label: '全部' },
   { id: 'active', label: '未答完' },
   { id: 'pending', label: '待批改' },
+  { id: 'self', label: '待自评' },
   { id: 'graded', label: '已批改' },
 ] as const;
 type HistoryFilter = (typeof historyTabs)[number]['id'];
 function historyStage(a: HistoryItem): Exclude<HistoryFilter, 'all'> {
   if (a.status === 'active') return 'active';
+  if (a.gradingMode === 'self' && a.selfReviewState === 'in_progress') return 'self';
   if (a.reviewState) return a.reviewState === 'published' ? 'graded' : 'pending';
   return !a.pending && typeof a.earned === 'number' ? 'graded' : 'pending';
 }
@@ -44,6 +48,7 @@ const emptyMessages: Record<HistoryFilter, { title: string; description: string 
     title: '暂时没有已批改的作答',
     description: '教师发布结果后，可在这里查看成绩和反馈。',
   },
+  self: { title: '没有待自评的练习', description: '展示练习交卷后，可对照标准答案完成自评。' },
 };
 export function HistoryPage() {
   const location = useLocation();
@@ -56,6 +61,7 @@ export function HistoryPage() {
     all: all.length,
     active: 0,
     pending: 0,
+    self: 0,
     graded: 0,
   };
   for (const a of all) counts[historyStage(a)]++;
@@ -75,7 +81,9 @@ export function HistoryPage() {
     <div className="page">
       {location.state?.timeout && (
         <p className="assignment-notice" role="status">
-          时间到，试卷已自动交卷。你可以查看作答，等待教师批改。
+          {location.state?.selfReview
+            ? '时间到，展示练习已交卷。可对照答案完成自评。'
+            : '时间到，试卷已自动交卷。你可以查看作答，等待教师批改。'}
         </p>
       )}
       <div className="page-heading">
@@ -165,13 +173,18 @@ export function HistoryPage() {
                   >
                     {historyStage(a) === 'active'
                       ? '未答完'
-                      : historyStage(a) === 'graded'
-                        ? '已批改'
-                        : a.reviewState === 'in_progress'
-                          ? '批改中'
-                          : '待批改'}
+                      : historyStage(a) === 'self'
+                        ? '待自评'
+                        : historyStage(a) === 'graded'
+                          ? '已批改'
+                          : a.reviewState === 'in_progress'
+                            ? '批改中'
+                            : '待批改'}
                   </span>
                   <h2>{a.title}</h2>
+                  {a.gradingMode === 'self' && (
+                    <small className="mode-badge mode-showcase">学生自评成绩</small>
+                  )}
                   {a.submissionReason === 'timeout' && (
                     <small className="task-rule">到时自动交卷</small>
                   )}
@@ -180,11 +193,13 @@ export function HistoryPage() {
                     {a.questionCount} 道题 ·{' '}
                     {a.status === 'active'
                       ? `已保存 ${a.answeredCount} 题`
-                      : historyStage(a) === 'pending'
-                        ? a.reviewState
-                          ? '已交卷，等待教师发布结果'
-                          : '已交卷，等待评阅结果'
-                        : `得分 ${a.earned ?? 0} 分`}
+                      : historyStage(a) === 'self'
+                        ? '选择已评，其他部分请对照答案自评'
+                        : historyStage(a) === 'pending'
+                          ? a.reviewState
+                            ? '已交卷，等待教师发布结果'
+                            : '已交卷，等待评阅结果'
+                          : `得分 ${a.earned ?? 0} 分`}
                     <span>更新于 {formatDate(a.updatedAt)}</span>
                   </p>
                 </div>
@@ -200,9 +215,17 @@ export function HistoryPage() {
                   ) : (
                     <Link
                       className={`button ${a.status === 'active' ? 'primary' : ''}`}
-                      to={`/attempts/${a.id}`}
+                      to={
+                        historyStage(a) === 'self'
+                          ? `/attempts/${a.id}/self-review`
+                          : `/attempts/${a.id}`
+                      }
                     >
-                      {a.status === 'active' ? '继续练习' : '查看作答'}
+                      {a.status === 'active'
+                        ? '继续练习'
+                        : historyStage(a) === 'self'
+                          ? '继续自评'
+                          : '查看作答'}
                       <ArrowUpRight size={17} />
                     </Link>
                   )}

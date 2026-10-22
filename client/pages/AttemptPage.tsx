@@ -92,7 +92,11 @@ function AttemptWorkspace({ initial, reload }: { initial: Attempt; reload: () =>
       const result = await api<Attempt>(`/attempts/${attempt.id}/submit`, { method: 'POST' });
       setAttempt(result);
       setConfirm(false);
-      toast('已交卷，教师已收到你的作答');
+      toast(
+        result.gradingMode === 'self'
+          ? '已交卷，可查看答案并完成自评'
+          : '已交卷，教师已收到你的作答',
+      );
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (e) {
       toast((e as Error).message, true);
@@ -180,10 +184,28 @@ function AttemptWorkspace({ initial, reload }: { initial: Attempt; reload: () =>
             toast(a.submissionReason === 'timeout' ? '时间到，已自动交卷' : '作答已提交');
             navigate(a.assignmentId ? '/tasks' : '/history', {
               replace: true,
-              state: { timeout: a.submissionReason === 'timeout' },
+              state: {
+                timeout: a.submissionReason === 'timeout',
+                selfReview: a.gradingMode === 'self',
+              },
             });
           }}
         />
+        {submitted && attempt.gradingMode === 'self' && (
+          <section className="waiting-banner self-assessment-banner">
+            <div>
+              <h2>
+                {attempt.selfReview?.state === 'completed'
+                  ? '自评已完成'
+                  : '答案已公布，请对照完成自评'}
+              </h2>
+              <p>单选、多选自动评分；其余部分由你自己判分，成绩标记为学生自评。</p>
+            </div>
+            <Link className="button primary" to={`/attempts/${attempt.id}/self-review`}>
+              {attempt.selfReview?.state === 'completed' ? '查看自评' : '开始自评'}
+            </Link>
+          </section>
+        )}
         {waiting && (
           <section className="waiting-banner" aria-live="polite">
             <Clock3 size={30} />
@@ -415,7 +437,9 @@ function AttemptWorkspace({ initial, reload }: { initial: Attempt; reload: () =>
                       <div className="grade-heading">
                         <strong>
                           {grade.pending
-                            ? '待人工评阅'
+                            ? attempt.gradingMode === 'self'
+                              ? '待自评'
+                              : '待人工评阅'
                             : grade.status === 'correct'
                               ? '回答正确'
                               : grade.status === 'partial'
@@ -444,6 +468,17 @@ function AttemptWorkspace({ initial, reload }: { initial: Attempt; reload: () =>
                           />
                           <p className="feedback-author">
                             {attempt.teacherFeedback[q.id].teacherName} · 已批改
+                          </p>
+                        </div>
+                      )}
+                      {attempt.selfReview?.feedback[q.id] && (
+                        <div className="teacher-feedback">
+                          <h4>自评备注</h4>
+                          <Markdown
+                            text={attempt.selfReview.feedback[q.id].comment || '未填写自评备注'}
+                          />
+                          <p className="feedback-author">
+                            学生自评 · {attempt.selfReview.feedback[q.id].score}分（人工部分）
                           </p>
                         </div>
                       )}
@@ -505,7 +540,9 @@ function AttemptWorkspace({ initial, reload }: { initial: Attempt; reload: () =>
               已完成 <strong>{count}</strong> / {attempt.questions.length} 题。
               {count < attempt.questions.length
                 ? '还有未完成的题目，可以返回补充，也可以继续提交。'
-                : '每一份思考都已准备好，提交后将交给教师批改。'}
+                : attempt.gradingMode === 'self'
+                  ? '作答已准备好，提交后即可查看答案并开始自评。'
+                  : '每一份思考都已准备好，提交后将交给教师批改。'}
             </p>
             <div className="submission-overview">
               {attempt.questions.map((q, i) => {
@@ -526,7 +563,9 @@ function AttemptWorkspace({ initial, reload }: { initial: Attempt; reload: () =>
               })}
             </div>
             <p className="muted small">
-              提交后无法修改本次答案。教师收到试卷或答题卡并完成批改，发布后即可查看成绩与反馈。
+              {attempt.gradingMode === 'self'
+                ? '提交后无法修改本次答案。单选、多选自动评分，其他部分由你对照标准答案完成自评。'
+                : '提交后无法修改本次答案。教师收到试卷或答题卡并完成批改，发布后即可查看成绩与反馈。'}
             </p>
             <div className="modal-actions">
               <button className="button" disabled={submitting} onClick={() => setConfirm(false)}>

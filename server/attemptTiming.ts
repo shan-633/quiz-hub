@@ -50,6 +50,13 @@ export function submitAttempt(
     a.submittedAt = a.updatedAt =
       reason === 'timeout' && a.dueAt ? a.dueAt : new Date(now).toISOString();
     Object.assign(a, initialReview(a.questions, a.answers));
+    if (a.gradingMode === 'self') {
+      a.review!.state = 'published';
+      a.review!.publishedAt = a.updatedAt;
+      a.review!.publishedBy = '自动评分与学生自评';
+      a.selfReview = { state: 'in_progress', revision: 1, feedback: {} };
+      if (Object.values(a.grades!).every((g) => !g.pending)) a.selfReview.state = 'completed';
+    }
     store.put('attempts', a.id, a, a.userId);
     trackDeadline(store, a);
     return a;

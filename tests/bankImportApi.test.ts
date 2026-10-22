@@ -7,7 +7,7 @@ import sharp from 'sharp';
 import fs from 'node:fs';
 import { syncBuiltinESMExports } from 'node:module';
 import { deflateSync } from 'node:zlib';
-import { createApp } from '../server/app';
+import { createAssignedApp as createApp, pushFixture } from './fixtures/assignedApp';
 import { Store } from '../server/store';
 import { prepareBankImport, commitBankImport } from '../server/import/bankImport';
 
@@ -180,6 +180,7 @@ it('发布选项创建不可变v1且学生作答不获得标准答案；提交�
   ).toBe(409);
   const r = await upload('commit', text, { digest: valid.digest, publish: 'true' });
   expect(r.statusCode).toBe(201);
+  pushFixture(dir, r.json().bankId);
   const started = await app.inject({
     method: 'POST',
     url: '/api/attempts',

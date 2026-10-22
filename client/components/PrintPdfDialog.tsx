@@ -6,7 +6,15 @@ import { apiFile, json, type DownloadFile } from '../api';
 import { useAuth } from '../context';
 import { Modal } from './ui';
 import '../print.css';
-export function PrintPdfDialog({ item, onClose }: { item: LibraryItem; onClose: () => void }) {
+export function PrintPdfDialog({
+  item,
+  assignmentId,
+  onClose,
+}: {
+  item: Pick<LibraryItem, 'id' | 'title' | 'kind' | 'questionCount' | 'totalScore'>;
+  assignmentId?: string;
+  onClose: () => void;
+}) {
   const { user } = useAuth(),
     [busy, setBusy] = useState(false),
     [error, setError] = useState(''),
@@ -38,7 +46,7 @@ export function PrintPdfDialog({ item, onClose }: { item: LibraryItem; onClose: 
     try {
       const result = await apiFile(`/library/${encodeURIComponent(item.id)}/pdf`, {
         method: 'POST',
-        body: json({}),
+        body: json(assignmentId ? { assignmentId } : {}),
         signal: controller.signal,
       });
       if (!state.current.alive) return;

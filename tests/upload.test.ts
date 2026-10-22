@@ -3,7 +3,7 @@ import { mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import sharp from 'sharp';
-import { createApp } from '../server/app';
+import { createAssignedApp as createApp } from './fixtures/assignedApp';
 let app: any, dir: string;
 afterEach(async () => {
   if (app) await app.close();

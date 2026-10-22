@@ -2,7 +2,7 @@ import { afterEach, expect, it, vi } from 'vitest';
 import { mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { createApp } from '../server/app';
+import { createAssignedApp as createApp, assignLibrary } from './fixtures/assignedApp';
 import { Store } from '../server/store';
 import type { LibraryItem, Question } from '../shared/model';
 const resources: { app: Awaited<ReturnType<typeof createApp>>; store: Store; dir: string }[] = [];
@@ -87,6 +87,7 @@ it('试卷保持发布版本、顺序和自定义分值；当前草稿及教师�
     ],
   };
   store.put('library', paper.id, paper);
+  assignLibrary(store as any, paper.id);
   const r = await app.inject({
     method: 'POST',
     url: `/api/library/${paper.id}/pdf`,
@@ -125,7 +126,7 @@ it('匿名/缺CSRF、草稿与空题库、答案开关均不能生成PDF', async
   const bank = store.get<LibraryItem>('library', 'bank-mechanics')!;
   store.put('library', bank.id, { ...bank, state: 'draft' });
   expect((await app.inject({ method: 'POST', url, headers, payload: {} })).statusCode).toBe(404);
-  store.put('library', 'empty', { ...bank, id: 'empty', state: 'published' });
+  store.put('library', 'empty', { ...bank, id: 'empty', state: 'published', deliveryMode: 'showcase' });
   expect(
     (await app.inject({ method: 'POST', url: '/api/library/empty/pdf', headers, payload: {} }))
       .statusCode,

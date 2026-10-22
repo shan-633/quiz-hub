@@ -32,6 +32,7 @@ import { registerChat } from './routes/chat';
 import { AssignmentService } from './assignments';
 import { registerAssignments } from './routes/assignments';
 import { initAttemptTiming, startDeadlineWorker } from './attemptTiming';
+import { registerSelfReview } from './routes/selfReview';
 import type { PdfRenderer } from './print/pdf';
 export interface AppOptions {
   dataDir: string;
@@ -117,10 +118,11 @@ export async function createApp(options: AppOptions) {
   registerAssignments(app, store, assignments);
   registerQuestions(app, store);
   registerAttempts(app, store, assignments);
-  registerPrint(app, store, options.pdfRenderer);
+  registerSelfReview(app, store);
+  registerPrint(app, store, options.pdfRenderer, assignments);
   registerTeacher(app, store, (teacherId) => store.listProgress(teacherId));
   registerProgressStream(app, store);
-  await registerUploads(app, store);
+  await registerUploads(app, store, assignments);
   registerBankImport(app, store);
   const publicDir = resolve('public');
   if (existsSync(publicDir))

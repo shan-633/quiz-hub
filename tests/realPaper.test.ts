@@ -10,7 +10,7 @@ import { Store, type StoredQuestion } from '../server/store';
 import { questionSchema } from '../shared/schema';
 import { emptyAnswer, gradeQuestion, validateQuestion, walkBlocks } from '../shared/domain';
 import manifest from '../content-assets/beijing-2022/manifest.json';
-import { createApp } from '../server/app';
+import { createAssignedApp as createApp } from './fixtures/assignedApp';
 
 it('24张原图经有权限学生的真实API读取时字节与来源无损WebP一致', async () => {
   const dir = mkdtempSync(join(tmpdir(), 'bj-real-api-'));

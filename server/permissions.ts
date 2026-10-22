@@ -28,7 +28,13 @@ export function canReadLibrary(
     user.role === 'student' &&
     item.state === 'published' &&
     !!item.teacherId &&
-    linked(store, item.teacherId, user.id)
+    linked(store, item.teacherId, user.id) &&
+    (item.deliveryMode === 'showcase' ||
+      !!store.db
+        .prepare(
+          `SELECT 1 FROM assignment_recipients r JOIN documents d ON d.collection='assignments' AND d.id=r.assignment_id WHERE r.student_id=? AND json_extract(d.data,'$.libraryId')=? AND json_extract(d.data,'$.teacherId')=? LIMIT 1`,
+        )
+        .get(user.id, item.id, item.teacherId))
   );
 }
 export function attemptTeacher(store: Store, a: Attempt): string | undefined {
@@ -37,6 +43,7 @@ export function attemptTeacher(store: Store, a: Attempt): string | undefined {
 export function canReview(store: Store, user: User, a: Attempt): boolean {
   return (
     user.role === 'teacher' &&
+    a.gradingMode !== 'self' &&
     attemptTeacher(store, a) === user.id &&
     linked(store, user.id, a.userId)
   );

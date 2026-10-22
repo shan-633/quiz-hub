@@ -100,6 +100,8 @@ export class AssignmentService {
       if (!canManageLibrary({ id: teacherId, role: 'teacher' } as User, item))
         throw new HttpError(404, '未找到你的题库或试卷');
       if (item!.state !== 'published') throw new HttpError(422, '请先发布题库或试卷');
+      if (item!.deliveryMode === 'showcase')
+        throw new HttpError(422, '展示练习无需推送，请改为分配任务后再推送');
       const groups = this.groups(teacherId),
         targets = [...new Set(input.groupIds)].map((id) => groups.find((g) => g.id === id));
       if (targets.some((g) => !g)) throw new HttpError(422, '班级组不存在或不属于你');
@@ -190,7 +192,7 @@ export class AssignmentService {
         ];
       });
   }
-  start(user: User, id: string, libraryId: string): Attempt {
+  start(user: User, id: string, libraryId: string): { attempt: Attempt; created: boolean } {
     return this.store.transaction(() => {
       const a = this.store.get<ClassAssignment>('assignments', id);
       const recipient = this.store.db
@@ -207,7 +209,7 @@ export class AssignmentService {
       )
         throw new HttpError(404, '未找到你的班级任务');
       const existing = this.attempt(recipient.attempt_id as string | null);
-      if (existing) return existing;
+      if (existing) return { attempt: existing, created: false };
       if (isBeforeOpening(a.opensAt))
         throw new HttpError(403, '任务尚未到开放时间，请稍后开始作答');
       if (this.status(a) === 'expired') throw new HttpError(409, '任务已截止，无法开始作答');
@@ -217,6 +219,7 @@ export class AssignmentService {
         userId: user.id,
         teacherId: a.teacherId,
         assignmentId: a.id,
+        gradingMode: 'teacher',
         title: a.title,
         libraryId: a.libraryId,
         status: 'active',
@@ -233,8 +236,24 @@ export class AssignmentService {
           'UPDATE assignment_recipients SET attempt_id=? WHERE assignment_id=? AND student_id=?',
         )
         .run(attempt.id, id, user.id);
-      return attempt;
+      return { attempt, created: true };
     });
+  }
+  latestForLibrary(studentId: string, libraryId: string): ClassAssignment | undefined {
+    const rows = this.store.db
+      .prepare(
+        `SELECT d.data FROM assignment_recipients r JOIN documents d ON d.collection='assignments' AND d.id=r.assignment_id WHERE r.student_id=? AND json_extract(d.data,'$.libraryId')=? ORDER BY d.rowid DESC`,
+      )
+      .all(studentId, libraryId);
+    return rows.length ? JSON.parse(rows[0].data as string) : undefined;
+  }
+  received(studentId: string): ClassAssignment[] {
+    return this.store.db
+      .prepare(
+        `SELECT d.data FROM assignment_recipients r JOIN documents d ON d.collection='assignments' AND d.id=r.assignment_id WHERE r.student_id=? ORDER BY d.rowid DESC`,
+      )
+      .all(studentId)
+      .map((row) => JSON.parse(row.data as string));
   }
   teacherSummary(a: ClassAssignment): TeacherAssignment {
     const students = this.details(a.teacherId, a.id).students;

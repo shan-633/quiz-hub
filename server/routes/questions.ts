@@ -10,6 +10,7 @@ import type { LibraryItem, Question } from '../../shared/model';
 import { HttpError, requireTeacher } from '../auth';
 import { canManageLibrary } from '../permissions';
 import type { Store, StoredQuestion } from '../store';
+import { hasCompleteStandardAnswer } from '../../shared/teacherReview';
 function checkDepth(value: unknown) {
   const queue = [{ v: value, d: 0 }];
   let count = 0;
@@ -95,6 +96,11 @@ export function registerQuestions(app: FastifyInstance, store: Store) {
   app.post<{ Params: { id: string } }>('/api/teacher/questions/:id/publish', async (req) => {
     const old = get(req.params.id, requireTeacher(req).id),
       issues = validateQuestion(old.draft);
+    if (
+      store.get<LibraryItem>('library', old.bankId)?.deliveryMode === 'showcase' &&
+      !hasCompleteStandardAnswer(old.draft)
+    )
+      issues.push('展示练习需要完整标准答案');
     for (const b of walkBlocks(old.draft.content))
       if (b.type === 'image') {
         const asset = b.assetId ? store.get<Asset>('assets', b.assetId) : null;

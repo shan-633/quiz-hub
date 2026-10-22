@@ -34,6 +34,9 @@ const TeacherStudentsPage = lazy(() =>
   import('./pages/TeacherStudentsPage').then((m) => ({ default: m.TeacherStudentsPage })),
 );
 const TasksPage = lazy(() => import('./pages/TasksPage').then((m) => ({ default: m.TasksPage })));
+const SelfReviewPage = lazy(() =>
+  import('./pages/SelfReviewPage').then((m) => ({ default: m.SelfReviewPage })),
+);
 const ChatPage = lazy(() => import('./pages/ChatPage').then((m) => ({ default: m.ChatPage })));
 const PasswordPage = lazy(() =>
   import('./pages/PasswordPage').then((m) => ({ default: m.PasswordPage })),
@@ -364,6 +367,14 @@ function Shell() {
                 element={
                   <Protected>
                     <AttemptPage />
+                  </Protected>
+                }
+              />
+              <Route
+                path="/attempts/:id/self-review"
+                element={
+                  <Protected>
+                    <SelfReviewPage />
                   </Protected>
                 }
               />

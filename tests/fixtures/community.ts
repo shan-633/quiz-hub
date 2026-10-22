@@ -5,9 +5,10 @@ import { createApp } from '../../server/app';
 import { ProgressStore } from '../../server/progressStore';
 import { hashPassword } from '../../server/auth';
 import { bootstrapAdmin } from '../../server/identity';
-export async function community() {
+import { createAssignedApp } from './assignedApp';
+export async function community(options: { assigned?: boolean } = {}) {
   const dir = mkdtempSync(join(tmpdir(), 'community-')),
-    app = await createApp({ dataDir: dir }),
+    app = await (options.assigned === false ? createApp : createAssignedApp)({ dataDir: dir }),
     store = new ProgressStore(dir);
   for (const [id, role] of [
     ['t2', 'teacher'],

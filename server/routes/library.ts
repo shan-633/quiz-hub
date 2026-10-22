@@ -4,6 +4,7 @@ import { librarySchema } from '../../shared/schema';
 import { HttpError, requireTeacher } from '../auth';
 import { canReadLibrary, canManageLibrary } from '../permissions';
 import type { Store, StoredQuestion } from '../store';
+import { hasCompleteStandardAnswer } from '../../shared/teacherReview';
 export function libraryQuestions(store: Store, item: LibraryItem): Question[] {
   if (item.kind === 'paper')
     return (item.items ?? []).flatMap((ref) => {
@@ -32,7 +33,12 @@ export function libraryQuestions(store: Store, item: LibraryItem): Question[] {
 }
 export function enrichLibrary(store: Store, item: LibraryItem): LibraryItem {
   const qs = libraryQuestions(store, item);
-  return { ...item, questionCount: qs.length, totalScore: qs.reduce((sum, q) => sum + q.score, 0) };
+  return {
+    ...item,
+    deliveryMode: item.deliveryMode ?? 'assigned',
+    questionCount: qs.length,
+    totalScore: qs.reduce((sum, q) => sum + q.score, 0),
+  };
 }
 export function registerLibrary(app: FastifyInstance, store: Store) {
   const teacherItem = (item: LibraryItem): LibraryItem => {
@@ -42,6 +48,7 @@ export function registerLibrary(app: FastifyInstance, store: Store) {
       .filter((q) => q.bankId === item.id && !q.archived);
     return {
       ...item,
+      deliveryMode: item.deliveryMode ?? 'assigned',
       questionCount: questions.length,
       totalScore: questions.reduce((s, q) => s + q.draft.score, 0),
     };
@@ -82,6 +89,12 @@ export function registerLibrary(app: FastifyInstance, store: Store) {
       const item: LibraryItem = { ...parsed, id, kind, teacherId, questionCount: 0, totalScore: 0 };
       if (item.state === 'published' && !libraryQuestions(store, item).length)
         throw new HttpError(422, '请先添加并发布至少一道题目');
+      if (
+        item.state === 'published' &&
+        item.deliveryMode === 'showcase' &&
+        !libraryQuestions(store, item).every(hasCompleteStandardAnswer)
+      )
+        throw new HttpError(422, '展示练习公布答案前，请补全所有已发布题目的标准答案');
       store.put('library', id, item, teacherId);
       return teacherItem(item);
     };

@@ -41,6 +41,7 @@ export function TeacherLibraryPage() {
     [templateId, setTemplateId] = useState(''),
     [busy, setBusy] = useState(false),
     [query, setQuery] = useState('');
+  const [mode, setMode] = useState<'all' | 'showcase' | 'assigned'>('all');
   const refresh = () => {
     banks.reload();
     papers.reload();
@@ -66,8 +67,10 @@ export function TeacherLibraryPage() {
   };
   const loading = banks.loading || papers.loading || questions.loading,
     error = banks.error || papers.error || questions.error;
-  const filtered = (tab === 'papers' ? papers.data : banks.data)?.filter((x) =>
-    `${x.title} ${x.chapter}`.includes(query),
+  const filtered = (tab === 'papers' ? papers.data : banks.data)?.filter(
+    (x) =>
+      `${x.title} ${x.chapter}`.includes(query) &&
+      (mode === 'all' || (x.deliveryMode ?? 'assigned') === mode),
   );
   return (
     <div className="page teacher-library-page">
@@ -103,6 +106,7 @@ export function TeacherLibraryPage() {
                   chapter: '八年级 · 力学',
                   accent: tab === 'papers' ? 'exam' : 'mechanics',
                   minutes: 30,
+                  deliveryMode: mode === 'showcase' ? 'showcase' : 'assigned',
                   items: [],
                 });
             }}
@@ -140,6 +144,33 @@ export function TeacherLibraryPage() {
           />
         </div>
       </div>
+      {tab !== 'questions' && (
+        <div className="delivery-tabs" aria-label="内容类别分区">
+          {(
+            [
+              ['all', '全部'],
+              ['showcase', '展示练习'],
+              ['assigned', '分配任务'],
+            ] as const
+          ).map(([id, label]) => (
+            <button
+              className={mode === id ? 'active' : ''}
+              aria-pressed={mode === id}
+              key={id}
+              onClick={() => setMode(id)}
+            >
+              {label}
+            </button>
+          ))}
+          <span>
+            {mode === 'showcase'
+              ? '关联学生可见 · 交卷后看答案并自评'
+              : mode === 'assigned'
+                ? '推送后仅收件学生可见 · 教师批改'
+                : '展示练习与分配任务分别管理'}
+          </span>
+        </div>
+      )}
       {loading ? (
         <Loading />
       ) : error ? (
@@ -243,6 +274,9 @@ export function TeacherLibraryPage() {
               </div>
               <span className="card-chapter">{item.chapter}</span>
               <h2>{item.title}</h2>
+              <span className={`mode-badge mode-${item.deliveryMode ?? 'assigned'}`}>
+                {item.deliveryMode === 'showcase' ? '展示练习 · 学生自评' : '分配任务 · 教师批改'}
+              </span>
               <p>{item.description || '还没有添加简介'}</p>
               <div className="teacher-card-meta">
                 <span>
@@ -252,7 +286,7 @@ export function TeacherLibraryPage() {
                 <span>{item.totalScore} 分</span>
               </div>
               <div className="teacher-card-actions">
-                {item.state === 'published' && (
+                {item.state === 'published' && item.deliveryMode !== 'showcase' && (
                   <button className="text-button" onClick={() => setPushing(item)}>
                     推送班级
                   </button>
@@ -413,6 +447,16 @@ function LibraryEditor({
       wide={paper}
     >
       <div className="form-grid">
+        <label className="field span-2">
+          内容类别
+          <select
+            value={value.deliveryMode ?? 'assigned'}
+            onChange={(e) => patch({ deliveryMode: e.target.value as LibraryItem['deliveryMode'] })}
+          >
+            <option value="assigned">分配任务：推送后可见，教师批改</option>
+            <option value="showcase">展示练习：关联学生可见，学生自评</option>
+          </select>
+        </label>
         <label className="field">
           名称
           <input

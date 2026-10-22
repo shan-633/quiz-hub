@@ -184,6 +184,7 @@ export function commitBankImport(
   });
   const bank: LibraryItem = {
     ...document.bank,
+    deliveryMode: 'assigned',
     id: bankId,
     teacherId: ownerId,
     kind: 'bank',

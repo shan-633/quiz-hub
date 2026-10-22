@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { BookOpen, Clock3, ArrowUpRight, RefreshCw } from 'lucide-react';
+import { BookOpen, Clock3, ArrowUpRight, RefreshCw, Printer } from 'lucide-react';
 import type { StudentTask, TaskStatus } from '../../shared/assignments';
 import { taskStatusLabels } from '../../shared/assignments';
 import { useLoad } from '../useLoad';
@@ -8,6 +8,7 @@ import { api, json } from '../api';
 import { Loading, ErrorState, EmptyState, formatDate } from '../components/ui';
 import { isBeforeOpening } from '../../shared/availability';
 import { useOpeningClock } from '../useOpeningClock';
+import { PrintPdfDialog } from '../components/PrintPdfDialog';
 
 export function TasksPage() {
   const tasks = useLoad<StudentTask[]>('/tasks'),
@@ -15,7 +16,8 @@ export function TasksPage() {
     location = useLocation();
   const [filter, setFilter] = useState<TaskStatus | 'all'>('all'),
     [busy, setBusy] = useState(''),
-    [error, setError] = useState('');
+    [error, setError] = useState(''),
+    [printing, setPrinting] = useState<StudentTask | null>(null);
   const now = useOpeningClock((tasks.data ?? []).map((t) => t.opensAt));
   useEffect(() => {
     const refresh = () => {
@@ -139,6 +141,12 @@ export function TasksPage() {
                 </p>
               </div>
               <div className="task-action">
+                {t.status !== 'scheduled' && (
+                  <button className="button" onClick={() => setPrinting(t)}>
+                    <Printer size={16} />
+                    打印题目
+                  </button>
+                )}
                 {t.status === 'scheduled' ? (
                   <button className="button" disabled>
                     尚未开放
@@ -166,6 +174,14 @@ export function TasksPage() {
             </article>
           ))}
         </div>
+      )}
+      {printing && (
+        <PrintPdfDialog
+          key={printing.id}
+          item={{ ...printing, id: printing.libraryId, kind: 'paper' }}
+          assignmentId={printing.id}
+          onClose={() => setPrinting(null)}
+        />
       )}
     </div>
   );
