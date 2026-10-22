@@ -9,11 +9,13 @@ export function GradeControls({
   maximum,
   disabled = false,
   onChange,
+  scoreLabel = '本题得分',
 }: {
   value: GradeValue;
   maximum: number;
   disabled?: boolean;
   onChange: (patch: Partial<GradeValue>) => void;
+  scoreLabel?: string;
 }) {
   return (
     <>
@@ -51,14 +53,14 @@ export function GradeControls({
         ))}
       </div>
       <label className="field">
-        本题得分
+        {scoreLabel}
         <div className="grading-score-input">
           <input
             type="number"
             step="any"
             min={0}
             max={maximum}
-            aria-label="本题得分"
+            aria-label={scoreLabel}
             value={value.score}
             disabled={disabled || value.verdict !== 'partial'}
             onChange={(e) => onChange({ score: e.target.value })}

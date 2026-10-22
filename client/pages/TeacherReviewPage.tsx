@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { ArrowLeft, Check, Save, Send, BookOpen, Sparkles } from 'lucide-react';
-import type { Attempt, Question, TeacherFeedback } from '../../shared/model';
+import type { Attempt, Question, TeacherFeedback, ReviewColumn } from '../../shared/model';
 import { typeLabels } from '../../shared/model';
 import { emptyAnswer } from '../../shared/domain';
 import { referenceAnswer } from '../../shared/teacherReview';
@@ -14,6 +14,18 @@ import { ReferenceImages } from '../components/ReferenceImages';
 import { Loading, ErrorState, Modal, formatDate } from '../components/ui';
 import { navigatorState, navigatorLabels } from '../practiceFeedback';
 import { GradeControls } from '../components/GradeControls';
+import {
+  ReviewColumnFields,
+  ReviewColumnResults,
+  RubricSetup,
+} from '../components/ReviewColumnFields';
+import {
+  columnForms,
+  columnPayload,
+  type ColumnForms,
+  type ColumnForm,
+} from '../reviewColumnForms';
+import { reviewColumns, columnErrors, reviewComplete } from '../../shared/reviewColumns';
 import '../teacher.css';
 type ReviewAttempt = Attempt & {
   student?: { name: string; username: string };
@@ -24,6 +36,8 @@ type Form = {
   score: string;
   correctAnswer: string;
   comment: string;
+  items: ColumnForms;
+  rubric?: ReviewColumn[];
 };
 function formFor(a: Attempt, q: Question): Form {
   const f = a.teacherFeedback?.[q.id],
@@ -41,6 +55,8 @@ function formFor(a: Attempt, q: Question): Form {
     score: String(f?.score ?? g?.earned ?? 0),
     correctAnswer: f?.correctAnswer ?? referenceAnswer(q),
     comment: f?.comment ?? '',
+    rubric: f?.rubric,
+    items: columnForms(a, q, false, f?.rubric),
   };
 }
 export function TeacherReviewPage() {
@@ -70,15 +86,29 @@ function ReviewWorkspace({ initial }: { initial: ReviewAttempt }) {
     [publishConfirm, setPublishConfirm] = useState(false),
     [leave, setLeave] = useState<number | 'back' | null>(null),
     [startConfirm, setStartConfirm] = useState(false);
+  const [showErrors, setShowErrors] = useState(false),
+    [rubricEditing, setRubricEditing] = useState(false);
   const toast = useToast(),
     navigate = useNavigate(),
     q = a.questions[index],
     grade = a.grades?.[q.id],
     feedback = a.teacherFeedback?.[q.id];
   const readOnly = !a.review || a.review.state === 'published',
-    pending = a.questions.filter((q) => !a.grades?.[q.id] || a.grades[q.id].pending).length,
+    pending = a.questions.filter((q) => !reviewComplete(a, q)).length,
     earned = Object.values(a.grades ?? {}).reduce((s, g) => s + g.earned, 0),
     total = a.questions.reduce((s, q) => s + q.score, 0);
+  const columns = reviewColumns(q, form.rubric),
+    multi = columns.length > 1;
+  const validation = () => columnErrors(columns, columnPayload(form.items, columns), q.score);
+  const reportColumns = (errors: string[]) => {
+    setShowErrors(true);
+    setError(errors.join('；'));
+    const missing = columns.find((c) => !form.items[c.id]?.verdict);
+    if (missing)
+      [...document.querySelectorAll<HTMLElement>('[data-review-column]')]
+        .find((el) => el.dataset.reviewColumn === missing.id)
+        ?.focus();
+  };
   useEffect(() => {
     if (!dirty) return;
     const warn = (e: BeforeUnloadEvent) => {
@@ -93,7 +123,30 @@ function ReviewWorkspace({ initial }: { initial: ReviewAttempt }) {
     setDirty(true);
     setError('');
   };
+  const changeItem = (id: string, patch: Partial<ColumnForm>) => {
+    setForm((f) => ({ ...f, items: { ...f.items, [id]: { ...f.items[id], ...patch } } }));
+    setDirty(true);
+    setError('');
+  };
   const jump = (i: number | 'back') => {
+    if (i === index) return;
+    if (!readOnly && i !== 'back') {
+      if (rubricEditing) {
+        setError('请先应用或取消评分栏目设置');
+        return;
+      }
+      if (multi) {
+        const errors = validation();
+        if (errors.length) {
+          reportColumns(errors);
+          return;
+        }
+        if (dirty || !reviewComplete(a, q)) {
+          setError('请先保存本题所有栏目评价，再切换题目');
+          return;
+        }
+      }
+    }
     if (dirty) {
       setLeave(i);
       return;
@@ -106,13 +159,26 @@ function ReviewWorkspace({ initial }: { initial: ReviewAttempt }) {
     setForm(formFor(a, a.questions[i]));
     setError('');
     setConflict(false);
+    setShowErrors(false);
+    setRubricEditing(false);
   };
-  const save = async () => {
-    if (!form.verdict) {
+  const save = async (next = false) => {
+    if (rubricEditing) {
+      setError('请先应用或取消评分栏目设置');
+      return;
+    }
+    if (multi) {
+      const errors = validation();
+      if (errors.length) {
+        reportColumns(errors);
+        return;
+      }
+    }
+    if (!multi && !form.verdict) {
       setError('请先选择正确、错误或部分正确');
       return;
     }
-    if (!form.score.trim() || !Number.isFinite(Number(form.score))) {
+    if (!multi && (!form.score.trim() || !Number.isFinite(Number(form.score)))) {
       setError('请填写有效分数');
       return;
     }
@@ -121,12 +187,27 @@ function ReviewWorkspace({ initial }: { initial: ReviewAttempt }) {
     try {
       const updated = await api<ReviewAttempt>(`/teacher/attempts/${a.id}/grades/${q.id}`, {
         method: 'PUT',
-        body: json({ ...form, score: Number(form.score), expectedRevision: a.review!.revision }),
+        body: json({
+          expectedRevision: a.review!.revision,
+          ...(multi
+            ? { items: columnPayload(form.items, columns), rubric: form.rubric }
+            : {
+                verdict: form.verdict,
+                score: Number(form.score),
+                correctAnswer: form.correctAnswer,
+                comment: form.comment,
+              }),
+        }),
       });
       setAttempt(updated);
       setForm(formFor(updated, q));
       setDirty(false);
       setConflict(false);
+      setShowErrors(false);
+      if (next && index < updated.questions.length - 1) {
+        setIndex(index + 1);
+        setForm(formFor(updated, updated.questions[index + 1]));
+      }
       toast('本题批改已保存');
     } catch (e) {
       setError((e as Error).message);
@@ -353,38 +434,111 @@ function ReviewWorkspace({ initial }: { initial: ReviewAttempt }) {
           )}
           {!readOnly ? (
             <>
-              <GradeControls value={form} maximum={q.score} disabled={busy} onChange={change} />
-              <label className="field">
-                正确答案
-                <textarea
-                  rows={6}
-                  value={form.correctAnswer}
+              {q.type !== 'single' && q.type !== 'multiple' && !rubricEditing && (
+                <button
+                  className="text-button"
                   disabled={busy}
-                  onChange={(e) => change({ correctAnswer: e.target.value })}
-                  maxLength={20000}
-                  placeholder="填写正确答案或解题过程，支持 Markdown 与公式"
-                />
-              </label>
-              <label className="field">
-                教师评语
-                <textarea
-                  rows={4}
-                  value={form.comment}
+                  onClick={() => setRubricEditing(true)}
+                >
+                  {reviewColumns(q).length > 1
+                    ? '调整评分栏目分值'
+                    : form.rubric
+                      ? '调整评分栏目'
+                      : '按原卷拆分评分栏目'}
+                </button>
+              )}
+              {rubricEditing && (
+                <RubricSetup
+                  maximum={q.score}
+                  initial={
+                    form.rubric ?? (reviewColumns(q).length > 1 ? reviewColumns(q) : undefined)
+                  }
+                  fixed={reviewColumns(q).length > 1}
                   disabled={busy}
-                  onChange={(e) => change({ comment: e.target.value })}
-                  maxLength={10000}
-                  placeholder="告诉学生哪里做得好，下一步如何改进…"
+                  onCancel={() => setRubricEditing(false)}
+                  onApply={(rubric) => {
+                    setForm((f) => ({
+                      ...f,
+                      rubric,
+                      items: Object.fromEntries(
+                        rubric.map((c) => [
+                          c.id,
+                          { verdict: '', score: '0', correctAnswer: '', comment: '' },
+                        ]),
+                      ),
+                    }));
+                    setDirty(true);
+                    setRubricEditing(false);
+                    setError('');
+                    setShowErrors(false);
+                  }}
                 />
-              </label>
+              )}
+              {multi ? (
+                <>
+                  {feedback && !feedback.items && (
+                    <p className="review-column-legacy">
+                      原记录仅保存了整题评价。重新保存本题时，请逐栏确认；历史成绩在保存前保留。
+                    </p>
+                  )}
+                  <ReviewColumnFields
+                    attempt={a}
+                    question={q}
+                    columns={columns}
+                    value={form.items}
+                    onChange={changeItem}
+                    disabled={busy || conflict || rubricEditing}
+                    showErrors={showErrors}
+                    customRubric={!!form.rubric}
+                  />
+                </>
+              ) : (
+                <>
+                  <GradeControls value={form} maximum={q.score} disabled={busy} onChange={change} />
+                  <label className="field">
+                    正确答案
+                    <textarea
+                      rows={6}
+                      value={form.correctAnswer}
+                      disabled={busy}
+                      onChange={(e) => change({ correctAnswer: e.target.value })}
+                      maxLength={20000}
+                      placeholder="填写正确答案或解题过程，支持 Markdown 与公式"
+                    />
+                  </label>
+                  <label className="field">
+                    教师评语
+                    <textarea
+                      rows={4}
+                      value={form.comment}
+                      disabled={busy}
+                      onChange={(e) => change({ comment: e.target.value })}
+                      maxLength={10000}
+                      placeholder="告诉学生哪里做得好，下一步如何改进…"
+                    />
+                  </label>
+                </>
+              )}
               <p className="muted small">正确答案与评语仅用于本次答卷，发布后学生可见。</p>
-              <button
-                className="button primary full"
-                disabled={busy || conflict}
-                onClick={() => void save()}
-              >
-                <Save size={16} />
-                {busy ? '正在保存…' : '保存本题批改'}
-              </button>
+              <div className="review-save-actions">
+                <button
+                  className="button primary full"
+                  disabled={busy || conflict || rubricEditing}
+                  onClick={() => void save()}
+                >
+                  <Save size={16} />
+                  {busy ? '正在保存…' : '保存本题批改'}
+                </button>
+                {index < a.questions.length - 1 && (
+                  <button
+                    className="button full"
+                    disabled={busy || conflict || rubricEditing}
+                    onClick={() => void save(true)}
+                  >
+                    保存并下一题
+                  </button>
+                )}
+              </div>
               <p className="grading-save-state" aria-live="polite">
                 {dirty
                   ? '本题有未保存改动'
@@ -397,11 +551,20 @@ function ReviewWorkspace({ initial }: { initial: ReviewAttempt }) {
             </>
           ) : (
             <>
-              <h3>正确答案</h3>
-              <Markdown text={feedback?.correctAnswer || referenceAnswer(q) || '未填写'} />
-              <ReferenceImages question={q} />
-              <h3>教师评语</h3>
-              <Markdown text={feedback?.comment || '未填写评语'} />
+              {multi && feedback?.items ? (
+                <>
+                  <ReviewColumnResults columns={columns} items={feedback.items} />
+                  <ReferenceImages question={q} />
+                </>
+              ) : (
+                <>
+                  <h3>正确答案</h3>
+                  <Markdown text={feedback?.correctAnswer || referenceAnswer(q) || '未填写'} />
+                  <ReferenceImages question={q} />
+                  <h3>教师评语</h3>
+                  <Markdown text={feedback?.comment || '未填写评语'} />
+                </>
+              )}
               {feedback && (
                 <p className="muted small">
                   {feedback.teacherName} · {formatDate(feedback.updatedAt)}

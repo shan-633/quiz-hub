@@ -5,6 +5,8 @@ import { join } from 'node:path';
 import { createApp } from '../server/app';
 import { ProgressStore } from '../server/progressStore';
 import { emptyAnswer } from '../shared/domain';
+import { reviewColumns } from '../shared/reviewColumns';
+import { selfReviewParts } from '../shared/selfReview';
 const resources: {
   app: Awaited<ReturnType<typeof createApp>>;
   store: ProgressStore;
@@ -174,7 +176,25 @@ it('展示交卷立即给答案，只自动评选择，其余仅本人自评；�
       method: 'PUT',
       url: `/api/attempts/${a.id}/self-review/${qid}`,
       headers,
-      payload: { expectedRevision: revision, verdict: 'correct', score, comment: '对照答案自评' },
+      payload: {
+        expectedRevision: revision,
+        verdict: 'correct',
+        score,
+        comment: '对照答案自评',
+        ...(reviewColumns(submitted.questions.find((q: any) => q.id === qid)).length > 1
+          ? {
+              items: Object.fromEntries(
+                selfReviewParts(
+                  submitted,
+                  submitted.questions.find((q: any) => q.id === qid),
+                ).columns.map((c) => [
+                  c.id,
+                  { verdict: 'correct', score: c.max, comment: '对照答案自评' },
+                ]),
+              ),
+            }
+          : {}),
+      },
     });
   expect((await save(fill.id, other, 1, fill.score)).statusCode).toBe(404);
   expect((await save('q-force', s, 1, 3)).statusCode).toBe(422);
@@ -377,7 +397,18 @@ it('混合题自评只评人工部分，不能覆盖选择小问自动分', asyn
       method: 'PUT',
       url: `/api/attempts/${a.id}/self-review/${q.id}`,
       headers: s,
-      payload: { verdict, score, expectedRevision, comment: '' },
+      payload: {
+        verdict,
+        score,
+        expectedRevision,
+        comment: '',
+        items: Object.fromEntries(
+          selfReviewParts(submitted, q).columns.map((c) => [
+            c.id,
+            { verdict, score: (score * c.max) / 4, comment: '' },
+          ]),
+        ),
+      },
     });
   expect((await save('correct', 6, 1)).statusCode).toBe(422);
   const full = await save('correct', 4, 1);
@@ -523,7 +554,10 @@ it.each([0, 0.3])('混合题人工部分为%s分时仍可正常自评并完成',
     method: 'PUT',
     url: `/api/attempts/${a.id}/self-review/${q.id}`,
     headers: s,
-    payload: { expectedRevision: 1, verdict: 'correct', score: manual, comment: '对照答案确认' },
+    payload: {
+      expectedRevision: 1,
+      items: { open: { verdict: 'correct', score: manual, comment: '对照答案确认' } },
+    },
   });
   expect(saved.statusCode).toBe(200);
   expect(saved.json().grades[q.id].earned).toBeCloseTo(score);

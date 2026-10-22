@@ -6,6 +6,7 @@ import { createAssignedApp as createApp } from './fixtures/assignedApp';
 import { Store } from '../server/store';
 import type { Attempt, Question } from '../shared/model';
 import { emptyAnswer } from '../shared/domain';
+import { reviewColumns } from '../shared/reviewColumns';
 const resources: { app: Awaited<ReturnType<typeof createApp>>; store: Store; dir: string }[] = [];
 afterEach(async () => {
   for (const r of resources.splice(0)) {
@@ -134,6 +135,21 @@ it('交卷进入教师箱，学生无答案/成绩；教师逐题批改、冲突
         score: i === 0 ? question.score : i === 1 ? question.score / 2 : 0,
         correctAnswer: `第${i + 1}题正确答案`,
         comment: '逐题评语',
+        ...(reviewColumns(question).length > 1
+          ? {
+              items: Object.fromEntries(
+                reviewColumns(question).map((c) => [
+                  c.id,
+                  {
+                    verdict: i === 0 ? 'correct' : i === 1 ? 'partial' : 'incorrect',
+                    score: i === 0 ? c.max : i === 1 ? c.max / 2 : 0,
+                    correctAnswer: `第${i + 1}题正确答案`,
+                    comment: '逐题评语',
+                  },
+                ]),
+              ),
+            }
+          : {}),
       },
     });
     expect(r.statusCode).toBe(200);
@@ -215,6 +231,21 @@ it('六种题型都支持手工写答案与评语；标准答案缺失时全卷�
         score: 0,
         correctAnswer: '人工标准答案',
         comment: q.type + '评语',
+        ...(reviewColumns(q).length > 1
+          ? {
+              items: Object.fromEntries(
+                reviewColumns(q).map((c) => [
+                  c.id,
+                  {
+                    verdict: 'incorrect',
+                    score: 0,
+                    correctAnswer: '人工标准答案',
+                    comment: q.type + '评语',
+                  },
+                ]),
+              ),
+            }
+          : {}),
       },
     });
     expect(r.statusCode).toBe(200);

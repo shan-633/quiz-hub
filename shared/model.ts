@@ -179,6 +179,18 @@ export interface SelfFeedback {
   comment: string;
   studentName: string;
   updatedAt: string;
+  items?: Record<string, ReviewColumnFeedback>;
+}
+export interface ReviewColumn {
+  id: string;
+  label: string;
+  max: number;
+}
+export interface ReviewColumnFeedback {
+  verdict: 'correct' | 'incorrect' | 'partial';
+  score: number;
+  comment: string;
+  correctAnswer?: string;
 }
 export interface Review {
   state: 'pending' | 'in_progress' | 'published';
@@ -198,6 +210,8 @@ export interface TeacherFeedback {
   teacherId: string;
   teacherName: string;
   updatedAt: string;
+  items?: Record<string, ReviewColumnFeedback>;
+  rubric?: ReviewColumn[];
 }
 export const typeLabels: Record<QuestionType, string> = {
   single: '单选题',

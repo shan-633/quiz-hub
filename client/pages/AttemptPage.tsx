@@ -20,6 +20,8 @@ import type { Attempt } from '../../shared/model';
 import { typeLabels } from '../../shared/model';
 import { isAnswered } from '../../shared/domain';
 import { referenceAnswer } from '../../shared/teacherReview';
+import { reviewColumns } from '../../shared/reviewColumns';
+import { ReviewColumnResults } from '../components/ReviewColumnFields';
 import { useLoad } from '../useLoad';
 import { useAnswerSync } from '../useAnswerSync';
 import { api } from '../api';
@@ -454,20 +456,37 @@ function AttemptWorkspace({ initial, reload }: { initial: Attempt; reload: () =>
                         </span>
                       </div>
                       <h4>
-                        {attempt.teacherFeedback?.[q.id]?.correctAnswer
+                        {attempt.teacherFeedback?.[q.id]?.correctAnswer &&
+                        !(
+                          attempt.teacherFeedback[q.id].items &&
+                          reviewColumns(q, attempt.teacherFeedback[q.id].rubric).length > 1
+                        )
                           ? '教师提供的正确答案'
                           : '参考答案与解析'}
                       </h4>
                       <Markdown
-                        text={attempt.teacherFeedback?.[q.id]?.correctAnswer || referenceAnswer(q)}
+                        text={
+                          attempt.teacherFeedback?.[q.id]?.items &&
+                          reviewColumns(q, attempt.teacherFeedback[q.id].rubric).length > 1
+                            ? referenceAnswer(q)
+                            : attempt.teacherFeedback?.[q.id]?.correctAnswer || referenceAnswer(q)
+                        }
                       />
                       <ReferenceImages question={q} />
                       {attempt.teacherFeedback?.[q.id] && (
                         <div className="teacher-feedback">
                           <h4>教师评语</h4>
-                          <Markdown
-                            text={attempt.teacherFeedback[q.id].comment || '本题未填写评语。'}
-                          />
+                          {attempt.teacherFeedback[q.id].items &&
+                          reviewColumns(q, attempt.teacherFeedback[q.id].rubric).length > 1 ? (
+                            <ReviewColumnResults
+                              columns={reviewColumns(q, attempt.teacherFeedback[q.id].rubric)}
+                              items={attempt.teacherFeedback[q.id].items!}
+                            />
+                          ) : (
+                            <Markdown
+                              text={attempt.teacherFeedback[q.id].comment || '本题未填写评语。'}
+                            />
+                          )}
                           <p className="feedback-author">
                             {attempt.teacherFeedback[q.id].teacherName} · 已批改
                           </p>
@@ -476,9 +495,18 @@ function AttemptWorkspace({ initial, reload }: { initial: Attempt; reload: () =>
                       {attempt.selfReview?.feedback[q.id] && (
                         <div className="teacher-feedback">
                           <h4>自评备注</h4>
-                          <Markdown
-                            text={attempt.selfReview.feedback[q.id].comment || '未填写自评备注'}
-                          />
+                          {attempt.selfReview.feedback[q.id].items &&
+                          reviewColumns(q).length > 1 ? (
+                            <ReviewColumnResults
+                              columns={reviewColumns(q)}
+                              items={attempt.selfReview.feedback[q.id].items!}
+                              self
+                            />
+                          ) : (
+                            <Markdown
+                              text={attempt.selfReview.feedback[q.id].comment || '未填写自评备注'}
+                            />
+                          )}
                           <p className="feedback-author">
                             学生自评 · {attempt.selfReview.feedback[q.id].score}分（人工部分）
                           </p>

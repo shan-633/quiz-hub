@@ -6,6 +6,14 @@ import { attemptProgress, type StudentProgress } from '../../shared/progress';
 import { HttpError, requireTeacher } from '../auth';
 import type { Store } from '../store';
 import { canReview } from '../permissions';
+import {
+  reviewColumns,
+  columnErrors,
+  columnGrade,
+  columnText,
+  reviewComplete,
+} from '../../shared/reviewColumns';
+import { teacherGradeSchema } from '../reviewValidation';
 
 export function registerTeacher(
   app: FastifyInstance,
@@ -71,7 +79,7 @@ export function registerTeacher(
           submittedAt: a.submittedAt ?? a.updatedAt,
           reviewState: a.review?.state ?? 'legacy',
           questionCount: a.questions.length,
-          finalizedCount: grades.filter((g) => !g.pending).length,
+          finalizedCount: a.questions.filter((q) => reviewComplete(a, q)).length,
           autoCount: a.review?.autoCount ?? 0,
           autoReason: a.review?.autoReason,
           earned: grades.reduce((s, g) => s + g.earned, 0),
@@ -100,15 +108,7 @@ export function registerTeacher(
     '/api/teacher/attempts/:id/grades/:questionId',
     async (req) => {
       const user = requireTeacher(req);
-      const body = z
-        .object({
-          expectedRevision: z.number().int().min(1),
-          verdict: z.enum(['correct', 'incorrect', 'partial']),
-          score: z.number().finite().nonnegative(),
-          correctAnswer: z.string().max(20000),
-          comment: z.string().max(10000),
-        })
-        .parse(req.body);
+      const body = teacherGradeSchema.parse(req.body);
       return store.transaction(() => {
         const a = submitted(req.params.id, user);
         checkRevision(a, body.expectedRevision);
@@ -116,33 +116,62 @@ export function registerTeacher(
           throw new HttpError(409, '请先发起复核，已发布的批改不能修改');
         const q = a.questions.find((q) => q.id === req.params.questionId);
         if (!q) throw new HttpError(404, '题目不属于该答卷');
+        const defaults = reviewColumns(q);
+        const rubric = body.rubric ?? a.teacherFeedback?.[q.id]?.rubric;
         if (
-          body.score > q.score ||
-          (body.verdict === 'correct' && body.score !== q.score) ||
-          (body.verdict === 'incorrect' && body.score !== 0) ||
-          (body.verdict === 'partial' && (body.score <= 0 || body.score >= q.score))
+          rubric &&
+          (q.type === 'single' ||
+            q.type === 'multiple' ||
+            (defaults.length > 1 &&
+              (rubric.length !== defaults.length ||
+                defaults.some((c) => !rubric.some((r) => r.id === c.id)))))
         )
-          throw new HttpError(422, '正确应为满分，错误应为 0 分，部分正确应在 0 与满分之间');
+          throw new HttpError(422, '结构化多空、小问和选择题不能用自定义栏目替换');
+        const columns = reviewColumns(q, rubric);
+        const items =
+          body.items ??
+          (columns.length === 1 && body.verdict !== undefined && body.score !== undefined
+            ? {
+                [columns[0].id]: {
+                  verdict: body.verdict,
+                  score: body.score,
+                  correctAnswer: body.correctAnswer ?? '',
+                  comment: body.comment ?? '',
+                },
+              }
+            : undefined);
+        const errors = columnErrors(columns, items, q.score);
+        if (errors.length)
+          throw new HttpError(422, errors.join('；'), {
+            missingItems: columns.filter((c) => !items?.[c.id]?.verdict).map((c) => c.id),
+          });
+        const normalized = Object.fromEntries(
+          Object.entries(items!).map(([id, f]) => [
+            id,
+            {
+              ...f,
+              correctAnswer: f.correctAnswer?.trim() ?? '',
+              comment: f.comment.trim(),
+            },
+          ]),
+        );
+        const grade = columnGrade(q, columns, normalized, 'teacher');
         const now = new Date().toISOString();
         a.teacherFeedback ??= {};
         a.teacherFeedback[q.id] = {
-          verdict: body.verdict,
-          score: body.score,
-          correctAnswer: body.correctAnswer.trim(),
-          comment: body.comment.trim(),
+          verdict: grade.status as 'correct' | 'incorrect' | 'partial',
+          score: grade.earned,
+          correctAnswer:
+            body.correctAnswer?.trim() ?? columnText(columns, normalized, 'correctAnswer'),
+          comment: body.comment?.trim() ?? columnText(columns, normalized, 'comment'),
           teacherId: user.id,
           teacherName: user.name,
           updatedAt: now,
+          ...(columns.length > 1 || body.items ? { items: normalized } : {}),
+          ...(rubric ? { rubric } : {}),
         };
         a.grades ??= {};
-        a.grades[q.id] = {
-          earned: body.score,
-          max: q.score,
-          pending: false,
-          status: body.verdict,
-          source: 'teacher',
-          details: { teacher: { earned: body.score, max: q.score, pending: false } },
-        };
+        a.grades[q.id] = grade;
         a.review.state = 'in_progress';
         a.review.revision++;
         a.updatedAt = now;
@@ -158,7 +187,7 @@ export function registerTeacher(
       const a = submitted(req.params.id, user);
       checkRevision(a, body.expectedRevision);
       if (a.review?.state === 'published') return detail(a);
-      if (!a.review || a.questions.some((q) => !a.grades?.[q.id] || a.grades[q.id].pending))
+      if (!a.review || a.questions.some((q) => !reviewComplete(a, q)))
         throw new HttpError(422, '还有题目待批改，全部完成后才能发布');
       a.review.state = 'published';
       a.review.revision++;

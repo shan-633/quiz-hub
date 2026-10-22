@@ -1,5 +1,6 @@
 import type { Attempt, Grade, Question, SelfFeedback } from './model';
 import { initialReview } from './teacherReview';
+import { reviewColumns } from './reviewColumns';
 const points = (n: number) => Number(n.toFixed(12));
 
 export function selfReviewParts(a: Attempt, q: Question) {
@@ -19,6 +20,7 @@ export function selfReviewParts(a: Attempt, q: Question) {
     maximum,
     hasManual: Object.values(initial.details).some((unit) => unit.pending),
     earned: points(Object.values(automatic).reduce((s, unit) => s + unit.earned, 0)),
+    columns: reviewColumns(q).filter((c) => !Object.hasOwn(automatic, c.id)),
   };
 }
 export function validManualScore(

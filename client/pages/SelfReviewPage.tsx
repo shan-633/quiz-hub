@@ -10,17 +10,30 @@ import { api, json, ApiError } from '../api';
 import { useLoad } from '../useLoad';
 import { useToast } from '../context';
 import { GradeControls, type GradeValue } from '../components/GradeControls';
+import { ReviewColumnFields, ReviewColumnResults } from '../components/ReviewColumnFields';
+import {
+  columnForms,
+  columnPayload,
+  type ColumnForms,
+  type ColumnForm,
+} from '../reviewColumnForms';
+import { reviewColumns, columnErrors, reviewComplete } from '../../shared/reviewColumns';
 import { Loading, ErrorState, Modal } from '../components/ui';
 import { Markdown } from '../components/Markdown';
 import { ReferenceImages } from '../components/ReferenceImages';
 import { QuestionRenderer } from '../components/QuestionRenderer';
 import { navigatorState } from '../practiceFeedback';
 import '../teacher.css';
-type Form = GradeValue & { comment: string };
+type Form = GradeValue & { comment: string; items: ColumnForms };
 function formFor(a: Attempt, index: number): Form {
   const q = a.questions[index],
     f = a.selfReview?.feedback[q.id];
-  return { verdict: f?.verdict ?? '', score: String(f?.score ?? 0), comment: f?.comment ?? '' };
+  return {
+    verdict: f?.verdict ?? '',
+    score: String(f?.score ?? 0),
+    comment: f?.comment ?? '',
+    items: columnForms(a, q, true),
+  };
 }
 export function SelfReviewPage() {
   const { id } = useParams(),
@@ -46,13 +59,29 @@ function SelfWorkspace({ initial }: { initial: Attempt }) {
     [conflict, setConflict] = useState(false),
     [finish, setFinish] = useState(false),
     [leave, setLeave] = useState<number | 'back' | null>(null);
+  const [showErrors, setShowErrors] = useState(false);
   const navigate = useNavigate(),
     toast = useToast(),
     q = a.questions[index],
     grade = a.grades?.[q.id],
     parts = selfReviewParts(a, q),
     completed = a.selfReview!.state === 'completed',
-    pending = a.questions.filter((q) => a.grades?.[q.id]?.pending).length;
+    pending = a.questions.filter(
+      (q) => selfReviewParts(a, q).hasManual && !reviewComplete(a, q),
+    ).length;
+  const columns = reviewColumns(q),
+    multi = columns.length > 1;
+  const validation = () =>
+    columnErrors(parts.columns, columnPayload(form.items, parts.columns, true), parts.maximum);
+  const reportColumns = (errors: string[]) => {
+    setShowErrors(true);
+    setError(errors.join('；'));
+    const missing = parts.columns.find((c) => !form.items[c.id]?.verdict);
+    if (missing)
+      [...document.querySelectorAll<HTMLElement>('[data-review-column]')]
+        .find((el) => el.dataset.reviewColumn === missing.id)
+        ?.focus();
+  };
   useEffect(() => {
     const warn = (e: BeforeUnloadEvent) => {
       if (dirty) e.preventDefault();
@@ -61,6 +90,18 @@ function SelfWorkspace({ initial }: { initial: Attempt }) {
     return () => window.removeEventListener('beforeunload', warn);
   }, [dirty]);
   const move = (i: number | 'back', discard = false) => {
+    if (i === index) return;
+    if (!completed && i !== 'back' && multi && parts.hasManual) {
+      const errors = validation();
+      if (errors.length) {
+        reportColumns(errors);
+        return;
+      }
+      if (dirty || !reviewComplete(a, q)) {
+        setError('请先保存本题所有栏目自评，再切换题目');
+        return;
+      }
+    }
     if (dirty && !discard) {
       setLeave(i);
       return;
@@ -74,14 +115,28 @@ function SelfWorkspace({ initial }: { initial: Attempt }) {
     setDirty(false);
     setError('');
     setMessage('');
+    setShowErrors(false);
   };
   const change = (patch: Partial<Form>) => {
     setForm((f) => ({ ...f, ...patch }));
     setDirty(true);
     setMessage('');
   };
-  const save = async () => {
-    if (!form.verdict) {
+  const changeItem = (id: string, patch: Partial<ColumnForm>) => {
+    setForm((f) => ({ ...f, items: { ...f.items, [id]: { ...f.items[id], ...patch } } }));
+    setDirty(true);
+    setError('');
+    setMessage('');
+  };
+  const save = async (next = false) => {
+    if (multi) {
+      const errors = validation();
+      if (errors.length) {
+        reportColumns(errors);
+        return;
+      }
+    }
+    if (!multi && !form.verdict) {
       setError('请选择判定结果');
       return;
     }
@@ -91,8 +146,9 @@ function SelfWorkspace({ initial }: { initial: Attempt }) {
       const updated = await api<Attempt>(`/attempts/${a.id}/self-review/${q.id}`, {
         method: 'PUT',
         body: json({
-          ...form,
-          score: Number(form.score),
+          ...(multi
+            ? { items: columnPayload(form.items, parts.columns, true) }
+            : { verdict: form.verdict, score: Number(form.score), comment: form.comment }),
           expectedRevision: a.selfReview!.revision,
         }),
       });
@@ -101,6 +157,12 @@ function SelfWorkspace({ initial }: { initial: Attempt }) {
       setDirty(false);
       setConflict(false);
       setMessage('本题自评已保存');
+      setShowErrors(false);
+      if (next && index < updated.questions.length - 1) {
+        setIndex(index + 1);
+        setForm(formFor(updated, index + 1));
+        setMessage('');
+      }
     } catch (e) {
       setError((e as Error).message);
       if (e instanceof ApiError && e.status === 409) setConflict(true);
@@ -231,13 +293,30 @@ function SelfWorkspace({ initial }: { initial: Attempt }) {
             </strong>
           </p>
           {!parts.hasManual ? (
-            <p className="assignment-notice">自动评分，不能修改</p>
+            <>
+              <p className="assignment-notice">自动评分，不能修改</p>
+              {!reviewComplete(a, q) && !completed && (
+                <p className="muted small">
+                  完成自评时，会按原始作答校准旧版选择小问的自动评分记录。
+                </p>
+              )}
+            </>
           ) : completed ? (
             <>
-              <p>
-                人工部分得分：{a.selfReview!.feedback[q.id]?.score ?? 0}/{parts.maximum}
-              </p>
-              <Markdown text={a.selfReview!.feedback[q.id]?.comment || '未填写自评备注'} />
+              {multi && a.selfReview!.feedback[q.id]?.items ? (
+                <ReviewColumnResults
+                  columns={columns}
+                  items={a.selfReview!.feedback[q.id].items!}
+                  self
+                />
+              ) : (
+                <>
+                  <p>
+                    人工部分得分：{a.selfReview!.feedback[q.id]?.score ?? 0}/{parts.maximum}
+                  </p>
+                  <Markdown text={a.selfReview!.feedback[q.id]?.comment || '未填写自评备注'} />
+                </>
+              )}
             </>
           ) : (
             <>
@@ -246,30 +325,57 @@ function SelfWorkspace({ initial }: { initial: Attempt }) {
                   选择小问已得{parts.earned}分，下方只评人工部分（{parts.maximum}分）。
                 </p>
               )}
-              <GradeControls
-                value={form}
-                maximum={parts.maximum}
-                disabled={busy || conflict}
-                onChange={change}
-              />
-              <label className="field">
-                自评备注
-                <textarea
-                  rows={4}
-                  value={form.comment}
-                  maxLength={10000}
+              {multi ? (
+                <ReviewColumnFields
+                  attempt={a}
+                  question={q}
+                  columns={columns}
+                  value={form.items}
+                  onChange={changeItem}
                   disabled={busy || conflict}
-                  onChange={(e) => change({ comment: e.target.value })}
+                  self
+                  automatic={parts.automatic}
+                  showErrors={showErrors}
                 />
-              </label>
-              <button
-                className="button primary full"
-                disabled={busy || conflict}
-                onClick={() => void save()}
-              >
-                <Save size={16} />
-                保存本题自评
-              </button>
+              ) : (
+                <>
+                  <GradeControls
+                    value={form}
+                    maximum={parts.maximum}
+                    disabled={busy || conflict}
+                    onChange={change}
+                  />
+                  <label className="field">
+                    自评备注
+                    <textarea
+                      rows={4}
+                      value={form.comment}
+                      maxLength={10000}
+                      disabled={busy || conflict}
+                      onChange={(e) => change({ comment: e.target.value })}
+                    />
+                  </label>
+                </>
+              )}
+              <div className="review-save-actions">
+                <button
+                  className="button primary full"
+                  disabled={busy || conflict}
+                  onClick={() => void save()}
+                >
+                  <Save size={16} />
+                  保存本题自评
+                </button>
+                {index < a.questions.length - 1 && (
+                  <button
+                    className="button full"
+                    disabled={busy || conflict}
+                    onClick={() => void save(true)}
+                  >
+                    保存并下一题
+                  </button>
+                )}
+              </div>
             </>
           )}
           {message && (

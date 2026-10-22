@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import React from 'react';
 import { afterEach, expect, it, vi } from 'vitest';
-import { render, screen, fireEvent, cleanup, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, cleanup, waitFor, within } from '@testing-library/react';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import { TeacherReviewPage } from '../client/pages/TeacherReviewPage';
 import { useLoad } from '../client/useLoad';
@@ -71,6 +71,58 @@ function mount(a = fixture()) {
     </MemoryRouter>,
   );
 }
+it('同题多栏独立评价，漏一栏时不能保存、下一题或点击答题卡绕过，全部完成才能保存并下一题', async () => {
+  const a = fixture(),
+    q = a.questions[0];
+  a.questions = [
+    {
+      ...q,
+      type: 'fill',
+      score: 5,
+      title: '多空题',
+      blanks: [
+        { id: 'x', label: '第1空', score: 2, kind: 'text' },
+        { id: 'y', label: '第2空', score: 3, kind: 'text' },
+      ],
+      content: [{ id: 'stem', type: 'paragraph', text: '{{x}} {{y}}' }],
+    },
+    { ...q, id: 'next' },
+  ];
+  mount(a);
+  const first = screen.getByRole('group', { name: '评分栏目：第1空' });
+  const second = screen.getByRole('group', { name: '评分栏目：第2空' });
+  fireEvent.click(within(first).getByRole('button', { name: '正确' }));
+  fireEvent.click(screen.getByRole('button', { name: '保存本题批改' }));
+  expect(screen.getByRole('alert').textContent).toContain('第2空');
+  expect(api).not.toHaveBeenCalled();
+  fireEvent.click(screen.getByRole('button', { name: '下一题' }));
+  expect(screen.getByRole('group', { name: '评分栏目：第2空' })).toBeTruthy();
+  expect(screen.queryByRole('dialog')).toBeNull();
+  fireEvent.click(screen.getByRole('button', { name: /第 2 题/ }));
+  expect(screen.getByRole('group', { name: '评分栏目：第2空' })).toBeTruthy();
+  fireEvent.click(within(second).getByRole('button', { name: '错误' }));
+  fireEvent.change(within(second).getByLabelText('正确答案'), { target: { value: '应填写乙' } });
+  const updated = structuredClone(a);
+  updated.review!.revision = 2;
+  updated.grades!.q = {
+    earned: 2,
+    max: 5,
+    status: 'partial',
+    pending: false,
+    source: 'teacher',
+    details: { x: { earned: 2, max: 2, pending: false }, y: { earned: 0, max: 3, pending: false } },
+  };
+  vi.mocked(api).mockResolvedValueOnce(updated);
+  fireEvent.click(screen.getByRole('button', { name: '保存并下一题' }));
+  await waitFor(() =>
+    expect(screen.getByRole('button', { name: /第 2 题/ }).getAttribute('aria-current')).toBe(
+      'step',
+    ),
+  );
+  const sent = JSON.parse(vi.mocked(api).mock.calls[0][1]!.body as string);
+  expect(sent.items.x).toMatchObject({ verdict: 'correct', score: 2 });
+  expect(sent.items.y).toMatchObject({ verdict: 'incorrect', score: 0, correctAnswer: '应填写乙' });
+});
 it('手工判定会填写对应分数，并保存正确答案和评语，待评题不能直接发布', async () => {
   mount();
   expect(screen.getAllByText('学生原始作答').length).toBe(2);

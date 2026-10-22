@@ -1,5 +1,6 @@
 import type { Attempt, Grade, Question, Review } from './model';
 import { emptyAnswer, gradeQuestion, walkBlocks } from './domain';
+import { reviewColumns, reviewPoints } from './reviewColumns';
 
 /** Completeness is checked on the frozen attempt, never the current question bank. */
 export function hasCompleteStandardAnswer(q: Question): boolean {
@@ -69,38 +70,40 @@ export function initialReview(questions: Question[], answers: Attempt['answers']
       continue;
     }
     const details: Grade['details'] = {};
-    if (q.type === 'single' || q.type === 'multiple' || q.type === 'calculation')
-      details.whole = { earned: 0, max: q.score, pending: true };
-    else {
-      for (const b of q.blanks) details[b.id] = { earned: 0, max: b.score, pending: true };
-      for (const b of walkBlocks(q.content)) {
-        if (b.type !== 'subquestion' || b.responseKind === 'blanks') continue;
-        if (autoEligible && (b.responseKind === 'single' || b.responseKind === 'multiple')) {
-          const synthetic: Question = {
-            ...q,
-            type: b.responseKind,
-            score: b.score,
-            options: b.options ?? [],
-            multipleScoring: 'exact',
-            solution: { choices: q.solution!.partChoices![b.id], blanks: {}, explanation: '' },
-          };
-          const g = gradeQuestion(synthetic, { ...emptyAnswer(), ...a.parts[b.id] });
-          details[b.id] = { earned: g.earned, max: b.score, pending: false };
-          autoCount++;
-        } else details[b.id] = { earned: 0, max: b.score, pending: true };
-      }
+    for (const column of reviewColumns(q)) {
+      const b =
+        column.kind === 'part'
+          ? walkBlocks(q.content).find((b) => b.id === column.sourceId)
+          : undefined;
+      if (
+        autoEligible &&
+        b?.type === 'subquestion' &&
+        (b.responseKind === 'single' || b.responseKind === 'multiple')
+      ) {
+        const synthetic: Question = {
+          ...q,
+          type: b.responseKind,
+          score: column.max,
+          options: b.options ?? [],
+          multipleScoring: 'exact',
+          solution: { choices: q.solution!.partChoices![b.id], blanks: {}, explanation: '' },
+        };
+        const g = gradeQuestion(synthetic, { ...emptyAnswer(), ...a.parts[b.id] });
+        details[column.id] = { earned: g.earned, max: column.max, pending: false };
+        autoCount++;
+      } else details[column.id] = { earned: 0, max: column.max, pending: true };
     }
     if (!Object.keys(details).length) details.whole = { earned: 0, max: q.score, pending: true };
     const units = Object.values(details),
       pending = units.some((u) => u.pending),
-      earned = units.reduce((s, u) => s + u.earned, 0);
+      earned = reviewPoints(units.reduce((s, u) => s + u.earned, 0));
     grades[q.id] = {
       earned,
       max: q.score,
       pending,
       status: pending
         ? 'pending'
-        : earned === q.score
+        : earned === reviewPoints(q.score)
           ? 'correct'
           : earned > 0
             ? 'partial'
