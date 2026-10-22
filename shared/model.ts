@@ -47,6 +47,7 @@ export interface Solution {
   blanks: Record<string, BlankRule>;
   partChoices?: Record<string, string[]>;
   explanation: string;
+  referenceImages?: { assetId: string; caption: string }[];
 }
 export interface Question {
   id: string;

@@ -2,6 +2,7 @@ import { ResponsivePreview } from '../components/editor/ResponsivePreview';
 import { randomId } from '../../shared/browserIds';
 import { removeBlank, syncScores } from '../../shared/editor';
 import { useEffect, useState } from 'react';
+import { ReferenceImages } from '../components/ReferenceImages';
 import { Link, useParams } from 'react-router-dom';
 import {
   ArrowLeft,
@@ -506,6 +507,7 @@ export function QuestionEditorPage() {
                     placeholder="支持 Markdown 与 $公式$；学生提交后才能查看。"
                   />
                 </label>
+                <ReferenceImages question={q} />
               </div>
             )}
           </section>

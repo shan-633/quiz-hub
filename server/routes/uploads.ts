@@ -167,6 +167,8 @@ export async function registerUploads(
       const user = requireUser(req);
       const hasImage = (q: Attempt['questions'][number]) =>
         walkBlocks(q.content).some((b) => b.type === 'image' && b.assetId === asset.id);
+      const hasReference = (q: Attempt['questions'][number]) =>
+        q.solution?.referenceImages?.some((image) => image.assetId === asset.id);
       const published =
         asset.kind === 'question' &&
         ((user.role === 'teacher' && asset.ownerId === user.id) ||
@@ -193,7 +195,10 @@ export async function registerUploads(
               .some(
                 (a) =>
                   (a.status === 'submitted' || canContinue(store, user, a)) &&
-                  a.questions.some(hasImage),
+                  (a.questions.some(hasImage) ||
+                    (a.status === 'submitted' &&
+                      a.review?.state === 'published' &&
+                      a.questions.some(hasReference))),
               )) ||
           (user.role === 'teacher' &&
             store

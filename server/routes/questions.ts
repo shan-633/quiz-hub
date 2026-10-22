@@ -111,6 +111,11 @@ export function registerQuestions(app: FastifyInstance, store: Store) {
         )
           issues.push('题干图片不存在或不是题目资源');
       }
+    for (const image of old.draft.solution?.referenceImages ?? []) {
+      const asset = store.get<Asset>('assets', image.assetId);
+      if (!asset || asset.kind !== 'question' || asset.ownerId !== requireTeacher(req).id)
+        issues.push('参考答案图片不存在或不属于当前教师');
+    }
     if (issues.length) throw new HttpError(422, '题目尚未满足发布条件', { issues });
     const q = { ...old.draft, version: old.latestVersion + 1, state: 'published' as const };
     store.transaction(() => {

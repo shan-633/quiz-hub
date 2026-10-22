@@ -180,6 +180,9 @@ export function commitBankImport(
         b.intrinsicWidth = a.asset.width;
         b.intrinsicHeight = a.asset.height;
       }
+    for (const image of q.solution?.referenceImages ?? []) {
+      image.assetId = assets.find((a) => a.original.externalId === image.assetId)!.asset.id;
+    }
     return q;
   });
   const bank: LibraryItem = {

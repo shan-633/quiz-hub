@@ -93,6 +93,10 @@ const question = z
         blanks: z.record(id, rule).default({}),
         partChoices: z.record(id, z.array(id).max(20)).optional(),
         explanation: text.refine((v) => !!v.trim(), '请填写参考解析'),
+        referenceImages: z
+          .array(z.object({ assetId: id, caption: z.string().max(1000).default('') }).strict())
+          .max(20)
+          .optional(),
       })
       .strict(),
     multipleScoring: z.enum(['exact', 'half']).optional(),
@@ -242,6 +246,15 @@ export function parseBankPackage(fileText: string): ImportReport & { document?: 
     const path = `$.questions[${index}]`,
       blocks = walkBlocks(q.content);
     totalBlocks += blocks.length;
+    for (const image of q.solution.referenceImages ?? []) {
+      if (!assets.has(image.assetId))
+        add(
+          path + '.solution.referenceImages',
+          'asset_reference',
+          `参考答案图片 ${image.assetId} 未在assets声明`,
+        );
+      else usedAssets.add(image.assetId);
+    }
     if (
       structureTooLarge(
         packageQuestion(q),

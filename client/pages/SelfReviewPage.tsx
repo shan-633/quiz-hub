@@ -12,6 +12,7 @@ import { useToast } from '../context';
 import { GradeControls, type GradeValue } from '../components/GradeControls';
 import { Loading, ErrorState, Modal } from '../components/ui';
 import { Markdown } from '../components/Markdown';
+import { ReferenceImages } from '../components/ReferenceImages';
 import { QuestionRenderer } from '../components/QuestionRenderer';
 import { navigatorState } from '../practiceFeedback';
 import '../teacher.css';
@@ -221,6 +222,7 @@ function SelfWorkspace({ initial }: { initial: Attempt }) {
           <div className="self-reference">
             <h3>标准答案</h3>
             <Markdown text={referenceAnswer(q) || '未录入标准答案，请联系教师'} />
+            <ReferenceImages question={q} />
           </div>
           <p className="grading-current">
             当前得分{' '}

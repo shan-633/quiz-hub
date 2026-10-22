@@ -12,7 +12,13 @@ export interface PrintDocumentInput {
   fontCss: string;
   mathCss: string;
 }
-function Options({ options, multiple = false }: { options: Question['options']; multiple?: boolean }) {
+function Options({
+  options,
+  multiple = false,
+}: {
+  options: Question['options'];
+  multiple?: boolean;
+}) {
   const short = options.every(
     (o) => o.text.replace(/\$[^$]+\$/g, '公式').length <= 26 && !o.text.includes('\n'),
   );
@@ -41,6 +47,7 @@ function PrintQuestion({
   index: number;
   images: Record<string, string>;
 }) {
+  const originalScan = q.tags.includes('原卷图文');
   const inline = (text: string): ReactNode => (
     <>
       {text.split(/(\{\{[a-zA-Z0-9_-]+\}\})/g).map((chunk, i) => {
@@ -155,7 +162,7 @@ function PrintQuestion({
     <>
       {intro.length > 0 && <div className="print-section-intro">{intro.map(block)}</div>}
       <article
-        className={`print-question type-${q.type}`}
+        className={`print-question type-${q.type}${originalScan ? ' original-scan' : ''}`}
         data-question-id={q.id}
         data-question-index={index + 1}
         data-version={q.version}
@@ -167,13 +174,13 @@ function PrintQuestion({
         </header>
         <div className={`question-body ${aside ? 'has-aside' : ''}`}>
           {aside && <aside className="print-aside">{block(aside)}</aside>}
-          {content.filter((b) => b !== aside).map(block)}
+          {content.filter((b) => b !== aside && !(originalScan && b.id === 'response')).map(block)}
           {q.type === 'multiple' && q.multipleScoring === 'half' && (
             <p className="scoring-note">
               全选对得 {q.score} 分，选对但不全得 {q.score / 2} 分，有错选或未选得 0 分。
             </p>
           )}
-          {(q.type === 'single' || q.type === 'multiple') && (
+          {!originalScan && (q.type === 'single' || q.type === 'multiple') && (
             <Options options={q.options} multiple={q.type === 'multiple'} />
           )}{' '}
         </div>

@@ -122,6 +122,7 @@ strong {
   padding-bottom: 1.5mm;
   margin-bottom: 2.6mm;
   break-after: avoid-page;
+  break-inside: avoid-page;
   line-height: 1.4;
 }
 .question-header h2 {
@@ -204,6 +205,12 @@ strong {
   line-height: 1.4;
   color: #555;
   margin-top: 1.5mm;
+  break-before: avoid-page;
+}
+.original-scan .print-figure img {
+  max-height: 235mm;
+}
+.original-scan .question-body > .print-figure:first-child {
   break-before: avoid-page;
 }
 .print-table {

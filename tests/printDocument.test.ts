@@ -51,6 +51,40 @@ const question: Question = {
     explanation: '绝不能进入学生PDF的解析',
   },
 };
+it('原卷图文打印保留专用排版，不重复合成选项和网页作答提示', () => {
+  const scan: Question = {
+    ...question,
+    tags: ['原卷图文'],
+    type: 'single',
+    options: [
+      { id: 'a', text: '选择原题中的 A 选项' },
+      { id: 'b', text: '选择原题中的 B 选项' },
+    ],
+    content: [
+      ...question.content,
+      {
+        id: 'response',
+        type: 'subquestion',
+        label: '按原题小问序号作答',
+        responseKind: 'open',
+        score: 4,
+        children: [
+          { id: 'response-note', type: 'paragraph', text: '可使用文字、手写或照片提交整题作答。' },
+        ],
+      },
+    ],
+  };
+  const html = renderPrintDocument({
+    item,
+    questions: [scan],
+    images: { fig: 'data:image/png;base64,AAAA' },
+    fontCss: '',
+    mathCss: '',
+  });
+  expect(html).toContain('original-scan');
+  expect(html).not.toContain('选择原题中的');
+  expect(html).not.toContain('可使用文字');
+});
 it('打印渲染包含原图、公式、空格、小问和表格，不含答案或交互输入', () => {
   const html = renderPrintDocument({
     item,

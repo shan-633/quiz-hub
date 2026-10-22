@@ -79,6 +79,10 @@ export const questionSchema = z.object({
       ),
       partChoices: z.record(id, z.array(id).max(20)).optional(),
       explanation: text,
+      referenceImages: z
+        .array(z.object({ assetId: id, caption: z.string().max(1000) }))
+        .max(20)
+        .optional(),
     })
     .optional(),
   state: z.enum(['draft', 'published', 'archived']),

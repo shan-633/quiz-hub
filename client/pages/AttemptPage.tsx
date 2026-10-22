@@ -27,6 +27,7 @@ import { useToast } from '../context';
 import { UploadContext } from '../uploadContext';
 import { QuestionRenderer } from '../components/QuestionRenderer';
 import { Markdown } from '../components/Markdown';
+import { ReferenceImages } from '../components/ReferenceImages';
 import { Loading, ErrorState, Modal } from '../components/ui';
 import { AttemptTimer } from '../components/AttemptTimer';
 import {
@@ -460,6 +461,7 @@ function AttemptWorkspace({ initial, reload }: { initial: Attempt; reload: () =>
                       <Markdown
                         text={attempt.teacherFeedback?.[q.id]?.correctAnswer || referenceAnswer(q)}
                       />
+                      <ReferenceImages question={q} />
                       {attempt.teacherFeedback?.[q.id] && (
                         <div className="teacher-feedback">
                           <h4>教师评语</h4>

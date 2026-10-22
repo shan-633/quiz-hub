@@ -10,6 +10,7 @@ import { api, json, ApiError } from '../api';
 import { useToast } from '../context';
 import { QuestionRenderer } from '../components/QuestionRenderer';
 import { Markdown } from '../components/Markdown';
+import { ReferenceImages } from '../components/ReferenceImages';
 import { Loading, ErrorState, Modal, formatDate } from '../components/ui';
 import { navigatorState, navigatorLabels } from '../practiceFeedback';
 import { GradeControls } from '../components/GradeControls';
@@ -398,6 +399,7 @@ function ReviewWorkspace({ initial }: { initial: ReviewAttempt }) {
             <>
               <h3>正确答案</h3>
               <Markdown text={feedback?.correctAnswer || referenceAnswer(q) || '未填写'} />
+              <ReferenceImages question={q} />
               <h3>教师评语</h3>
               <Markdown text={feedback?.comment || '未填写评语'} />
               {feedback && (
@@ -420,6 +422,7 @@ function ReviewWorkspace({ initial }: { initial: ReviewAttempt }) {
           <details className="review-reference">
             <summary>查看题库标准答案</summary>
             <Markdown text={referenceAnswer(q) || '未录入标准答案'} />
+            <ReferenceImages question={q} />
           </details>
         </section>
       </div>

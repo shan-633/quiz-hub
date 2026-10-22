@@ -238,6 +238,28 @@
               "explanation": {
                 "type": "string",
                 "maxLength": 100000
+              },
+              "referenceImages": {
+                "maxItems": 20,
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "assetId": {
+                      "type": "string",
+                      "pattern": "^(?!(?:__proto__|prototype|constructor|__defineGetter__|__defineSetter__|hasOwnProperty|__lookupGetter__|__lookupSetter__|isPrototypeOf|propertyIsEnumerable|toString|valueOf|toLocaleString)$)[a-zA-Z0-9_-]{1,128}$"
+                    },
+                    "caption": {
+                      "default": "",
+                      "type": "string",
+                      "maxLength": 1000
+                    }
+                  },
+                  "required": [
+                    "assetId"
+                  ],
+                  "additionalProperties": false
+                }
               }
             },
             "required": [
