@@ -47,6 +47,41 @@ afterEach(() => {
   state.contacts = [];
 });
 const response = (data: any) => ({ ok: true, json: async () => data });
+it('首页消息链接直接打开已有会话，未知会话参数不能触发读取', async () => {
+  const paths: string[] = [];
+  vi.stubGlobal('fetch', async (url: string) => {
+    paths.push(url);
+    return response({
+      messages: [
+        {
+          id: 1,
+          conversationId: 'c',
+          senderId: 't',
+          clientMessageId: 'home-message',
+          body: '从首页打开的教师消息',
+          createdAt: '2026-10-22T00:00:00Z',
+        },
+      ],
+      hasMore: false,
+    });
+  });
+  const view = render(
+    <MemoryRouter initialEntries={['/chat?conversation=c']}>
+      <ChatPage />
+    </MemoryRouter>,
+  );
+  expect(await screen.findByText('从首页打开的教师消息')).toBeTruthy();
+  expect(screen.getByLabelText('消息内容')).toBeTruthy();
+  view.unmount();
+  paths.length = 0;
+  render(
+    <MemoryRouter initialEntries={['/chat?conversation=foreign']}>
+      <ChatPage />
+    </MemoryRouter>,
+  );
+  expect(paths.some((p) => p.includes('foreign'))).toBe(false);
+  expect(screen.queryByLabelText('消息内容')).toBeNull();
+});
 it('管理员创建账号后仅本次显示临时密码，角色和归属入口可用', async () => {
   vi.stubGlobal('fetch', async (url: string, init: RequestInit) => {
     if (init?.method === 'POST')

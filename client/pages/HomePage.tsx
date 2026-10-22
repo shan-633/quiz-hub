@@ -20,6 +20,7 @@ import { useChat } from '../chatContext';
 import { Loading, ErrorState, EmptyState, formatDate } from '../components/ui';
 import { isBeforeOpening } from '../../shared/availability';
 import { useOpeningClock } from '../useOpeningClock';
+import { useCardAnchor } from '../useCardAnchor';
 import { PrintPdfDialog } from '../components/PrintPdfDialog';
 const diagram: Record<string, string> = {
   mechanics: 'cart',
@@ -49,6 +50,7 @@ export function HomePage() {
   const now = useOpeningClock((data ?? []).map((item) => item.opensAt));
   const locked = (item: LibraryItem) =>
     user?.role === 'student' && isBeforeOpening(item.opensAt, now);
+  useCardAnchor(!!data);
   useEffect(() => {
     if (user?.role === 'student') reload();
   }, [teacherKey]);
@@ -248,7 +250,12 @@ export function HomePage() {
         ) : (
           <div className="library-grid">
             {items.map((item) => (
-              <article key={item.id} className={`library-card accent-${item.accent}`}>
+              <article
+                key={item.id}
+                id={`library-${item.id}`}
+                tabIndex={-1}
+                className={`library-card accent-${item.accent}`}
+              >
                 <div className="card-art">
                   <span className="card-kind">
                     {item.kind === 'paper' ? <FileText size={14} /> : <Layers3 size={14} />}{' '}

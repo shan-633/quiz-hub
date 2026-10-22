@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { ArrowLeft, MessageCircle, Send, UsersRound, Paperclip, X, RefreshCw } from 'lucide-react';
 import type { ChatMessage, MessagePage } from '../../shared/chat';
 import { useAuth } from '../context';
@@ -18,6 +18,8 @@ interface Pending {
 export function ChatPage() {
   const { user } = useAuth(),
     chat = useChat();
+  const [params] = useSearchParams();
+  const requestedConversation = params.get('conversation');
   const [selected, setSelected] = useState(''),
     [messages, setMessages] = useState<ChatMessage[]>([]),
     [hasMore, setMore] = useState(false),
@@ -45,6 +47,10 @@ export function ChatPage() {
   selection.current = selected;
   const conversation = chat.conversations.find((c) => c.id === selected),
     draft = drafts[selected] ?? '';
+  useEffect(() => {
+    if (requestedConversation && chat.conversations.some((c) => c.id === requestedConversation))
+      setSelected(requestedConversation);
+  }, [requestedConversation, !!chat.conversations.find((c) => c.id === requestedConversation)]);
   useEffect(() => {
     const fn = () => setVisible(!document.hidden);
     document.addEventListener('visibilitychange', fn);

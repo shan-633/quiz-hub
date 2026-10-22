@@ -22,6 +22,7 @@ export interface Conversation {
   unread: number;
   updatedAt: string;
   lastMessage?: string;
+  latestReceived?: { body: string; createdAt: string };
 }
 export interface MessagePage {
   messages: ChatMessage[];

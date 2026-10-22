@@ -19,6 +19,7 @@ export class ChatService {
       CREATE INDEX IF NOT EXISTS chat_student ON chat_conversations(student_id,updated_at);
       CREATE TABLE IF NOT EXISTS chat_messages(id INTEGER PRIMARY KEY AUTOINCREMENT,conversation_id TEXT NOT NULL REFERENCES chat_conversations(id),sender_id TEXT NOT NULL,client_message_id TEXT NOT NULL,body TEXT NOT NULL,reference TEXT,created_at TEXT NOT NULL,UNIQUE(conversation_id,sender_id,client_message_id));
       CREATE INDEX IF NOT EXISTS chat_message_page ON chat_messages(conversation_id,id);
+      CREATE INDEX IF NOT EXISTS chat_message_sender ON chat_messages(conversation_id,sender_id,id);
       CREATE TABLE IF NOT EXISTS chat_reads(conversation_id TEXT NOT NULL,user_id TEXT NOT NULL,last_read_message_id INTEGER NOT NULL DEFAULT 0,PRIMARY KEY(conversation_id,user_id));`);
   }
   subscribe(listener: (users: string[], id: string) => void) {
@@ -69,6 +70,11 @@ export class ChatService {
     const last = this.store.db
       .prepare('SELECT body FROM chat_messages WHERE conversation_id=? ORDER BY id DESC LIMIT 1')
       .get(c.id);
+    const received = this.store.db
+      .prepare(
+        'SELECT body,created_at FROM chat_messages WHERE conversation_id=? AND sender_id=? ORDER BY id DESC LIMIT 1',
+      )
+      .get(c.id, peerId);
     const unread = this.store.db
       .prepare(
         'SELECT COUNT(*) AS n FROM chat_messages WHERE conversation_id=? AND sender_id<>? AND id>COALESCE((SELECT last_read_message_id FROM chat_reads WHERE conversation_id=? AND user_id=?),0)',
@@ -88,6 +94,14 @@ export class ChatService {
       unread,
       updatedAt: c.updated_at,
       lastMessage: last?.body as string | undefined,
+      ...(received
+        ? {
+            latestReceived: {
+              body: (received.body as string).slice(0, 240),
+              createdAt: received.created_at as string,
+            },
+          }
+        : {}),
     };
   }
   conversations(user: User): Conversation[] {

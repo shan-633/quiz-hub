@@ -16,6 +16,38 @@ afterEach(() => {
 });
 const response = (data: unknown) => ({ ok: true, json: async () => data });
 
+it('从首页定位任务只在首次加载后聚焦，15秒刷新不抢回用户焦点', async () => {
+  vi.useFakeTimers();
+  vi.stubGlobal('fetch', async () =>
+    response(
+      ['one', 'two'].map((id) => ({
+        id,
+        libraryId: 'b',
+        title: id,
+        teacherName: '陈老师',
+        groupNames: ['一班'],
+        status: 'not_started',
+        questionCount: 2,
+        totalScore: 6,
+      })),
+    ),
+  );
+  await act(async () => {
+    render(
+      <MemoryRouter initialEntries={['/tasks#task-one']}>
+        <TasksPage />
+      </MemoryRouter>,
+    );
+  });
+  expect(document.activeElement?.id).toBe('task-one');
+  const second = screen.getAllByRole('button', { name: '开始作答' })[1];
+  second.focus();
+  await act(async () => {
+    await vi.advanceTimersByTimeAsync(15100);
+  });
+  expect(document.activeElement).toBe(second);
+});
+
 it('目录显示开放时间，开放前禁用开始和打印，到时自动启用', async () => {
   vi.useFakeTimers();
   const opensAt = new Date(Date.now() + 1000).toISOString();

@@ -13,6 +13,7 @@ import type { AssignmentService } from '../assignments';
 import { expireAttempt, timingSnapshot, trackDeadline, submitAttempt } from '../attemptTiming';
 import { isBeforeOpening } from '../../shared/availability';
 import { hasCompleteStandardAnswer } from '../../shared/teacherReview';
+import { attemptPerformance } from '../../shared/learningOverview';
 export function registerAttempts(
   app: FastifyInstance,
   store: Store,
@@ -60,7 +61,10 @@ export function registerAttempts(
           canReadLibrary(store, requireUser(req), store.get<LibraryItem>('library', a.libraryId)),
         createdAt: a.createdAt,
         updatedAt: a.updatedAt,
+        submittedAt: a.submittedAt,
         questionCount: a.questions.length,
+        totalScore: Math.round(a.questions.reduce((n, q) => n + q.score, 0) * 100) / 100,
+        performance: attemptPerformance(a),
         answeredCount: attemptProgress(a).answeredCount,
         earned: a.grades ? Object.values(a.grades).reduce((s, g) => s + g.earned, 0) : undefined,
         pending: a.grades ? Object.values(a.grades).some((g) => g.pending) : undefined,

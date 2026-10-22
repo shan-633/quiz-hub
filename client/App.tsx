@@ -25,6 +25,7 @@ import {
 import { AuthProvider, ToastProvider, useAuth, useToast } from './context';
 import { Loading, Modal } from './components/ui';
 import { HomePage } from './pages/HomePage';
+import { StudentHomePage } from './pages/StudentHomePage';
 import './teacher.css';
 import './community.css';
 import './assignments.css';
@@ -286,7 +287,15 @@ function Shell() {
               <Route
                 path="/"
                 element={
-                  <Protected>{admin ? <Navigate to="/admin" replace /> : <HomePage />}</Protected>
+                  <Protected>
+                    {admin ? (
+                      <Navigate to="/admin" replace />
+                    ) : user?.role === 'student' ? (
+                      <StudentHomePage />
+                    ) : (
+                      <HomePage />
+                    )}
+                  </Protected>
                 }
               />
               <Route

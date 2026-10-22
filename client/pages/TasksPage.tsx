@@ -8,6 +8,7 @@ import { api, json } from '../api';
 import { Loading, ErrorState, EmptyState, formatDate } from '../components/ui';
 import { isBeforeOpening } from '../../shared/availability';
 import { useOpeningClock } from '../useOpeningClock';
+import { useCardAnchor } from '../useCardAnchor';
 import { PrintPdfDialog } from '../components/PrintPdfDialog';
 
 export function TasksPage() {
@@ -19,6 +20,7 @@ export function TasksPage() {
     [error, setError] = useState(''),
     [printing, setPrinting] = useState<StudentTask | null>(null);
   const now = useOpeningClock((tasks.data ?? []).map((t) => t.opensAt));
+  useCardAnchor(!!tasks.data);
   useEffect(() => {
     const refresh = () => {
       if (!document.hidden) tasks.reload();
@@ -105,7 +107,7 @@ export function TasksPage() {
       ) : (
         <div className="class-task-list">
           {rows.map((t) => (
-            <article className="class-task-card" key={t.id}>
+            <article className="class-task-card" key={t.id} id={`task-${t.id}`} tabIndex={-1}>
               <span className="class-icon">
                 <BookOpen />
               </span>
