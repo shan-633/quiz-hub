@@ -72,6 +72,20 @@ export function TeacherLibraryPage() {
       `${x.title} ${x.chapter}`.includes(query) &&
       (mode === 'all' || (x.deliveryMode ?? 'assigned') === mode),
   );
+  const typeFilter = Object.hasOwn(typeLabels, params.get('type') ?? '') ? params.get('type')! : '';
+  const filteredQuestions = questions.data?.filter(
+    (q) =>
+      (!params.get('bank') || q.bankId === params.get('bank')) &&
+      (!typeFilter || q.type === typeFilter) &&
+      `${q.title} ${q.tags.join(' ')}`.includes(query),
+  );
+  const setQuestionFilter = (key: string, value: string) => {
+    const next = new URLSearchParams(params);
+    next.set('tab', 'questions');
+    if (value) next.set(key, value);
+    else next.delete(key);
+    setParams(next);
+  };
   return (
     <div className="page teacher-library-page">
       <div className="teacher-library-heading">
@@ -183,12 +197,7 @@ export function TeacherLibraryPage() {
               <select
                 aria-label="按题库筛选题目"
                 value={params.get('bank') ?? ''}
-                onChange={(e) =>
-                  setParams({
-                    tab: 'questions',
-                    ...(e.target.value ? { bank: e.target.value } : {}),
-                  })
-                }
+                onChange={(e) => setQuestionFilter('bank', e.target.value)}
               >
                 <option value="">全部题库</option>
                 {banks.data?.map((b) => (
@@ -198,6 +207,24 @@ export function TeacherLibraryPage() {
                 ))}
               </select>
             </label>
+            <label>
+              题型
+              <select
+                aria-label="按题型筛选题目"
+                value={typeFilter}
+                onChange={(e) => setQuestionFilter('type', e.target.value)}
+              >
+                <option value="">全部题型</option>
+                {Object.entries(typeLabels).map(([id, label]) => (
+                  <option value={id} key={id}>
+                    {label}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <span className="muted small" role="status">
+              共 {filteredQuestions?.length ?? 0} 道题
+            </span>
             <span className="muted small">发布题目的修改会生成新版本，历史作答保持原样。</span>
           </div>
           <div className="teacher-table-scroll">
@@ -212,40 +239,34 @@ export function TeacherLibraryPage() {
                 </tr>
               </thead>
               <tbody>
-                {questions.data
-                  ?.filter(
-                    (q) =>
-                      (!params.get('bank') || q.bankId === params.get('bank')) &&
-                      `${q.title} ${q.tags.join(' ')}`.includes(query),
-                  )
-                  .map((q) => (
-                    <tr key={q.id}>
-                      <td>
-                        <strong>{q.title || '未命名题目'}</strong>
-                        <small>{q.tags.join(' · ') || '尚未设置知识点'}</small>
-                      </td>
-                      <td>{banks.data?.find((b) => b.id === q.bankId)?.title ?? '—'}</td>
-                      <td>
-                        {typeLabels[q.type]}
-                        <small>{q.score} 分</small>
-                      </td>
-                      <td>
-                        <span className={`status-tag status-${q.state}`}>
-                          {q.state === 'published'
-                            ? `已发布 v${q.version}`
-                            : q.state === 'archived'
-                              ? '已归档'
-                              : '草稿'}
-                        </span>
-                      </td>
-                      <td>
-                        <Link className="text-button" to={`/teacher/questions/${q.id}`}>
-                          <Pencil size={15} />
-                          编辑
-                        </Link>
-                      </td>
-                    </tr>
-                  ))}
+                {filteredQuestions?.map((q) => (
+                  <tr key={q.id}>
+                    <td>
+                      <strong>{q.title || '未命名题目'}</strong>
+                      <small>{q.tags.join(' · ') || '尚未设置知识点'}</small>
+                    </td>
+                    <td>{banks.data?.find((b) => b.id === q.bankId)?.title ?? '—'}</td>
+                    <td>
+                      {typeLabels[q.type]}
+                      <small>{q.score} 分</small>
+                    </td>
+                    <td>
+                      <span className={`status-tag status-${q.state}`}>
+                        {q.state === 'published'
+                          ? `已发布 v${q.version}`
+                          : q.state === 'archived'
+                            ? '已归档'
+                            : '草稿'}
+                      </span>
+                    </td>
+                    <td>
+                      <Link className="text-button" to={`/teacher/questions/${q.id}`}>
+                        <Pencil size={15} />
+                        编辑
+                      </Link>
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>
@@ -253,6 +274,12 @@ export function TeacherLibraryPage() {
             <EmptyState
               title="第一道题，从这里开始"
               description="选择题库与题型，使用内容块编辑题干。"
+            />
+          )}
+          {!!questions.data?.length && !filteredQuestions?.length && (
+            <EmptyState
+              title="没有符合条件的题目"
+              description="请调整题型、所属题库或搜索关键词。"
             />
           )}
         </>

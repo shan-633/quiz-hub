@@ -1998,6 +1998,7 @@ strong {
 }
 .teacher-filter {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
@@ -2005,12 +2006,15 @@ strong {
 }
 .teacher-filter > label {
   display: flex;
+  min-width: 0;
+  max-width: 100%;
   gap: 10px;
   align-items: center;
   font-size: 11px;
   color: #8b9d8c;
 }
 .teacher-filter select {
+  min-width: 0;
   font-size: 11px;
   padding: 8px;
 }
