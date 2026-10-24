@@ -1,4 +1,5 @@
 import type { Attempt } from './model';
+import type { Curriculum } from './curriculum';
 
 export interface AttemptPerformance {
   correct: number;
@@ -8,6 +9,7 @@ export interface AttemptPerformance {
   max: number;
 }
 export interface AttemptSummary {
+  curriculum?: Curriculum;
   id: string;
   title: string;
   libraryId: string;

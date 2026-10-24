@@ -1,0 +1,121 @@
+.generic-card-art {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  inset: 35px 20px 20px;
+  color: #47786f;
+}
+.generic-card-art span {
+  font-size: 24px;
+  overflow-wrap: anywhere;
+}
+.direction-bar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 14px 36px;
+  background: #f1f7f5;
+  border-bottom: 1px solid var(--line);
+  font-size: 12px;
+  position: relative;
+  z-index: 1;
+}
+.direction-bar label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  max-width: 100%;
+}
+.direction-bar select {
+  min-width: 0;
+  max-width: 420px;
+  padding: 8px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: white;
+  color: var(--ink);
+}
+.direction-bar > span {
+  font-size: 11px;
+  color: var(--muted);
+}
+.direction-bar > a {
+  color: var(--teal);
+  white-space: nowrap;
+}
+.curriculum-tag {
+  display: block;
+  font-size: 11px;
+  line-height: 1.7;
+  color: #45746b;
+  margin: 7px 0;
+  overflow-wrap: anywhere;
+}
+.curriculum-fields {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 18px;
+  margin: 18px 0;
+  min-width: 0;
+}
+.curriculum-fields legend {
+  padding: 0 8px;
+  color: #167d76;
+  font-size: 13px;
+}
+.curriculum-fields input {
+  min-width: 0;
+  width: 100%;
+}
+.directions-page {
+  max-width: 1000px;
+}
+.direction-list {
+  margin: 24px 0;
+}
+.direction-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  align-items: center;
+  padding: 16px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  margin: 10px 0;
+}
+.direction-item strong {
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+.direction-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+@media (max-width: 700px) {
+  .direction-bar {
+    padding: 12px 18px;
+    gap: 8px;
+  }
+  .direction-bar label {
+    width: 100%;
+  }
+  .direction-bar select {
+    flex: 1;
+    width: 0;
+  }
+  .direction-bar > span {
+    width: 100%;
+  }
+  .curriculum-fields {
+    padding: 12px;
+  }
+  .direction-item {
+    align-items: flex-start;
+  }
+}

@@ -14,6 +14,7 @@ import { expireAttempt, timingSnapshot, trackDeadline, submitAttempt } from '../
 import { isBeforeOpening } from '../../shared/availability';
 import { hasCompleteStandardAnswer } from '../../shared/teacherReview';
 import { attemptPerformance } from '../../shared/learningOverview';
+import { curriculumOf } from '../../shared/curriculum';
 export function registerAttempts(
   app: FastifyInstance,
   store: Store,
@@ -53,6 +54,7 @@ export function registerAttempts(
         title: a.title,
         status: a.status,
         libraryId: a.libraryId,
+        curriculum: curriculumOf(a),
         teacherId: a.teacherId,
         available: a.status === 'submitted' || canContinue(store, requireUser(req), a),
         repeatAvailable:
@@ -135,6 +137,7 @@ export function registerAttempts(
         teacherId: item.teacherId,
         userId: user.id,
         libraryId: item.id,
+        curriculum: curriculumOf(item),
         title: item.title,
         status: 'active',
         gradingMode: 'self',

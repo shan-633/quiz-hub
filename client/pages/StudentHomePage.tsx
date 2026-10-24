@@ -25,6 +25,7 @@ import { useChat } from '../chatContext';
 import { Loading, formatDate } from '../components/ui';
 import { LearningHeatmap } from '../components/LearningHeatmap';
 import '../learningOverview.css';
+import { useDirections, CurriculumTag } from '../directions';
 
 function LoadNotice({ error, retry }: { error: string; retry: () => void }) {
   return (
@@ -35,6 +36,7 @@ function LoadNotice({ error, retry }: { error: string; retry: () => void }) {
   );
 }
 export function StudentHomePage() {
+  const { matches, scope } = useDirections();
   const { user } = useAuth(),
     chat = useChat();
   const attempts = useLoad<AttemptSummary[]>('/attempts');
@@ -75,10 +77,13 @@ export function StudentHomePage() {
       document.removeEventListener('visibilitychange', onReturn);
     };
   }, [refresh]);
-  const history = [...(attempts.data ?? [])].sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
+  const history = [...(attempts.data ?? []).filter(matches)].sort((a, b) =>
+    b.updatedAt.localeCompare(a.updatedAt),
+  );
   const active = history.filter((a) => a.status === 'active' && a.available !== false);
   const recent = active[0];
   const newTasks = (tasks.data ?? [])
+    .filter(matches)
     .map((t) =>
       t.status === 'scheduled' && !isBeforeOpening(t.opensAt, now)
         ? { ...t, status: 'not_started' as const }
@@ -86,9 +91,9 @@ export function StudentHomePage() {
     )
     .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
     .slice(0, 4);
-  const todo = (tasks.data ?? []).filter((t) =>
-    ['not_started', 'scheduled', 'active'].includes(t.status),
-  ).length;
+  const todo = (tasks.data ?? [])
+    .filter(matches)
+    .filter((t) => ['not_started', 'scheduled', 'active'].includes(t.status)).length;
   const waiting = history.filter((a) => ['pending', 'self'].includes(learningStage(a))).length;
   const messages = chat.conversations
     .filter((c) => c.peer.role === 'teacher' && c.latestReceived)
@@ -96,6 +101,7 @@ export function StudentHomePage() {
     .slice(0, 3);
   const unread = chat.conversations.reduce((n, c) => n + c.unread, 0);
   const showcases = (library.data ?? [])
+    .filter(matches)
     .filter((b) => b.deliveryMode !== 'assigned')
     .slice()
     .reverse()
@@ -111,7 +117,11 @@ export function StudentHomePage() {
           <h1>
             {user?.name ?? '同学'}，今天也向前一步<span className="teal">。</span>
           </h1>
-          <p>看看最近的收获，再开始下一份练习。</p>
+          <p>
+            {scope
+              ? '当前概览仅统计所选方向，切换全部方向可查看所有记录。'
+              : '看看各个方向最近的收获，再开始下一份练习。'}
+          </p>
         </div>
         <button
           className="button learning-refresh"
@@ -201,7 +211,7 @@ export function StudentHomePage() {
         ) : attempts.loading && !attempts.data ? (
           <Loading />
         ) : (
-          <LearningHeatmap attempts={attempts.data ?? []} />
+          <LearningHeatmap attempts={(attempts.data ?? []).filter(matches)} />
         )}
       </section>
       <div className="learning-module-grid">

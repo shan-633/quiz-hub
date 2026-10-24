@@ -1,3 +1,4 @@
+import type { Curriculum } from './curriculum';
 export type QuestionType =
   'single' | 'multiple' | 'fill' | 'experiment' | 'reading' | 'calculation';
 export type State = 'draft' | 'published' | 'archived';
@@ -117,6 +118,7 @@ export interface Grade {
   details: Record<string, { earned: number; max: number; pending: boolean }>;
 }
 export interface LibraryItem {
+  curriculum?: Curriculum;
   id: string;
   teacherId?: string;
   deliveryMode?: 'showcase' | 'assigned';
@@ -144,6 +146,7 @@ export interface User {
   revision?: number;
 }
 export interface Attempt {
+  curriculum?: Curriculum;
   id: string;
   teacherId?: string;
   userId: string;

@@ -33,6 +33,7 @@ import { AssignmentService } from './assignments';
 import { registerAssignments } from './routes/assignments';
 import { initAttemptTiming, startDeadlineWorker } from './attemptTiming';
 import { registerSelfReview } from './routes/selfReview';
+import { registerCurriculum } from './routes/curriculum';
 import type { PdfRenderer } from './print/pdf';
 export interface AppOptions {
   dataDir: string;
@@ -78,6 +79,9 @@ export async function createApp(options: AppOptions) {
       .send({ message: status >= 500 ? '服务暂时不可用，请稍后重试' : (error as Error).message });
   });
   app.get('/api/health', async () => ({ ok: true, version: packageInfo.version }));
+  app.get('/api/auth/config', async () => ({
+    demoMode: (options.seed ?? true) && process.env.NODE_ENV !== 'production',
+  }));
   app.post(
     '/api/auth/login',
     { config: { rateLimit: { max: 10, timeWindow: '1 minute' } } },
@@ -113,6 +117,7 @@ export async function createApp(options: AppOptions) {
     return { ok: true };
   });
   registerLibrary(app, store);
+  registerCurriculum(app, store);
   registerAdmin(app, store);
   registerChat(app, store);
   registerAssignments(app, store, assignments);

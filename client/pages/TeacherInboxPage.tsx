@@ -5,7 +5,10 @@ import { useLoad } from '../useLoad';
 import { Loading, ErrorState, EmptyState, formatDate } from '../components/ui';
 import '../teacher.css';
 import { TeacherProgress } from '../components/TeacherProgress';
+import { useDirections } from '../directions';
+import type { Curriculum } from '../../shared/curriculum';
 export interface InboxItem {
+  curriculum?: Curriculum;
   id: string;
   title: string;
   kind: 'paper' | 'bank';
@@ -26,11 +29,12 @@ export const reviewLabels = {
   legacy: '历史记录',
 };
 export function TeacherInboxPage() {
+  const { matches } = useDirections();
   const { data, loading, error, reload } = useLoad<InboxItem[]>('/teacher/attempts');
   const [filter, setFilter] = useState('todo'),
     [search, setSearch] = useState(''),
     [progressRefresh, setProgressRefresh] = useState(0);
-  const all = data ?? [],
+  const all = (data ?? []).filter(matches),
     rows = all.filter(
       (a) =>
         (filter === 'all' ||

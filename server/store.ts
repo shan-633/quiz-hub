@@ -3,6 +3,7 @@ import { mkdirSync } from 'node:fs';
 import { join } from 'node:path';
 import type { Question } from '../shared/model';
 export type Collection =
+  | 'learning_directions'
   | 'users'
   | 'sessions'
   | 'library'

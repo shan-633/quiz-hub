@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { curriculumSchema } from './curriculum';
 import katex from 'katex';
 import type { Block, Question, QuestionType } from './model';
 import { validateQuestion, walkBlocks } from './domain';
@@ -113,6 +114,7 @@ export const bankPackageSchema = z
     version: z.literal('1.0'),
     bank: z
       .object({
+        curriculum: curriculumSchema.optional(),
         title: z.string().trim().min(1).max(200),
         description: z.string().max(3000).default(''),
         chapter: z.string().max(100).default(''),
@@ -227,6 +229,13 @@ export function parseBankPackage(fileText: string): ImportReport & { document?: 
       warnings: [],
     };
   const document = parsed.data;
+  const warnings: ImportIssue[] = [];
+  if (!document.bank.curriculum)
+    warnings.push({
+      path: '$.bank.curriculum',
+      code: 'unclassified',
+      message: '文件没有考试分类，导入后标记为待分类；请编辑题库设置实际学段、学科和地区。',
+    });
   const unique = (values: string[], path: string) => {
     if (new Set(values).size !== values.length)
       add(path, 'duplicate', 'ID重复；同一作用域内ID必须唯一');
@@ -368,7 +377,6 @@ export function parseBankPackage(fileText: string): ImportReport & { document?: 
       add('$.assets', 'asset_reference', `图片 ${asset.id} 未被题目使用，请删除多余资源`);
   const types: ImportSummary['types'] = {};
   let manualQuestionCount = 0;
-  const warnings: ImportIssue[] = [];
   document.questions.forEach((q, i) => {
     types[q.type] = (types[q.type] ?? 0) + 1;
     if (

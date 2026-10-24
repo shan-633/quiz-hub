@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { curriculumSchema } from './curriculum';
 import type { Block } from './model';
 const id = z.string().regex(/^[a-zA-Z0-9_-]{1,128}$/);
 const text = z.string().max(100000);
@@ -143,6 +144,7 @@ export const answerSchema = z.object({
   flagged: z.boolean(),
 });
 export const librarySchema = z.object({
+  curriculum: curriculumSchema.optional(),
   deliveryMode: z.enum(['showcase', 'assigned']).default('assigned'),
   title: z.string().trim().min(1).max(200),
   description: z.string().max(3000),

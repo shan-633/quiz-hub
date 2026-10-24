@@ -229,3 +229,13 @@ Python制作图片字段：`base64.b64encode(Path("原图.webp").read_bytes()).d
 项目中的 `shared/bankImport.ts` 是运行时协议定义；`content-assets/import/question-bank-v1.schema.json` 是对应JSON Schema。`scripts/build-import-examples.ts` 生成静态文档、机器Schema和三个示例；新增协议版本应同步Schema、介绍文档、示例和测试。当前不支持更高版本的自动兼容或迁移。
 
 下载接口为 `GET /api/teacher/bank-import/files/文件名`，同样仅限教师。示例含标准答案，文件保存在非公开资源目录，不能作为学生可访问的静态文件部署。
+
+## 5.0 可选考试分类
+
+`bank.curriculum`为可选严格对象：`stage`限primary/junior/senior/university/professional/other，`subject`、`region`、`exam`为1—80字非空字符串，`scheme`为0—120字（默认空字符串）。例如：
+
+```json
+"curriculum": {"stage":"senior","subject":"数学","region":"浙江","exam":"高考","scheme":"2026 · 物理组合"}
+```
+
+旧1.0文件继续兼容。新导入缺少此字段时提示警告，并将新库保存为“待分类”；教师须在编辑题库时核对实际分类。既有数据库旧题库的北京初中物理兼容逻辑不用于推断新文件的地区。其余字段和验证规则不变。

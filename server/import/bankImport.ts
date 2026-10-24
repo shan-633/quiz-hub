@@ -11,6 +11,7 @@ import {
 } from '../../shared/bankImport';
 import { walkBlocks } from '../../shared/domain';
 import type { LibraryItem } from '../../shared/model';
+import { unclassifiedCurriculum } from '../../shared/curriculum';
 import type { Asset } from '../routes/uploads';
 import type { Store } from '../store';
 import { HttpError } from '../auth';
@@ -187,6 +188,7 @@ export function commitBankImport(
   });
   const bank: LibraryItem = {
     ...document.bank,
+    curriculum: document.bank.curriculum ?? unclassifiedCurriculum,
     deliveryMode: 'assigned',
     id: bankId,
     teacherId: ownerId,

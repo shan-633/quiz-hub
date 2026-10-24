@@ -1,4 +1,5 @@
 import type { Attempt, LibraryItem, User } from '../shared/model';
+import { curriculumOf } from '../shared/curriculum';
 import type {
   ClassAssignment,
   ClassGroup,
@@ -121,6 +122,7 @@ export class AssignmentService {
         teacherId,
         title: item!.title,
         libraryId: item!.id,
+        curriculum: curriculumOf(item!),
         groupNames: targets.map((g) => g!.name),
         questions,
         createdAt: new Date().toISOString(),
@@ -154,6 +156,7 @@ export class AssignmentService {
   }
   private metadata(a: ClassAssignment) {
     return {
+      curriculum: curriculumOf(a),
       id: a.id,
       title: a.title,
       libraryId: a.libraryId,
@@ -222,6 +225,7 @@ export class AssignmentService {
         gradingMode: 'teacher',
         title: a.title,
         libraryId: a.libraryId,
+        curriculum: curriculumOf(a),
         status: 'active',
         createdAt: now,
         updatedAt: now,

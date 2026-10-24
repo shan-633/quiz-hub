@@ -1,0 +1,6 @@
+[Unit]
+Description=Renew Quiz Hub IP TLS certificate
+
+[Service]
+Type=oneshot
+ExecStart=/opt/quiz-certbot/bin/certbot renew --quiet --deploy-hook "systemctl reload nginx"

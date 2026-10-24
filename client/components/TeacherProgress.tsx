@@ -1,11 +1,14 @@
 import { Link } from 'react-router-dom';
 import { Radio } from 'lucide-react';
 import { useTeacherProgress } from '../useTeacherProgress';
+import { useDirections } from '../directions';
 import { EmptyState, ErrorState, Loading, formatDate } from './ui';
 
 export function TeacherProgress({ search, refreshKey }: { search: string; refreshKey: number }) {
+  const { matches } = useDirections();
   const { data, error, checkedAt, status, authError, retryNow } = useTeacherProgress(refreshKey);
-  const rows = (data ?? []).filter((a) =>
+  const scoped = (data ?? []).filter(matches);
+  const rows = scoped.filter((a) =>
     `${a.title} ${a.student.name} ${a.student.username}`
       .toLowerCase()
       .includes(search.trim().toLowerCase()),
@@ -15,7 +18,7 @@ export function TeacherProgress({ search, refreshKey }: { search: string; refres
       <div className="progress-live-note">
         <Radio size={17} aria-hidden="true" />
         <div>
-          <strong>未交卷 · {data?.length ?? '—'} 份记录</strong>
+          <strong>未交卷 · {data ? scoped.length : '—'} 份记录</strong>
           <p>
             {status === 'live'
               ? '实时连接已建立'

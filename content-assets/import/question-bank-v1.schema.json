@@ -13,6 +13,49 @@
     "bank": {
       "type": "object",
       "properties": {
+        "curriculum": {
+          "type": "object",
+          "properties": {
+            "stage": {
+              "type": "string",
+              "enum": [
+                "primary",
+                "junior",
+                "senior",
+                "university",
+                "professional",
+                "other"
+              ]
+            },
+            "subject": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            },
+            "region": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            },
+            "exam": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            },
+            "scheme": {
+              "default": "",
+              "type": "string",
+              "maxLength": 120
+            }
+          },
+          "required": [
+            "stage",
+            "subject",
+            "region",
+            "exam"
+          ],
+          "additionalProperties": false
+        },
         "title": {
           "type": "string",
           "minLength": 1,

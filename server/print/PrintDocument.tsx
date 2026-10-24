@@ -212,7 +212,7 @@ export function renderPrintDocument({
         <main>
           <header className="document-heading">
             <div className="document-brand">
-              知序 · 物理练习<span>阅读版 / A4</span>
+              知序 · 考试学习空间<span>阅读版 / A4</span>
             </div>
             <h1>{item.title}</h1>
             <p>

@@ -29,6 +29,7 @@ vi.mock('../client/pages/TeacherInboxPage', () => ({
 }));
 afterEach(() => {
   cleanup();
+  vi.unstubAllGlobals();
   window.history.replaceState({}, '', '/');
 });
 it('教师题库入口与录题链接全部属于teacher，收卷链接不会同时高亮', async () => {
@@ -47,6 +48,7 @@ it('教师题库入口与录题链接全部属于teacher，收卷链接不会同
   expect(document.querySelector('a[href^="/admin"]')).toBeNull();
 });
 it('登录仅有学生/教师入口，从教师页切换学生登录会进入学生空间', async () => {
+  vi.stubGlobal('fetch', async () => ({ ok: true, json: async () => ({ demoMode: true }) }));
   render(
     <MemoryRouter
       initialEntries={[
@@ -62,6 +64,18 @@ it('登录仅有学生/教师入口，从教师页切换学生登录会进入学
   );
   expect(screen.queryByRole('button', { name: '管理员端' })).toBeNull();
   expect(screen.queryByText(/Admin123/)).toBeNull();
-  fireEvent.click(screen.getByRole('button', { name: '学生端' }));
+  fireEvent.click(await screen.findByRole('button', { name: '学生端' }));
   expect(await screen.findByText('学生空间')).toBeTruthy();
+});
+it('公网配置关闭演示按钮，账号密码不预填', async () => {
+  vi.stubGlobal('fetch', async () => ({ ok: true, json: async () => ({ demoMode: false }) }));
+  render(
+    <MemoryRouter>
+      <LoginPage />
+    </MemoryRouter>,
+  );
+  await screen.findByText('使用管理员分配的账号登录，学习和教学方向可在登录后设置。');
+  expect(screen.queryByRole('button', { name: '学生端' })).toBeNull();
+  expect((screen.getByLabelText('账号') as HTMLInputElement).value).toBe('');
+  expect((screen.getByLabelText('密码') as HTMLInputElement).value).toBe('');
 });

@@ -1,4 +1,5 @@
 import type { Attempt, Question, User } from './model';
+import type { Curriculum } from './curriculum';
 export interface ClassGroup {
   id: string;
   teacherId: string;
@@ -7,6 +8,7 @@ export interface ClassGroup {
   revision: number;
 }
 export interface ClassAssignment {
+  curriculum?: Curriculum;
   id: string;
   teacherId: string;
   libraryId: string;
@@ -22,6 +24,7 @@ export interface ClassAssignment {
 export type TaskStatus =
   'scheduled' | 'not_started' | 'active' | 'pending' | 'published' | 'expired';
 export interface StudentTask {
+  curriculum?: Curriculum;
   id: string;
   title: string;
   libraryId: string;

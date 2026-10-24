@@ -14,6 +14,7 @@ import {
   reviewComplete,
 } from '../../shared/reviewColumns';
 import { teacherGradeSchema } from '../reviewValidation';
+import { curriculumOf } from '../../shared/curriculum';
 
 export function registerTeacher(
   app: FastifyInstance,
@@ -53,6 +54,7 @@ export function registerTeacher(
           id: a.id,
           title: a.title,
           libraryId: a.libraryId,
+          curriculum: curriculumOf(a),
           kind,
           student,
           createdAt: a.createdAt,
@@ -74,6 +76,7 @@ export function registerTeacher(
           id: a.id,
           title: a.title,
           libraryId: a.libraryId,
+          curriculum: curriculumOf(a),
           kind,
           student,
           submittedAt: a.submittedAt ?? a.updatedAt,

@@ -1,3 +1,5 @@
+import type { Curriculum } from '../../shared/curriculum';
+import { useDirections, CurriculumTag } from '../directions';
 import { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { ArrowUpRight, RotateCcw, Clock3, CheckCircle2 } from 'lucide-react';
@@ -6,6 +8,7 @@ import { useToast } from '../context';
 import { api, json } from '../api';
 import { Loading, ErrorState, EmptyState, formatDate } from '../components/ui';
 interface HistoryItem {
+  curriculum?: Curriculum;
   id: string;
   title: string;
   libraryId: string;
@@ -51,12 +54,13 @@ const emptyMessages: Record<HistoryFilter, { title: string; description: string 
   self: { title: '没有待自评的练习', description: '展示练习交卷后，可对照标准答案完成自评。' },
 };
 export function HistoryPage() {
+  const { matches } = useDirections();
   const location = useLocation();
   const { data, loading, error, reload } = useLoad<HistoryItem[]>('/attempts'),
     navigate = useNavigate(),
     toast = useToast();
   const [filter, setFilter] = useState<HistoryFilter>('all');
-  const all = data ?? [];
+  const all = (data ?? []).filter(matches);
   const counts: Record<HistoryFilter, number> = {
     all: all.length,
     active: 0,
@@ -182,6 +186,7 @@ export function HistoryPage() {
                             : '待批改'}
                   </span>
                   <h2>{a.title}</h2>
+                  <CurriculumTag item={a} />
                   {a.gradingMode === 'self' && (
                     <small className="mode-badge mode-showcase">学生自评成绩</small>
                   )}

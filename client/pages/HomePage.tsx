@@ -13,6 +13,7 @@ import {
   Printer,
 } from 'lucide-react';
 import type { LibraryItem } from '../../shared/model';
+import { curriculumOf } from '../../shared/curriculum';
 import { useLoad } from '../useLoad';
 import { api, json } from '../api';
 import { useAuth, useToast } from '../context';
@@ -21,6 +22,7 @@ import { Loading, ErrorState, EmptyState, formatDate } from '../components/ui';
 import { isBeforeOpening } from '../../shared/availability';
 import { useOpeningClock } from '../useOpeningClock';
 import { useCardAnchor } from '../useCardAnchor';
+import { useDirections, CurriculumTag } from '../directions';
 import { PrintPdfDialog } from '../components/PrintPdfDialog';
 const diagram: Record<string, string> = {
   mechanics: 'cart',
@@ -29,6 +31,7 @@ const diagram: Record<string, string> = {
   exam: 'friction',
 };
 export function HomePage() {
+  const { matches } = useDirections();
   const { contacts, status } = useChat();
   const teacherKey = contacts
     .filter((p) => p.role === 'teacher')
@@ -44,7 +47,7 @@ export function HomePage() {
     [query, setQuery] = useState(''),
     [chapter, setChapter] = useState('all'),
     [busy, setBusy] = useState(''),
-    [recent, setRecent] = useState<any>(null),
+    [recents, setRecents] = useState<any[]>([]),
     [printing, setPrinting] = useState<LibraryItem | null>(null);
   const [params, setParams] = useSearchParams();
   const now = useOpeningClock((data ?? []).map((item) => item.opensAt));
@@ -70,14 +73,14 @@ export function HomePage() {
       api<any[]>('/attempts')
         .then((items) => {
           if (alive)
-            setRecent(items.find((a) => a.status === 'active' && a.available !== false) ?? null);
+            setRecents(items.filter((a) => a.status === 'active' && a.available !== false));
         })
         .catch(() => {});
-    else setRecent(null);
+    else setRecents([]);
     return () => {
       alive = false;
     };
-  }, [user, teacherKey]);
+  }, [user?.id, teacherKey]);
   const start = async (item: LibraryItem) => {
     if (!user) {
       navigate(`/login?library=${item.id}`);
@@ -93,11 +96,22 @@ export function HomePage() {
       setBusy('');
     }
   };
+  const recent = recents.find(matches);
+  const chapters = [
+    ...new Set(
+      (data ?? [])
+        .filter(matches)
+        .map((item) => item.chapter)
+        .filter(Boolean),
+    ),
+  ];
+  const currentChapter = chapters.includes(chapter) ? chapter : 'all';
   const items = (data ?? []).filter(
     (item) =>
+      matches(item) &&
       item.deliveryMode !== 'assigned' &&
       (filter === 'all' || item.kind === filter) &&
-      (chapter === 'all' || item.chapter.includes(chapter)) &&
+      (currentChapter === 'all' || item.chapter === currentChapter) &&
       `${item.title} ${item.description} ${item.chapter}`.includes(query),
   );
   return (
@@ -121,8 +135,8 @@ export function HomePage() {
           <p>从理解一个概念，到写清一段过程。按自己的节奏，向前一步。</p>
         </div>
         <div className="heading-note">
-          <span className="note-equation">F = ma</span>
-          <span>保持好奇，探索物理的秩序</span>
+          <span className="note-equation">知行有序</span>
+          <span>跨越学段，让每次学习都有方向</span>
         </div>
       </section>
       {user?.role === 'student' && (
@@ -169,7 +183,7 @@ export function HomePage() {
         <div className="section-heading">
           <div>
             <h2>
-              你的下一次探索<span className="count-badge">{data?.length ?? '—'}</span>
+              你的下一次探索<span className="count-badge">{data ? items.length : '—'}</span>
             </h2>
             <p>按专题练习，或用一份试卷检验理解。</p>
           </div>
@@ -207,15 +221,18 @@ export function HomePage() {
             ))}
           </div>
           <label className="chapter-filter">
-            <span>学段</span>
+            <span>年级 / 专题</span>
             <select
-              aria-label="筛选学段"
-              value={chapter}
+              aria-label="筛选年级专题"
+              value={currentChapter}
               onChange={(e) => setChapter(e.target.value)}
             >
-              <option value="all">全部学段</option>
-              <option value="八年级">八年级</option>
-              <option value="九年级">九年级</option>
+              <option value="all">全部专题</option>
+              {chapters.map((name) => (
+                <option value={name} key={name}>
+                  {name}
+                </option>
+              ))}
             </select>
           </label>
         </div>
@@ -261,13 +278,21 @@ export function HomePage() {
                     {item.kind === 'paper' ? <FileText size={14} /> : <Layers3 size={14} />}{' '}
                     {item.kind === 'paper' ? '专题试卷' : '专题题库'}
                   </span>
-                  <img src={`/diagrams/${diagram[item.accent] ?? 'cart'}.svg`} alt="" />
+                  {curriculumOf(item).subject === '物理' ? (
+                    <img src={`/diagrams/${diagram[item.accent] ?? 'cart'}.svg`} alt="" />
+                  ) : (
+                    <div className="generic-card-art">
+                      <BookOpen size={48} strokeWidth={1.2} />
+                      <span>{curriculumOf(item).subject}</span>
+                    </div>
+                  )}
                   <span className="art-index">{item.kind === 'paper' ? 'PAPER' : 'PRACTICE'}</span>
                 </div>
                 <div className="card-body">
                   <div className="card-chapter">{item.chapter}</div>
                   <span className="mode-badge mode-showcase">展示练习 · 答后自评</span>
                   <h3>{item.title}</h3>
+                  <CurriculumTag item={item} />
                   <p className="card-description">{item.description}</p>
                   <div className="card-metadata">
                     <span>

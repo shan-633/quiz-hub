@@ -28,6 +28,10 @@ import { HomePage } from './pages/HomePage';
 import { StudentHomePage } from './pages/StudentHomePage';
 import './teacher.css';
 import './community.css';
+import { DirectionsProvider, DirectionBar } from './directions';
+const DirectionsPage = lazy(() =>
+  import('./pages/DirectionsPage').then((m) => ({ default: m.DirectionsPage })),
+);
 import './assignments.css';
 import { ChatProvider, useChat } from './chatContext';
 const AdminPage = lazy(() => import('./pages/AdminPage').then((m) => ({ default: m.AdminPage })));
@@ -124,7 +128,7 @@ function Shell() {
             <strong>
               知序<span className="brand-dot">.</span>
             </strong>
-            <small>{admin ? '账号管理' : teacher ? '教师工作台' : '物理练习'}</small>
+            <small>{admin ? '账号管理' : teacher ? '教师工作台' : '考试学习空间'}</small>
           </span>
         </Link>
         <div className="nav-section-label">
@@ -241,7 +245,7 @@ function Shell() {
                     : location.pathname === '/teacher/students'
                       ? '管理学生'
                       : '题库与题目'
-                  : '物理 · 自主练习'}
+                  : '多考试 · 自主练习'}
           </span>
           <div className="topbar-right">
             {user && (
@@ -260,11 +264,12 @@ function Shell() {
             <span className="term-label">每一步，都有收获</span>
             <span className="subject-badge">
               <span />
-              初中物理
+              多学段 · 多学科
             </span>
           </div>
         </header>
         <main id="main">
+          <DirectionBar />
           {user && (
             <div className="community-mobile-links">
               <Link to={admin ? '/admin' : user.role === 'teacher' ? '/teacher' : '/'}>
@@ -302,6 +307,14 @@ function Shell() {
                 path="/library"
                 element={
                   <Protected>{admin ? <Navigate to="/admin" replace /> : <HomePage />}</Protected>
+                }
+              />
+              <Route
+                path="/account/directions"
+                element={
+                  <Protected>
+                    <DirectionsPage />
+                  </Protected>
                 }
               />
               <Route path="/login" element={<LoginPage />} />
@@ -458,7 +471,9 @@ export default function App() {
       <AuthProvider>
         <ToastProvider>
           <ChatProvider>
-            <Shell />
+            <DirectionsProvider>
+              <Shell />
+            </DirectionsProvider>
           </ChatProvider>
         </ToastProvider>
       </AuthProvider>

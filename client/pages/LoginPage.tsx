@@ -3,7 +3,10 @@ import { useNavigate, useSearchParams, useLocation, Link } from 'react-router-do
 import { ArrowRight, GraduationCap, Atom, NotebookPen } from 'lucide-react';
 import { useAuth, useToast } from '../context';
 import { api, json } from '../api';
+import { useLoad } from '../useLoad';
 export function LoginPage() {
+  const config = useLoad<{ demoMode: boolean }>('/auth/config');
+  const demo = config.data?.demoMode === true;
   const { login } = useAuth(),
     toast = useToast(),
     navigate = useNavigate(),
@@ -11,8 +14,8 @@ export function LoginPage() {
     location = useLocation();
   const teacher = params.has('teacher'),
     admin = params.has('admin');
-  const [username, setUsername] = useState(admin ? '' : teacher ? 'teacher' : 'student'),
-    [password, setPassword] = useState(admin ? '' : teacher ? 'Teacher123!' : 'Student123!'),
+  const [username, setUsername] = useState(''),
+    [password, setPassword] = useState(''),
     [busy, setBusy] = useState(false),
     [error, setError] = useState('');
   const submit = async (user = username, pass = password) => {
@@ -77,7 +80,9 @@ export function LoginPage() {
         <p>
           {admin
             ? '使用本机初始化或管理员创建的账号登录。'
-            : '使用已分配的账号登录，也可体验本地演示。'}
+            : demo
+              ? '使用已分配的账号登录，也可体验本地演示。'
+              : '使用管理员分配的账号登录，学习和教学方向可在登录后设置。'}
         </p>
         <form
           onSubmit={(e) => {
@@ -114,32 +119,36 @@ export function LoginPage() {
             <ArrowRight size={18} />
           </button>
         </form>
-        <div className="demo-divider">
-          <span>快速体验 · 本地演示</span>
-        </div>
-        <div className="demo-actions">
-          <button
-            className="button"
-            disabled={busy}
-            onClick={() => void submit('teacher', 'Teacher123!')}
-          >
-            <NotebookPen size={18} />
-            教师端
-          </button>
-          <button
-            className="button"
-            disabled={busy}
-            onClick={() => void submit('student', 'Student123!')}
-          >
-            <GraduationCap size={18} />
-            学生端
-          </button>
-        </div>
-        <p className="demo-accounts">
-          学生 student / Student123!
-          <br />
-          教师 teacher / Teacher123!
-        </p>
+        {demo && (
+          <>
+            <div className="demo-divider">
+              <span>快速体验 · 本地演示</span>
+            </div>
+            <div className="demo-actions">
+              <button
+                className="button"
+                disabled={busy}
+                onClick={() => void submit('teacher', 'Teacher123!')}
+              >
+                <NotebookPen size={18} />
+                教师端
+              </button>
+              <button
+                className="button"
+                disabled={busy}
+                onClick={() => void submit('student', 'Student123!')}
+              >
+                <GraduationCap size={18} />
+                学生端
+              </button>
+            </div>
+            <p className="demo-accounts">
+              学生 student / Student123!
+              <br />
+              教师 teacher / Teacher123!
+            </p>
+          </>
+        )}
         <Link className="text-button" to="/login?admin=1">
           管理员登录
         </Link>

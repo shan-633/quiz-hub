@@ -23,8 +23,12 @@ import { useToast } from '../context';
 import { Loading, ErrorState, EmptyState, Modal } from '../components/ui';
 import { BankImportDialog } from '../components/BankImportDialog';
 import { PushAssignment } from '../components/PushAssignment';
+import { CurriculumFields, emptyCurriculum } from '../components/CurriculumFields';
+import { useDirections, CurriculumTag } from '../directions';
+import { curriculumOf } from '../../shared/curriculum';
 import { localDateTime } from '../../shared/availability';
 export function TeacherLibraryPage() {
+  const directions = useDirections();
   const [params, setParams] = useSearchParams(),
     tab = params.get('tab') ?? 'banks';
   const banks = useLoad<LibraryItem[]>('/teacher/banks'),
@@ -69,12 +73,14 @@ export function TeacherLibraryPage() {
     error = banks.error || papers.error || questions.error;
   const filtered = (tab === 'papers' ? papers.data : banks.data)?.filter(
     (x) =>
+      directions.matches(x) &&
       `${x.title} ${x.chapter}`.includes(query) &&
       (mode === 'all' || (x.deliveryMode ?? 'assigned') === mode),
   );
   const typeFilter = Object.hasOwn(typeLabels, params.get('type') ?? '') ? params.get('type')! : '';
   const filteredQuestions = questions.data?.filter(
     (q) =>
+      directions.matches(banks.data?.find((b) => b.id === q.bankId) ?? {}) &&
       (!params.get('bank') || q.bankId === params.get('bank')) &&
       (!typeFilter || q.type === typeFilter) &&
       `${q.title} ${q.tags.join(' ')}`.includes(query),
@@ -117,7 +123,8 @@ export function TeacherLibraryPage() {
                   state: 'draft',
                   title: '',
                   description: '',
-                  chapter: '八年级 · 力学',
+                  chapter: '',
+                  curriculum: directions.scope ?? directions.directions[0] ?? emptyCurriculum,
                   accent: tab === 'papers' ? 'exam' : 'mechanics',
                   minutes: 30,
                   deliveryMode: mode === 'showcase' ? 'showcase' : 'assigned',
@@ -133,9 +140,26 @@ export function TeacherLibraryPage() {
       <div className="teacher-tabs">
         <div className="line-tabs">
           {[
-            { id: 'banks', text: '题库管理', Icon: BookOpen, count: banks.data?.length },
-            { id: 'papers', text: '试卷管理', Icon: FileText, count: papers.data?.length },
-            { id: 'questions', text: '题目管理', Icon: NotebookPen, count: questions.data?.length },
+            {
+              id: 'banks',
+              text: '题库管理',
+              Icon: BookOpen,
+              count: banks.data?.filter(directions.matches).length,
+            },
+            {
+              id: 'papers',
+              text: '试卷管理',
+              Icon: FileText,
+              count: papers.data?.filter(directions.matches).length,
+            },
+            {
+              id: 'questions',
+              text: '题目管理',
+              Icon: NotebookPen,
+              count: questions.data?.filter((q) =>
+                directions.matches(banks.data?.find((b) => b.id === q.bankId) ?? {}),
+              ).length,
+            },
           ].map(({ id, text, Icon, count }) => (
             <button
               className={tab === id ? 'active' : ''}
@@ -244,6 +268,7 @@ export function TeacherLibraryPage() {
                     <td>
                       <strong>{q.title || '未命名题目'}</strong>
                       <small>{q.tags.join(' · ') || '尚未设置知识点'}</small>
+                      <CurriculumTag item={banks.data?.find((b) => b.id === q.bankId) ?? {}} />
                     </td>
                     <td>{banks.data?.find((b) => b.id === q.bankId)?.title ?? '—'}</td>
                     <td>
@@ -301,6 +326,7 @@ export function TeacherLibraryPage() {
               </div>
               <span className="card-chapter">{item.chapter}</span>
               <h2>{item.title}</h2>
+              <CurriculumTag item={item} />
               <span className={`mode-badge mode-${item.deliveryMode ?? 'assigned'}`}>
                 {item.deliveryMode === 'showcase' ? '展示练习 · 学生自评' : '分配任务 · 教师批改'}
               </span>
@@ -340,7 +366,13 @@ export function TeacherLibraryPage() {
         </div>
       )}
       {importing && (
-        <BankImportDialog onClose={() => setImporting(false)} onImported={() => refresh()} />
+        <BankImportDialog
+          onClose={() => setImporting(false)}
+          onImported={() => {
+            refresh();
+            directions.reload();
+          }}
+        />
       )}
       {pushing && (
         <PushAssignment item={pushing} onClose={() => setPushing(null)} onSent={() => {}} />
@@ -420,6 +452,7 @@ export function TeacherLibraryPage() {
           questions={questions.data ?? []}
           onClose={() => setEditing(null)}
           onSaved={() => {
+            directions.reload();
             setEditing(null);
             refresh();
           }}
@@ -439,7 +472,7 @@ function LibraryEditor({
   onClose: () => void;
   onSaved: () => void;
 }) {
-  const [value, setValue] = useState(item),
+  const [value, setValue] = useState({ ...item, curriculum: curriculumOf(item) }),
     [busy, setBusy] = useState(false),
     [error, setError] = useState('');
   const toast = useToast();
@@ -473,6 +506,11 @@ function LibraryEditor({
       onClose={onClose}
       wide={paper}
     >
+      <CurriculumFields
+        value={value.curriculum}
+        onChange={(curriculum) => patch({ curriculum })}
+        disabled={busy}
+      />
       <div className="form-grid">
         <label className="field span-2">
           内容类别
@@ -493,7 +531,7 @@ function LibraryEditor({
           />
         </label>
         <label className="field">
-          学段与专题
+          年级与专题（可选）
           <input value={value.chapter ?? ''} onChange={(e) => patch({ chapter: e.target.value })} />
         </label>
         <label className="field span-2">
@@ -568,10 +606,16 @@ function LibraryEditor({
         <label className="field">
           封面主题
           <select value={value.accent} onChange={(e) => patch({ accent: e.target.value })}>
-            <option value="mechanics">力与运动</option>
-            <option value="electric">电路</option>
-            <option value="buoyancy">浮力</option>
-            <option value="exam">实验与综合</option>
+            <option value="mechanics">
+              {value.curriculum.subject === '物理' ? '力与运动' : '青绿'}
+            </option>
+            <option value="electric">
+              {value.curriculum.subject === '物理' ? '电路' : '米金'}
+            </option>
+            <option value="buoyancy">
+              {value.curriculum.subject === '物理' ? '浮力' : '蓝绿'}
+            </option>
+            <option value="exam">综合</option>
           </select>
         </label>
       </div>

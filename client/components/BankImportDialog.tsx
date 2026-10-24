@@ -120,7 +120,10 @@ export function BankImportDialog({
         </div>
       ) : (
         <>
-          <p className="muted">使用知序题库交换协议 v1.0。先校验内容与图片，预览无误后再导入。</p>
+          <p className="muted">
+            使用知序题库交换协议 v1.0。先校验内容与图片，预览无误后再导入。支持 bank.curriculum
+            考试分类；旧文件未填写时保存为待分类，可在编辑题库中设置。
+          </p>
           <div className="import-resources">
             <a href={bankImportFileUrl('protocol-v1.md')} download>
               <Download size={15} />

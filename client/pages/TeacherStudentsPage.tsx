@@ -1,3 +1,4 @@
+import { useDirections, CurriculumTag } from '../directions';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Users, Plus, Send, Pencil, Clock3 } from 'lucide-react';
@@ -10,6 +11,7 @@ import { Loading, ErrorState, EmptyState, Modal, formatDate } from '../component
 type Student = Pick<User, 'id' | 'name' | 'username'>;
 
 export function TeacherStudentsPage() {
+  const { matches } = useDirections();
   const students = useLoad<Student[]>('/teacher/students'),
     groups = useLoad<ClassGroup[]>('/teacher/groups'),
     tasks = useLoad<TeacherAssignment[]>('/teacher/assignments');
@@ -33,6 +35,7 @@ export function TeacherStudentsPage() {
       document.removeEventListener('visibilitychange', refresh);
     };
   }, []);
+  const scopedTasks = tasks.data?.filter(matches);
   const error = students.error || groups.error || tasks.error;
   return (
     <div className="page class-page">
@@ -55,7 +58,7 @@ export function TeacherStudentsPage() {
           <strong>{groups.data?.length ?? 0}</strong> 班级组
         </span>
         <span>
-          <strong>{tasks.data?.length ?? 0}</strong> 推送任务
+          <strong>{scopedTasks?.length ?? 0}</strong> 推送任务
         </span>
       </div>
       {message && (
@@ -173,13 +176,14 @@ export function TeacherStudentsPage() {
           )}
           {tab === 'tasks' && (
             <div className="class-task-list">
-              {tasks.data
+              {scopedTasks
                 ?.filter((t) => `${t.title} ${t.groupNames.join(' ')}`.includes(query))
                 .map((t) => (
                   <article className="class-task-card" key={t.id}>
                     <div>
                       <span className="eyebrow">{t.groupNames.join(' · ')}</span>
                       <h2>{t.title}</h2>
+                      <CurriculumTag item={t} />
                       <p>
                         {t.questionCount}题 · {t.totalScore}分 · 已交 {t.submittedCount}/
                         {t.recipientCount}人
@@ -197,7 +201,7 @@ export function TeacherStudentsPage() {
                     </button>
                   </article>
                 ))}
-              {!tasks.data?.length && (
+              {!scopedTasks?.length && (
                 <EmptyState
                   title="还没有推送任务"
                   description="导入并发布题库后，在卡片上选择“推送班级”。"

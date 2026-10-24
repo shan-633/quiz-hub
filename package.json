@@ -1,6 +1,6 @@
 {
   "name": "zhixu-physics",
-  "version": "4.5.1",
+  "version": "5.0.0",
   "private": true,
   "type": "module",
   "engines": {
@@ -35,6 +35,7 @@
     "rehype-katex": "^7.0.1",
     "remark-math": "^6.0.0",
     "sharp": "^0.35.5",
+    "tsx": "^4.23.15",
     "zod": "^4.6.7"
   },
   "devDependencies": {
@@ -49,7 +50,6 @@
     "fake-indexeddb": "^6.2.6",
     "jsdom": "^30.1.3",
     "prettier": "^3.9.10",
-    "tsx": "^4.23.15",
     "typescript": "^7.0.2",
     "vite": "^8.3.4",
     "vitest": "^5.0.5"

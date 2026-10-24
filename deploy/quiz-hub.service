@@ -1,0 +1,22 @@
+[Unit]
+Description=Quiz Hub exam learning service
+After=network.target
+
+[Service]
+Type=simple
+User=quiz-hub
+Group=quiz-hub
+WorkingDirectory=/srv/quiz-hub/current
+EnvironmentFile=/etc/quiz-hub.env
+ExecStart=/srv/quiz-hub/runtime/bin/node --import tsx server/index.ts
+Restart=on-failure
+RestartSec=3
+TimeoutStopSec=30
+UMask=0077
+PrivateTmp=true
+ProtectHome=true
+MemoryHigh=512M
+MemoryMax=768M
+
+[Install]
+WantedBy=multi-user.target

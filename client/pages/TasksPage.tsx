@@ -9,9 +9,11 @@ import { Loading, ErrorState, EmptyState, formatDate } from '../components/ui';
 import { isBeforeOpening } from '../../shared/availability';
 import { useOpeningClock } from '../useOpeningClock';
 import { useCardAnchor } from '../useCardAnchor';
+import { useDirections, CurriculumTag } from '../directions';
 import { PrintPdfDialog } from '../components/PrintPdfDialog';
 
 export function TasksPage() {
+  const { matches } = useDirections();
   const tasks = useLoad<StudentTask[]>('/tasks'),
     navigate = useNavigate(),
     location = useLocation();
@@ -19,7 +21,7 @@ export function TasksPage() {
     [busy, setBusy] = useState(''),
     [error, setError] = useState(''),
     [printing, setPrinting] = useState<StudentTask | null>(null);
-  const now = useOpeningClock((tasks.data ?? []).map((t) => t.opensAt));
+  const now = useOpeningClock((tasks.data ?? []).filter(matches).map((t) => t.opensAt));
   useCardAnchor(!!tasks.data);
   useEffect(() => {
     const refresh = () => {
@@ -50,11 +52,13 @@ export function TasksPage() {
       setBusy('');
     }
   };
-  const all = (tasks.data ?? []).map((t) =>
-      t.status === 'scheduled' && !isBeforeOpening(t.opensAt, now)
-        ? { ...t, status: 'not_started' as const }
-        : t,
-    ),
+  const all = (tasks.data ?? [])
+      .filter(matches)
+      .map((t) =>
+        t.status === 'scheduled' && !isBeforeOpening(t.opensAt, now)
+          ? { ...t, status: 'not_started' as const }
+          : t,
+      ),
     rows = all.filter((t) => filter === 'all' || t.status === filter);
   return (
     <div className="page class-page">
@@ -116,6 +120,7 @@ export function TasksPage() {
                   {t.teacherName} · {t.groupNames.join(' / ')}
                 </span>
                 <h2>{t.title}</h2>
+                <CurriculumTag item={t} />
                 <div className="task-tags">
                   <span
                     className={`status-tag status-${t.status === 'expired' ? 'archived' : t.status === 'published' ? 'published' : 'draft'}`}

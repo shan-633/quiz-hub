@@ -1,5 +1,6 @@
 import { Store, type Collection } from './store';
 import type { Attempt } from '../shared/model';
+import { curriculumOf } from '../shared/curriculum';
 import { attemptProgress, type ProgressChange, type StudentProgress } from '../shared/progress';
 const snapshotSql = `SELECT p.data,p.user_id,
   json_extract(u.data,'$.name') AS name,json_extract(u.data,'$.username') AS username,
@@ -59,6 +60,7 @@ export class ProgressStore extends Store {
       return;
     }
     const data = {
+      curriculum: curriculumOf(a),
       id: a.id,
       title: a.title,
       libraryId: a.libraryId,

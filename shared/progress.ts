@@ -1,4 +1,5 @@
 import type { Attempt, ResponseValue } from './model';
+import type { Curriculum } from './curriculum';
 import { isAnswered } from './domain';
 
 function hasContent(a: ResponseValue): boolean {
@@ -31,6 +32,7 @@ export function attemptProgress(a: Pick<Attempt, 'questions' | 'answers'>) {
 }
 
 export interface StudentProgress {
+  curriculum?: Curriculum;
   id: string;
   title: string;
   libraryId: string;

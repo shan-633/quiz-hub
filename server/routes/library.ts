@@ -5,6 +5,7 @@ import { HttpError, requireTeacher } from '../auth';
 import { canReadLibrary, canManageLibrary } from '../permissions';
 import type { Store, StoredQuestion } from '../store';
 import { hasCompleteStandardAnswer } from '../../shared/teacherReview';
+import { curriculumOf } from '../../shared/curriculum';
 export function libraryQuestions(store: Store, item: LibraryItem): Question[] {
   if (item.kind === 'paper')
     return (item.items ?? []).flatMap((ref) => {
@@ -35,6 +36,7 @@ export function enrichLibrary(store: Store, item: LibraryItem): LibraryItem {
   const qs = libraryQuestions(store, item);
   return {
     ...item,
+    curriculum: curriculumOf(item),
     deliveryMode: item.deliveryMode ?? 'assigned',
     questionCount: qs.length,
     totalScore: qs.reduce((sum, q) => sum + q.score, 0),
@@ -48,6 +50,7 @@ export function registerLibrary(app: FastifyInstance, store: Store) {
       .filter((q) => q.bankId === item.id && !q.archived);
     return {
       ...item,
+      curriculum: curriculumOf(item),
       deliveryMode: item.deliveryMode ?? 'assigned',
       questionCount: questions.length,
       totalScore: questions.reduce((s, q) => s + q.draft.score, 0),
@@ -86,7 +89,15 @@ export function registerLibrary(app: FastifyInstance, store: Store) {
         if (!version || store.get<LibraryItem>('library', version.bankId)?.teacherId !== teacherId)
           throw new HttpError(422, '试卷包含尚未发布的题目');
       }
-      const item: LibraryItem = { ...parsed, id, kind, teacherId, questionCount: 0, totalScore: 0 };
+      const item: LibraryItem = {
+        ...parsed,
+        curriculum: parsed.curriculum ?? curriculumOf(store.get<LibraryItem>('library', id) ?? {}),
+        id,
+        kind,
+        teacherId,
+        questionCount: 0,
+        totalScore: 0,
+      };
       if (item.state === 'published' && !libraryQuestions(store, item).length)
         throw new HttpError(422, '请先添加并发布至少一道题目');
       if (
