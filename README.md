@@ -30,7 +30,7 @@ npm start
 
 管理员通过[管理员登录](http://localhost:3001/login?admin=1)进入[账号与师生关系](http://localhost:3001/admin)，可创建账号、分配角色、停用/启用、重置临时密码及管理多对多师生关系。新建和重置后的账号首次登录必须改密。旧管理员记录保持停用，不会自动恢复登录；新管理员不自动获得教师题库编辑或私聊阅读权限。教师工作台：[收卷与批改](http://localhost:3001/teacher)、[题库与试卷](http://localhost:3001/teacher/library)，[站内消息](http://localhost:3001/chat)供关联师生私聊。
 
-首次初始化管理员，在项目目录执行 `node --import tsx scripts/bootstrap-admin.ts administrator --output data/admin-initial-credentials.txt`，凭据仅写入本机文件，已有启用管理员时拒绝重复初始化。当前这台电脑已完成初始化，直接查看该文件并登录改密即可。详细流程与权限规则见[账号与聊天说明](docs/roles-and-chat.md)。
+首次初始化管理员，在项目目录执行 `node --import tsx scripts/bootstrap-admin.ts administrator --output data/admin-initial-credentials.txt`，凭据仅写入本机文件，已有启用管理员时拒绝重复初始化。如果已初始化，请使用已有管理员账号；不要重复创建。详细流程与权限规则见[账号与聊天说明](docs/roles-and-chat.md)。
 
 这些是本地演示账号。全新初始化包含 4 个题库、2 份试卷，共 8 道基础演示题及一套 26 道真实北京中考题，并将演示学生关联到演示教师。实际账号由管理员创建与分配；未登录不开放真实题库目录。本次已从工作目录内既有真题PDF录入2022北京卷，其他资料没有自动导入。
 
@@ -84,7 +84,7 @@ npm start
 
 复制 `.env.example` 为 `.env` 可设置 `PORT`、`HOST`、`DATA_DIR`、`APP_ORIGIN`、`SECURE_COOKIE`、`DEMO_MODE`。默认仅监听本机 `127.0.0.1`。`DEMO_MODE=false` 仅停止初始化演示数据，不会删除已有账号；管理员负责创建正式账号并分配师生关系。
 
-前后端分别部署时，前端构建环境设置 `VITE_API_URL`（例如同站点的 API 子域名），后端 `APP_ORIGIN` 设置前端准确来源。请求携带 Cookie，图片也跟随 API 地址。推荐同站点 HTTPS 反向代理：跨站点第三方 Cookie 不属于当前支持范围。正式上线需提供 HTTPS、关闭演示初始化并替换演示账号、配置可信来源和安全 Cookie；本次没有公网部署。
+前后端分别部署时，前端构建环境设置 `VITE_API_URL`（例如同站点的 API 子域名），后端 `APP_ORIGIN` 设置前端准确来源。请求携带 Cookie，图片也跟随 API 地址。推荐同站点 HTTPS 反向代理：跨站点第三方 Cookie 不属于当前支持范围。正式上线需提供 HTTPS、关闭演示初始化并替换演示账号、配置可信来源和安全 Cookie；5.0已部署到[公网考试学习空间](https://74.82.199.118/)，具体配置、备份和维护见[部署说明](docs/deployment.md)。公网关闭演示入口，上述演示密码仅用于本地初始化。
 
 在同一 Wi-Fi 的其他设备访问，需要按实际局域网地址设置 HOST/APP_ORIGIN 并允许本机端口；默认启动地址不能从另一台设备访问。Apple Pencil 压感、防误触和系统相机尚未真机验收。
 
