@@ -32,6 +32,7 @@ import { Markdown } from '../components/Markdown';
 import { ReferenceImages } from '../components/ReferenceImages';
 import { Loading, ErrorState, Modal } from '../components/ui';
 import { AttemptTimer } from '../components/AttemptTimer';
+import { useChat } from '../chatContext';
 import {
   getScoreFeedback,
   summarizeScore,
@@ -55,6 +56,7 @@ export function AttemptPage() {
   ) : null;
 }
 function AttemptWorkspace({ initial, reload }: { initial: Attempt; reload: () => void }) {
+  const { reportActivity } = useChat();
   const [params] = useSearchParams();
   const navigate = useNavigate();
   const [attempt, setAttempt] = useState(initial),
@@ -80,6 +82,10 @@ function AttemptWorkspace({ initial, reload }: { initial: Attempt; reload: () =>
       document.getElementById(`question-${q}`)?.scrollIntoView?.({ block: 'start' });
   }, [sync.ready, attempt.id]);
   const submitted = attempt.status === 'submitted';
+  useEffect(() => {
+    reportActivity?.(submitted ? undefined : attempt.id);
+    return () => reportActivity?.();
+  }, [attempt.id, submitted, reportActivity]);
   const waiting = submitted && !!attempt.review && attempt.review.state !== 'published';
   const count = attempt.questions.filter((q) => isAnswered(q, sync.get(q.id))).length;
   const jump = (index: number) => {
@@ -96,9 +102,11 @@ function AttemptWorkspace({ initial, reload }: { initial: Attempt; reload: () =>
       setAttempt(result);
       setConfirm(false);
       toast(
-        result.gradingMode === 'self'
-          ? '已交卷，可查看答案并完成自评'
-          : '已交卷，教师已收到你的作答',
+        result.dailyDate
+          ? '每日一题评分成功，结果已记入打卡日历'
+          : result.gradingMode === 'self'
+            ? '已交卷，可查看答案并完成自评'
+            : '已交卷，教师已收到你的作答',
       );
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (e) {
@@ -122,9 +130,9 @@ function AttemptWorkspace({ initial, reload }: { initial: Attempt; reload: () =>
   return (
     <UploadContext.Provider value={sync.uploads}>
       <div className="page practice-page">
-        <Link to="/library" className="back-link">
+        <Link to={attempt.dailyDate ? '/' : '/library'} className="back-link">
           <ArrowLeft size={16} />
-          返回试卷与题库
+          {attempt.dailyDate ? '返回每日一题日历' : '返回试卷与题库'}
         </Link>
         <div className="practice-heading">
           <div>
@@ -194,7 +202,23 @@ function AttemptWorkspace({ initial, reload }: { initial: Attempt; reload: () =>
             });
           }}
         />
-        {submitted && attempt.gradingMode === 'self' && (
+        {submitted && attempt.dailyDate && (
+          <section className="waiting-banner self-assessment-banner">
+            <div>
+              <h2>
+                每日一题评分完成 ·{' '}
+                {Object.values(attempt.grades ?? {}).every((g) => g.status === 'correct')
+                  ? '全对打卡'
+                  : '未全对'}
+              </h2>
+              <p>结果已记入 {attempt.dailyDate} 的打卡日历，答案和解析见下方。</p>
+            </div>
+            <Link className="button primary" to="/">
+              查看打卡日历
+            </Link>
+          </section>
+        )}
+        {submitted && !attempt.dailyDate && attempt.gradingMode === 'self' && (
           <section className="waiting-banner self-assessment-banner">
             <div>
               <h2>
@@ -568,11 +592,15 @@ function AttemptWorkspace({ initial, reload }: { initial: Attempt; reload: () =>
           >
             <p className="modal-intro">
               已完成 <strong>{count}</strong> / {attempt.questions.length} 题。
-              {count < attempt.questions.length
-                ? '还有未完成的题目，可以返回补充，也可以继续提交。'
-                : attempt.gradingMode === 'self'
-                  ? '作答已准备好，提交后即可查看答案并开始自评。'
-                  : '每一份思考都已准备好，提交后将交给教师批改。'}
+              {attempt.dailyDate
+                ? count
+                  ? '提交后立即自动评分，并记录本次打卡结果。'
+                  : '请先选择答案，再提交评分。'
+                : count < attempt.questions.length
+                  ? '还有未完成的题目，可以返回补充，也可以继续提交。'
+                  : attempt.gradingMode === 'self'
+                    ? '作答已准备好，提交后即可查看答案并开始自评。'
+                    : '每一份思考都已准备好，提交后将交给教师批改。'}
             </p>
             <div className="submission-overview">
               {attempt.questions.map((q, i) => {
@@ -593,9 +621,11 @@ function AttemptWorkspace({ initial, reload }: { initial: Attempt; reload: () =>
               })}
             </div>
             <p className="muted small">
-              {attempt.gradingMode === 'self'
-                ? '提交后无法修改本次答案。单选、多选自动评分，其他部分由你对照标准答案完成自评。'
-                : '提交后无法修改本次答案。教师收到试卷或答题卡并完成批改，发布后即可查看成绩与反馈。'}
+              {attempt.dailyDate
+                ? '首次交卷后无法修改答案。全对记绿色，未全对记红色，可随时查看解析。'
+                : attempt.gradingMode === 'self'
+                  ? '提交后无法修改本次答案。单选、多选自动评分，其他部分由你对照标准答案完成自评。'
+                  : '提交后无法修改本次答案。教师收到试卷或答题卡并完成批改，发布后即可查看成绩与反馈。'}
             </p>
             <div className="modal-actions">
               <button className="button" disabled={submitting} onClick={() => setConfirm(false)}>
@@ -603,7 +633,7 @@ function AttemptWorkspace({ initial, reload }: { initial: Attempt; reload: () =>
               </button>
               <button
                 className="button primary"
-                disabled={submitting || timeLocked}
+                disabled={submitting || timeLocked || (!!attempt.dailyDate && count === 0)}
                 onClick={() => void submit()}
               >
                 {submitting ? '正在保存并提交…' : '确认提交'}

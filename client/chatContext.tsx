@@ -1,7 +1,17 @@
-import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from 'react';
+import {
+  createContext,
+  useContext,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type ReactNode,
+} from 'react';
 import type { User } from '../shared/model';
 import type { Conversation } from '../shared/chat';
-import { api, ApiError } from './api';
+import { api, ApiError, json } from './api';
+import type { PresenceSnapshot } from '../shared/presence';
+import { randomId } from '../shared/browserIds';
 import { useAuth } from './context';
 const base = (import.meta.env.VITE_API_URL ?? '').replace(/\/$/, '');
 interface ChatState {
@@ -11,6 +21,8 @@ interface ChatState {
   status: string;
   error: string;
   reload: () => void;
+  presence: PresenceSnapshot;
+  reportActivity: (attemptId?: string) => void;
 }
 const Context = createContext<ChatState>({
   conversations: [],
@@ -19,10 +31,65 @@ const Context = createContext<ChatState>({
   status: 'connecting',
   error: '',
   reload: () => {},
+  presence: {},
+  reportActivity: () => {},
 });
 export const useChat = () => useContext(Context);
 export function ChatProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth();
+  const [presenceState, setPresence] = useState({ owner: '', values: {} as PresenceSnapshot });
+  const [activity, setActivity] = useState<{ owner: string; attemptId?: string }>({ owner: '' });
+  const [clientId] = useState(randomId);
+  const sequence = useRef(0);
+  const reportActivity = useCallback(
+    (attemptId?: string) => {
+      setActivity({ owner: user?.id ?? '', attemptId });
+    },
+    [user?.id],
+  );
+  useEffect(() => {
+    if (!user || user.role === 'admin' || user.mustChangePassword) return;
+    const send = async (offline = false) => {
+      const attemptId = activity.owner === user.id ? activity.attemptId : undefined;
+      try {
+        await api('/chat/presence', {
+          method: 'POST',
+          keepalive: offline,
+          body: json({
+            clientId,
+            sequence: ++sequence.current,
+            ...(attemptId ? { attemptId } : {}),
+            ...(offline ? { offline: true } : {}),
+          }),
+        });
+      } catch (e) {
+        if (e instanceof ApiError && e.status === 422 && attemptId)
+          setActivity((old) =>
+            old.owner === user.id && old.attemptId === attemptId ? { owner: user.id } : old,
+          );
+      }
+    };
+    const heartbeat = () => void send();
+    const leave = () => void send(true);
+    heartbeat();
+    const timer = setInterval(heartbeat, 25000);
+    window.addEventListener('online', heartbeat);
+    window.addEventListener('pageshow', heartbeat);
+    window.addEventListener('pagehide', leave);
+    return () => {
+      clearInterval(timer);
+      window.removeEventListener('online', heartbeat);
+      window.removeEventListener('pageshow', heartbeat);
+      window.removeEventListener('pagehide', leave);
+    };
+  }, [
+    user?.id,
+    user?.role,
+    user?.mustChangePassword,
+    activity.owner,
+    activity.attemptId,
+    clientId,
+  ]);
   const [conversations, setConversations] = useState<Conversation[]>([]),
     [contacts, setContacts] = useState<User[]>([]),
     [revision, setRevision] = useState(0),
@@ -34,6 +101,7 @@ export function ChatProvider({ children }: { children: ReactNode }) {
     setConversations([]);
     setContacts([]);
     setError('');
+    setPresence({ owner: user?.id ?? '', values: {} });
     if (!user || user.role === 'admin' || user.mustChangePassword) return;
     let stopped = false,
       blocked = false,
@@ -59,6 +127,7 @@ export function ChatProvider({ children }: { children: ReactNode }) {
       disconnect();
       setConversations([]);
       setContacts([]);
+      setPresence({ owner: user.id, values: {} });
       setStatus('expired');
       setError('登录状态已失效，请重新登录。');
     };
@@ -94,6 +163,7 @@ export function ChatProvider({ children }: { children: ReactNode }) {
         source = null;
         clearTimeout(watchdog);
         setStatus('retrying');
+        setPresence({ owner: user.id, values: {} });
         setError('连接中断，正在重连；已加载消息仍可查看。');
         const controller = new AbortController();
         probe = controller;
@@ -157,6 +227,23 @@ export function ChatProvider({ children }: { children: ReactNode }) {
           void load();
         }
       });
+      events.addEventListener('presence', (event) => {
+        if (!alive()) return;
+        try {
+          const values = JSON.parse((event as MessageEvent).data);
+          if (
+            !values ||
+            Array.isArray(values) ||
+            typeof values !== 'object' ||
+            Object.values(values).some(
+              (v) => !['offline', 'online', 'practicing', 'examining'].includes(v as string),
+            )
+          )
+            return;
+          setPresence({ owner: user.id, values });
+          touch();
+        } catch {}
+      });
       events.addEventListener('heartbeat', () => {
         if (alive()) touch();
       });
@@ -195,6 +282,8 @@ export function ChatProvider({ children }: { children: ReactNode }) {
         revision,
         status,
         error,
+        presence: presenceState.owner === user?.id ? presenceState.values : {},
+        reportActivity,
         reload: () => {
           if (status === 'expired' || status === 'retrying') setRetry((v) => v + 1);
           else refresh.current();

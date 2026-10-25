@@ -5,7 +5,8 @@ import { requireUser, sessionUser, HttpError } from '../auth';
 import { subscribeAccess } from '../permissions';
 import { streamManager } from '../eventStream';
 import type { Store } from '../store';
-export function registerChat(app: FastifyInstance, store: Store) {
+import type { PresenceService } from '../presence';
+export function registerChat(app: FastifyInstance, store: Store, presence: PresenceService) {
   const chat = new ChatService(store),
     stream = streamManager(app);
   const user = (req: FastifyRequest) => {
@@ -14,6 +15,25 @@ export function registerChat(app: FastifyInstance, store: Store) {
     return u;
   };
   app.get('/api/chat/contacts', async (req) => chat.contacts(user(req)));
+  app.get('/api/chat/presence', (req) => presence.snapshot(chat.contacts(user(req))));
+  app.post(
+    '/api/chat/presence',
+    { config: { rateLimit: { max: 120, timeWindow: '1 minute' } } },
+    (req) => {
+      const u = user(req);
+      const body = z
+        .object({
+          clientId: z.string().regex(/^[a-zA-Z0-9_-]{1,100}$/),
+          sequence: z.number().int().nonnegative().max(Number.MAX_SAFE_INTEGER),
+          attemptId: z.string().min(1).max(128).optional(),
+          offline: z.boolean().optional(),
+        })
+        .strict()
+        .parse(req.body);
+      presence.update(u, req.sessionId, body);
+      return { ok: true };
+    },
+  );
   app.get('/api/chat/conversations', async (req) => chat.conversations(user(req)));
   app.post('/api/chat/conversations', async (req) =>
     chat.create(
@@ -87,11 +107,26 @@ export function registerChat(app: FastifyInstance, store: Store) {
             } catch {}
           }
         });
-        const access = subscribeAccess(store, () => write('snapshot', chat.conversations(u)));
+        let previousPresence = '';
+        const writePresence = () => {
+          const snapshot = presence.snapshot(chat.contacts(u));
+          const key = JSON.stringify(snapshot);
+          if (key !== previousPresence) {
+            previousPresence = key;
+            write('presence', snapshot);
+          }
+        };
+        const disposePresence = presence.subscribe(writePresence);
+        const access = subscribeAccess(store, () => {
+          write('snapshot', chat.conversations(u));
+          writePresence();
+        });
         write('snapshot', chat.conversations(u));
+        writePresence();
         return () => {
           dispose();
           access();
+          disposePresence();
         };
       },
     );

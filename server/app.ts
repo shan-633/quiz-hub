@@ -34,6 +34,8 @@ import { registerAssignments } from './routes/assignments';
 import { initAttemptTiming, startDeadlineWorker } from './attemptTiming';
 import { registerSelfReview } from './routes/selfReview';
 import { registerCurriculum } from './routes/curriculum';
+import { registerDailyQuestion } from './routes/dailyQuestion';
+import { PresenceService } from './presence';
 import type { PdfRenderer } from './print/pdf';
 export interface AppOptions {
   dataDir: string;
@@ -52,6 +54,7 @@ export async function createApp(options: AppOptions) {
   migrateIdentity(store);
   initAttemptTiming(store);
   const assignments = new AssignmentService(store);
+  const presence = new PresenceService(store);
   await app.register(cookie);
   await app.register(cors, {
     origin: options.origin ?? process.env.APP_ORIGIN ?? 'http://localhost:5173',
@@ -113,13 +116,15 @@ export async function createApp(options: AppOptions) {
   app.post('/api/auth/logout', async (req, reply) => {
     requireUser(req);
     store.delete('sessions', req.sessionId);
+    presence.removeSession(req.sessionId);
     reply.clearCookie('zhixu_session', { path: '/' });
     return { ok: true };
   });
   registerLibrary(app, store);
   registerCurriculum(app, store);
+  registerDailyQuestion(app, store);
   registerAdmin(app, store);
-  registerChat(app, store);
+  registerChat(app, store, presence);
   registerAssignments(app, store, assignments);
   registerQuestions(app, store);
   registerAttempts(app, store, assignments);
@@ -147,7 +152,11 @@ export async function createApp(options: AppOptions) {
     );
   }
   const stopDeadlines = startDeadlineWorker(store, (error) => app.log.error(error));
+  const presenceTimer = setInterval(() => presence.sweep(), 15000);
+  presenceTimer.unref();
   app.addHook('onClose', async () => {
+    clearInterval(presenceTimer);
+    presence.close();
     stopDeadlines();
     store.close();
   });

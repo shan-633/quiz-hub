@@ -1,6 +1,6 @@
 # Quiz Hub · 知序考试学习空间
 
-当前版本5.0.0：支持多学段、多学科、多地区考试，一个账号可保存多个学习或教学方向。题库独立分类，任务和作答保留分类快照；方向筛选与师生授权独立。[使用说明](docs/multi-exam.md)。
+当前版本5.1.0：学生首页提供每日一题打卡日历，站内联系人可实时看到在线、做题和考试状态。[每日一题与状态说明](docs/daily-question-and-presence.md)。支持多学段、多学科、多地区考试，一个账号可保存多个学习或教学方向。[多方向使用说明](docs/multi-exam.md)。
 
 中文响应式答题 WebApp，含学生端、教师端、管理员端与师生站内私聊。React + TypeScript + Vite 前端通过 HTTP API 访问 Fastify 后端，SQLite 保存数据。无需外部 AI 服务或 API Key。
 

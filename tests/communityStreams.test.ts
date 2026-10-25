@@ -123,7 +123,7 @@ it('聊天SSE仅通知双方，关系解除只读，重置密码后旧连接即�
     headers: admin,
   });
   await until(() => teachers.filter((e) => e.type === 'snapshot').length === 2);
-  expect(teachers.at(-1).data[0].canSend).toBe(false);
+  expect(teachers.filter((e) => e.type === 'snapshot').at(-1).data[0].canSend).toBe(false);
   const reset = await app.inject({
     method: 'POST',
     url: '/api/admin/users/user-student/reset-password',
@@ -136,4 +136,41 @@ it('聊天SSE仅通知双方，关系解除只读，重置密码后旧连接即�
   expect(
     (await app.inject({ url: `/api/chat/conversations/${c.id}/messages`, headers: s })).statusCode,
   ).toBe(401);
+});
+it('在线状态推送覆盖所有关联联系人，未关联用户收不到他人状态，解除关系清除状态', async () => {
+  const { app, client, login } = await setup();
+  const t = await login('teacher'),
+    t2 = await login('t2'),
+    s = await login('student'),
+    other = await login('s3'),
+    admin = await login('administrator');
+  const one: any[] = [],
+    two: any[] = [],
+    strangers: any[] = [];
+  const closes = [
+    await client.stream('/api/chat/events', t, (type, data) => one.push({ type, data })),
+    await client.stream('/api/chat/events', t2, (type, data) => two.push({ type, data })),
+    await client.stream('/api/chat/events', other, (type, data) => strangers.push({ type, data })),
+  ];
+  await app.inject({
+    method: 'POST',
+    url: '/api/chat/presence',
+    headers: s,
+    payload: { clientId: 'sse-tab', sequence: 1 },
+  });
+  await until(
+    () =>
+      one.some((e) => e.type === 'presence' && e.data['user-student'] === 'online') &&
+      two.some((e) => e.type === 'presence' && e.data['user-student'] === 'online'),
+  );
+  expect(strangers.filter((e) => e.type === 'presence').map((e) => e.data)).toEqual([{}]);
+  await app.inject({
+    method: 'DELETE',
+    url: '/api/admin/teachers/user-teacher/students/user-student',
+    headers: admin,
+  });
+  await until(
+    () => one.filter((e) => e.type === 'presence').at(-1)?.data['user-student'] === undefined,
+  );
+  for (const close of closes) close();
 });

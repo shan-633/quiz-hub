@@ -51,6 +51,7 @@ export function registerAttempts(
       .map(view)
       .map((a) => ({
         id: a.id,
+        dailyDate: a.dailyDate,
         title: a.title,
         status: a.status,
         libraryId: a.libraryId,
@@ -58,6 +59,7 @@ export function registerAttempts(
         teacherId: a.teacherId,
         available: a.status === 'submitted' || canContinue(store, requireUser(req), a),
         repeatAvailable:
+          !a.dailyDate &&
           !a.assignmentId &&
           store.get<LibraryItem>('library', a.libraryId)?.deliveryMode === 'showcase' &&
           canReadLibrary(store, requireUser(req), store.get<LibraryItem>('library', a.libraryId)),
@@ -103,6 +105,7 @@ export function registerAttempts(
         .find(
           (a) =>
             !a.assignmentId &&
+            !a.dailyDate &&
             a.libraryId === body.libraryId &&
             a.status === 'active' &&
             canContinue(store, user, a),
@@ -119,7 +122,9 @@ export function registerAttempts(
     const active = store
       .list<Attempt>('attempts', user.id)
       .reverse()
-      .find((a) => a.libraryId === item.id && !a.assignmentId && a.status === 'active');
+      .find(
+        (a) => a.libraryId === item.id && !a.assignmentId && !a.dailyDate && a.status === 'active',
+      );
     if (active) {
       const current = expireAttempt(store, active);
       if (current.status === 'active' && (!body.fresh || current.dueAt)) return view(current);
@@ -200,6 +205,8 @@ export function registerAttempts(
     return store.transaction(() => {
       const a = owned(req, req.params.id);
       if (a.status === 'submitted') return view(a);
+      if (a.dailyDate && !a.answers[a.questions[0].id]?.data.choiceIds.length)
+        throw new HttpError(422, '请先作答每日一题再提交评分');
       return view(submitAttempt(store, a, 'student'));
     });
   });

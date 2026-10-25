@@ -24,6 +24,7 @@ import { useAuth } from '../context';
 import { useChat } from '../chatContext';
 import { Loading, formatDate } from '../components/ui';
 import { LearningHeatmap } from '../components/LearningHeatmap';
+import { DailyQuestionPanel } from '../components/DailyQuestionPanel';
 import '../learningOverview.css';
 import { useDirections, CurriculumTag } from '../directions';
 
@@ -135,6 +136,7 @@ export function StudentHomePage() {
           {refreshing ? '更新中' : '刷新概览'}
         </button>
       </header>
+      <DailyQuestionPanel />
       <div className="learning-stat-grid">
         <Link to="/tasks" className="learning-stat">
           <span className="learning-stat-icon">

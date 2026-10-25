@@ -159,6 +159,44 @@
 .chat-heading p {
   margin-bottom: 0;
 }
+.presence-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  line-height: 1.5;
+  color: #78847f;
+}
+.presence-badge i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #a7afaa;
+}
+.presence-badge.online {
+  color: #287053;
+}
+.presence-badge.online i {
+  background: #47936b;
+}
+.presence-badge.practicing {
+  color: #277c91;
+}
+.presence-badge.practicing i {
+  background: #3896ab;
+}
+.presence-badge.examining {
+  color: #9b6723;
+}
+.presence-badge.examining i {
+  background: #c18d39;
+}
+.chat-person-text .presence-badge {
+  margin: 3px 0;
+}
+.chat-detail-heading .presence-badge {
+  margin-top: 4px;
+}
 .chat-status {
   display: flex;
   align-items: center;

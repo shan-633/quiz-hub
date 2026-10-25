@@ -80,6 +80,8 @@ function mount(rows: any[] = []) {
           },
         ];
       if (url.endsWith('/library')) return [];
+      if (url.includes('/daily-question?'))
+        return { today: at.slice(0, 10), month: at.slice(0, 7), entries: [] };
       throw new Error(`Unexpected request ${url}`);
     },
   }));
@@ -116,9 +118,7 @@ it('首页汇总新任务、真实教师消息和可继续的作答，链接直�
   ]);
   const tasks = await screen.findByRole('region', { name: '最新收到' });
   expect(
-    within(tasks)
-      .getByRole('link', { name: /刚收到的电学卷/ })
-      .getAttribute('href'),
+    (await within(tasks).findByRole('link', { name: /刚收到的电学卷/ })).getAttribute('href'),
   ).toBe('/tasks#task-task-new');
   expect(screen.getByRole('link', { name: /继续作答/ }).getAttribute('href')).toBe(
     '/attempts/active',

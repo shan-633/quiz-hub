@@ -146,6 +146,7 @@ export interface User {
   revision?: number;
 }
 export interface Attempt {
+  dailyDate?: string;
   curriculum?: Curriculum;
   id: string;
   teacherId?: string;

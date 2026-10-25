@@ -7,6 +7,7 @@ import { useChat } from '../chatContext';
 import { api, json } from '../api';
 import { randomId } from '../../shared/browserIds';
 import { EmptyState, Loading, Modal, formatDate } from '../components/ui';
+import { PresenceBadge } from '../components/PresenceBadge';
 interface Pending {
   id: string;
   conversationId: string;
@@ -314,6 +315,7 @@ export function ChatPage() {
                   <span className="avatar">{c.peer.name.slice(-1)}</span>
                   <span className="chat-person-text">
                     <strong>{c.peer.name}</strong>
+                    {c.canSend && <PresenceBadge status={chat.presence?.[c.peer.id]} />}
                     <small>
                       {c.lastMessage ?? '开始一段交流'}
                       {!c.canSend ? ' · 只读' : ''}
@@ -340,6 +342,7 @@ export function ChatPage() {
                   <span className="avatar">{p.name.slice(-1)}</span>
                   <span className="chat-person-text">
                     <strong>{p.name}</strong>
+                    <PresenceBadge status={chat.presence?.[p.id]} />
                     <small>@{p.username}</small>
                   </span>
                 </button>
@@ -372,6 +375,9 @@ export function ChatPage() {
                 <span className="avatar">{conversation?.peer.name.slice(-1) ?? '·'}</span>
                 <div>
                   <h2>{conversation?.peer.name ?? '正在载入会话…'}</h2>
+                  {conversation?.canSend && (
+                    <PresenceBadge status={chat.presence?.[conversation.peer.id]} />
+                  )}
                   <p className="muted small">
                     {conversation?.canSend
                       ? '关联师生 · 私聊'

@@ -1,10 +1,10 @@
-# 公网部署 · 5.0
+# 公网部署 · 5.1
 
 访问 [考试学习空间](https://74.82.199.118/)。根路径的原cat游戏保留在 [/game/cat/](http://74.82.199.118/game/cat/)，UNO继续在 [/uno/](http://74.82.199.118/uno/)。游戏同时支持HTTPS；HTTP游戏入口仍保留，避免切换协议使原浏览器本地存档和登录令牌失去原来的origin。游戏文件未搬动或重写，Nginx将新路径映射到原目录。
 
 新应用使用独立的`quiz-hub`系统用户和systemd服务：
 
-- 源码和静态构建：`/srv/quiz-hub/current`，指向`releases/5.0.0-final-20261024`。
+- 源码和静态构建：`/srv/quiz-hub/current`，指向`releases/5.1.0-20261025`。5.0旧release保留供回滚。
 - Node运行时：`/srv/quiz-hub/runtime`，本次为经过官方校验和验证的Node24.22.1。
 - 业务数据：`/var/lib/quiz-hub/data`，目录只允许服务用户访问。
 - 环境文件：`/etc/quiz-hub.env`，production、DEMO_MODE=false、SECURE_COOKIE=true，监听127.0.0.1:3201。

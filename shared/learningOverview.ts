@@ -9,6 +9,7 @@ export interface AttemptPerformance {
   max: number;
 }
 export interface AttemptSummary {
+  dailyDate?: string;
   curriculum?: Curriculum;
   id: string;
   title: string;
