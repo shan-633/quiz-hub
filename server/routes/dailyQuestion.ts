@@ -3,8 +3,13 @@ import { z } from 'zod';
 import { HttpError, requireUser } from '../auth';
 import { DailyQuestionService } from '../dailyQuestion';
 import type { Store } from '../store';
-export function registerDailyQuestion(app: FastifyInstance, store: Store) {
-  const service = new DailyQuestionService(store);
+import type { AssignmentService } from '../assignments';
+export function registerDailyQuestion(
+  app: FastifyInstance,
+  store: Store,
+  assignments: AssignmentService,
+) {
+  const service = new DailyQuestionService(store, assignments);
   const student = (req: FastifyRequest) => {
     const u = requireUser(req);
     if (u.role !== 'student') throw new HttpError(403, '每日一题仅供学生使用');

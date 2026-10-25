@@ -176,3 +176,63 @@ it('多选部分得分标红；其他学生、未推送和未开放题库不能�
       .statusCode,
   ).toBe(403);
 });
+it('分配题库仅从发给本人的已开放推送快照抽题，不暴露新题和未来任务', async () => {
+  const f = await fixture();
+  const s = await f.login('student'),
+    other = await f.login('student2'),
+    t = await f.login('teacher');
+  f.store.put('library', f.bank.id, { ...f.bank, deliveryMode: 'assigned' }, f.bank.teacherId);
+  const group = (
+    await f.app.inject({
+      method: 'POST',
+      url: '/api/teacher/groups',
+      headers: t,
+      payload: { name: '每日题回归班', studentIds: ['user-student'] },
+    })
+  ).json();
+  const push = (opensAt?: string) =>
+    f.app.inject({
+      method: 'POST',
+      url: '/api/teacher/assignments',
+      headers: t,
+      payload: { libraryId: f.bank.id, groupIds: [group.id], ...(opensAt ? { opensAt } : {}) },
+    });
+  expect((await push('2099-01-01T00:00:00Z')).statusCode).toBe(201);
+  expect(
+    (await f.app.inject({ method: 'POST', url: '/api/daily-question/start', headers: s }))
+      .statusCode,
+  ).toBe(422);
+  expect((await push()).statusCode).toBe(201);
+  f.store.publish({ ...f.q, version: 2, solution: { ...f.q.solution, choices: ['b'] } });
+  f.store.put('questions', f.q.id, {
+    id: f.q.id,
+    bankId: f.bank.id,
+    latestVersion: 2,
+    draft: f.q,
+    archived: false,
+  });
+  const secret = { ...f.q, id: 'unassigned-new-question' };
+  f.store.publish(secret);
+  f.store.put('questions', secret.id, {
+    id: secret.id,
+    bankId: f.bank.id,
+    latestVersion: 1,
+    draft: secret,
+    archived: false,
+  });
+  expect(
+    (await f.app.inject({ method: 'POST', url: '/api/daily-question/start', headers: other }))
+      .statusCode,
+  ).toBe(422);
+  const result = await f.app.inject({
+    method: 'POST',
+    url: '/api/daily-question/start',
+    headers: s,
+  });
+  expect(result.statusCode).toBe(201);
+  const frozen = f.store.get<Attempt>('attempts', result.json().attemptId)!;
+  expect(frozen.questions).toHaveLength(1);
+  expect(frozen.questions[0].id).toBe(f.q.id);
+  expect(frozen.questions[0].version).toBe(1);
+  expect(frozen.questions[0].solution!.choices).toEqual(['a']);
+});

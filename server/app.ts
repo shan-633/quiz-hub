@@ -122,7 +122,7 @@ export async function createApp(options: AppOptions) {
   });
   registerLibrary(app, store);
   registerCurriculum(app, store);
-  registerDailyQuestion(app, store);
+  registerDailyQuestion(app, store, assignments);
   registerAdmin(app, store);
   registerChat(app, store, presence);
   registerAssignments(app, store, assignments);

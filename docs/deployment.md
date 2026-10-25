@@ -4,7 +4,7 @@
 
 新应用使用独立的`quiz-hub`系统用户和systemd服务：
 
-- 源码和静态构建：`/srv/quiz-hub/current`，指向`releases/5.1.0-20261025`。5.0旧release保留供回滚。
+- 源码和静态构建：`/srv/quiz-hub/current`，指向`releases/5.1.0-final-20261025`。旧release保留供回滚。
 - Node运行时：`/srv/quiz-hub/runtime`，本次为经过官方校验和验证的Node24.22.1。
 - 业务数据：`/var/lib/quiz-hub/data`，目录只允许服务用户访问。
 - 环境文件：`/etc/quiz-hub.env`，production、DEMO_MODE=false、SECURE_COOKIE=true，监听127.0.0.1:3201。

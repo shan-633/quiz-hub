@@ -8,9 +8,13 @@ import { isBeforeOpening } from '../shared/availability';
 import { HttpError } from './auth';
 import { canContinue, canReadLibrary } from './permissions';
 import type { Store } from './store';
+import type { AssignmentService } from './assignments';
 
 export class DailyQuestionService {
-  constructor(private store: Store) {
+  constructor(
+    private store: Store,
+    private assignments?: AssignmentService,
+  ) {
     store.db.exec(`CREATE TABLE IF NOT EXISTS daily_questions(
       user_id TEXT NOT NULL,day TEXT NOT NULL,attempt_id TEXT NOT NULL UNIQUE,
       PRIMARY KEY(user_id,day));`);
@@ -79,6 +83,18 @@ export class DailyQuestionService {
           .map((b) => [b.id, b]),
       );
       const candidates: { q: Question; bank: LibraryItem }[] = [];
+      const seen = new Set<string>();
+      const add = (q: Question, bank: LibraryItem) => {
+        const key = `${bank.id}:${q.id}:${q.version}`;
+        if (
+          !seen.has(key) &&
+          (q.type === 'single' || q.type === 'multiple') &&
+          hasCompleteStandardAnswer(q)
+        ) {
+          seen.add(key);
+          candidates.push({ q, bank });
+        }
+      };
       // Only project identifiers here: drafts and historical answer payloads stay in SQLite.
       for (const row of this.store.db
         .prepare(
@@ -91,13 +107,28 @@ export class DailyQuestionService {
         const bank = banks.get(row.bank_id as string);
         if (!bank) continue;
         const q = this.store.version(row.id as string, row.version as number);
-        if (q && (q.type === 'single' || q.type === 'multiple') && hasCompleteStandardAnswer(q))
-          candidates.push({ q, bank });
+        if (q) add(q, bank);
+      }
+      // Assigned banks contribute only the already-delivered, opened snapshot.
+      // New source-bank questions and future pushes must never enter this pool.
+      for (const task of this.assignments?.received(user.id) ?? []) {
+        const bank = this.store.get<LibraryItem>('library', task.libraryId);
+        if (
+          !bank ||
+          bank.kind !== 'bank' ||
+          bank.deliveryMode === 'showcase' ||
+          bank.state !== 'published' ||
+          bank.teacherId !== task.teacherId ||
+          isBeforeOpening(task.opensAt) ||
+          !canReadLibrary(this.store, user, bank)
+        )
+          continue;
+        for (const q of task.questions) add(q, { ...bank, curriculum: curriculumOf(task) });
       }
       if (!candidates.length)
         throw new HttpError(
           422,
-          '暂无可用的每日一题，请等待老师发布含完整答案的单选或多选展示题库',
+          '暂无可用的每日一题，请等待老师发布展示题库，或推送已开放且有完整答案的单选、多选题库',
         );
       const { q, bank } = candidates[randomInt(candidates.length)];
       const now = new Date().toISOString();
